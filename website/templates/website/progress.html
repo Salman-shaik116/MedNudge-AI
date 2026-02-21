@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Health Progress Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #1f2937;
+}
+
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.header-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.header-card h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.header-card p {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 20px;
+}
+
+.progress-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.progress-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#10b981 0deg, #e5e7eb 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 24px;
+    color: #1f2937;
+    position: relative;
+}
+
+.progress-stats {
+    text-align: left;
+}
+
+.progress-stats div {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.stat-number {
+    font-weight: bold;
+    color: #667eea;
+}
+
+.tracker-id {
+    background: #f3f4f6;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 15px;
+}
+
+.week-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.day-btn {
+    padding: 12px 24px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+}
+
+.day-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.day-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.day-content {
+    display: none;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.day-content.active {
+    display: block;
+}
+
+.day-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.task-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.task-category {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 5px solid #667eea;
+}
+
+.category-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.3s;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-item:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 8px;
+    padding-left: 10px;
+}
+
+.task-checkbox {
+    width: 24px;
+    height: 24px;
+    accent-color: #667eea;
+    cursor: pointer;
+}
+
+.task-details {
+    flex: 1;
+}
+
+.task-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.task-time {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.task-item.completed .task-name {
+    text-decoration: line-through;
+    opacity: 0.6;
+    color: #10b981;
+}
+
+.task-item.completed .task-time {
+    opacity: 0.6;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+    background: #667eea;
+    color: white;
+}
+
+.alert {
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    font-weight: 500;
+    text-align: center;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+
+.alert-info {
+    background: #dbeafe;
+    color: #1e40af;
+    border-left: 4px solid #3b82f6;
+}
+
+.completion-celebration {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.celebration-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.celebration-content h2 {
+    font-size: 32px;
+    color: #10b981;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .task-categories {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-display {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .week-navigation {
+        gap: 5px;
+    }
+    
+    .day-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header-card">
+        <h1>🏥 Weekly Health Progress Tracker</h1>
+        <p>Hello <span id="userName">User</span>! Track your daily health activities and build healthy habits.</p>
+        
+        <div class="progress-display">
+            <div class="progress-circle" id="progressCircle">0%</div>
+            <div class="progress-stats">
+                <div>📊 <span class="stat-number" id="completedTasks">0</span> / <span id="totalTasks">63</span> Tasks Completed</div>
+                <div>📅 <span class="stat-number" id="completedDays">0</span> / 7 Days Completed</div>
+                <div>🔥 <span class="stat-number" id="streakDays">0</span> Day Streak</div>
+                <div>⏰ Last Updated: <span class="stat-number" id="lastUpdated">Never</span></div>
+            </div>
+        </div>
+        
+        <div class="tracker-id">
+            Tracker ID: <span id="trackerId">{{ tracker_id }}</span>
+        </div>
+    </div>
+
+    <!-- Week Navigation -->
+    <div class="week-navigation">
+        <button class="day-btn active" onclick="showDay('monday', this)">Monday</button>
+        <button class="day-btn" onclick="showDay('tuesday', this)">Tuesday</button>
+        <button class="day-btn" onclick="showDay('wednesday', this)">Wednesday</button>
+        <button class="day-btn" onclick="showDay('thursday', this)">Thursday</button>
+        <button class="day-btn" onclick="showDay('friday', this)">Friday</button>
+        <button class="day-btn" onclick="showDay('saturday', this)">Saturday</button>
+        <button class="day-btn" onclick="showDay('sunday', this)">Sunday</button>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
+    <!-- Day Contents -->
+    <div class="day-content active" id="monday">
+        <div class="day-title">Monday Tasks</div>
+        <div class="task-categories">
+            <div class="task-category">
+                <div class="category-title">🏃 Exercises</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_ex1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Brisk Walking</div>
+                        <div class="task-time">7:00 AM - 30 minutes</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_ex2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Stretching</div>
+                        <div class="task-time">7:30 PM - 10 minutes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-category">
+                <div class="category-title">🥗 Meals</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_food1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Breakfast</div>
+                        <div class="task-time">8:30 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_food2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Nutritious Lunch</div>
+                        <div class="task-time">1:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_food3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Snack</div>
+                        <div class="task-time">5:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_food4" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Dinner</div>
+                        <div class="task-time">8:30 PM</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-category">
+                <div class="category-title">💊 Medicines</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_med1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Iron Tablet</div>
+                        <div class="task-time">9:00 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_med2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Vitamin B12</div>
+                        <div class="task-time">1:30 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="monday_med3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Folic Acid</div>
+                        <div class="task-time">10:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-content" id="tuesday">
+        <div class="day-title">Tuesday Tasks</div>
+        <div class="task-categories">
+            <div class="task-category">
+                <div class="category-title">🏃 Exercises</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_ex1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Cycling</div>
+                        <div class="task-time">7:00 AM - 25 minutes</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_ex2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Yoga</div>
+                        <div class="task-time">7:30 PM - 15 minutes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">🥗 Meals</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_food1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Breakfast</div>
+                        <div class="task-time">8:30 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_food2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Nutritious Lunch</div>
+                        <div class="task-time">1:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_food3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Snack</div>
+                        <div class="task-time">5:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_food4" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Dinner</div>
+                        <div class="task-time">8:30 PM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">💊 Medicines</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_med1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Iron Tablet</div>
+                        <div class="task-time">9:00 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_med2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Vitamin D</div>
+                        <div class="task-time">1:30 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="tuesday_med3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Calcium</div>
+                        <div class="task-time">10:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-content" id="wednesday">
+        <div class="day-title">Wednesday Tasks</div>
+        <div class="task-categories">
+            <div class="task-category">
+                <div class="category-title">🏃 Exercises</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_ex1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Swimming</div>
+                        <div class="task-time">7:00 AM - 30 minutes</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_ex2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Meditation</div>
+                        <div class="task-time">8:00 PM - 10 minutes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">🥗 Meals</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_food1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Breakfast</div>
+                        <div class="task-time">8:30 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_food2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Nutritious Lunch</div>
+                        <div class="task-time">1:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_food3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Snack</div>
+                        <div class="task-time">5:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_food4" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Dinner</div>
+                        <div class="task-time">8:30 PM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">💊 Medicines</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_med1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Iron Tablet</div>
+                        <div class="task-time">9:00 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_med2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Multivitamin</div>
+                        <div class="task-time">1:30 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="wednesday_med3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Omega-3</div>
+                        <div class="task-time">10:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-content" id="thursday">
+        <div class="day-title">Thursday Tasks</div>
+        <div class="task-categories">
+            <div class="task-category">
+                <div class="category-title">🏃 Exercises</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_ex1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Jogging</div>
+                        <div class="task-time">6:30 AM - 20 minutes</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_ex2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Core Exercises</div>
+                        <div class="task-time">7:30 PM - 12 minutes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">🥗 Meals</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_food1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Breakfast</div>
+                        <div class="task-time">8:30 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_food2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Nutritious Lunch</div>
+                        <div class="task-time">1:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_food3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Snack</div>
+                        <div class="task-time">5:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_food4" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Dinner</div>
+                        <div class="task-time">8:30 PM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">💊 Medicines</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_med1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Iron Tablet</div>
+                        <div class="task-time">9:00 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_med2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Multivitamin</div>
+                        <div class="task-time">1:30 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="thursday_med3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Folic Acid</div>
+                        <div class="task-time">10:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-content" id="friday">
+        <div class="day-title">Friday Tasks</div>
+        <div class="task-categories">
+            <div class="task-category">
+                <div class="category-title">🏃 Exercises</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_ex1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Dancing</div>
+                        <div class="task-time">7:00 AM - 25 minutes</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_ex2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Meditation</div>
+                        <div class="task-time">8:00 PM - 15 minutes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">🥗 Meals</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_food1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Breakfast</div>
+                        <div class="task-time">8:30 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_food2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Nutritious Lunch</div>
+                        <div class="task-time">1:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_food3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Snack</div>
+                        <div class="task-time">5:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_food4" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Dinner</div>
+                        <div class="task-time">8:30 PM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">💊 Medicines</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_med1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Iron Tablet</div>
+                        <div class="task-time">9:00 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_med2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Vitamin B12</div>
+                        <div class="task-time">1:30 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="friday_med3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Folic Acid</div>
+                        <div class="task-time">10:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-content" id="saturday">
+        <div class="day-title">Saturday Tasks</div>
+        <div class="task-categories">
+            <div class="task-category">
+                <div class="category-title">🏃 Exercises</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_ex1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Hiking</div>
+                        <div class="task-time">7:00 AM - 40 minutes</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_ex2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Stretching</div>
+                        <div class="task-time">7:00 PM - 12 minutes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">🥗 Meals</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_food1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Breakfast</div>
+                        <div class="task-time">9:00 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_food2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Nutritious Lunch</div>
+                        <div class="task-time">1:30 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_food3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Snack</div>
+                        <div class="task-time">5:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_food4" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Dinner</div>
+                        <div class="task-time">8:30 PM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">💊 Medicines</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_med1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Iron Tablet</div>
+                        <div class="task-time">9:30 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_med2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Omega-3</div>
+                        <div class="task-time">2:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="saturday_med3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Calcium</div>
+                        <div class="task-time">10:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-content" id="sunday">
+        <div class="day-title">Sunday Tasks</div>
+        <div class="task-categories">
+            <div class="task-category">
+                <div class="category-title">🏃 Exercises</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_ex1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Walking</div>
+                        <div class="task-time">8:00 AM - 25 minutes</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_ex2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Yoga & Meditation</div>
+                        <div class="task-time">7:00 PM - 20 minutes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">🥗 Meals</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_food1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Breakfast</div>
+                        <div class="task-time">9:00 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_food2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Nutritious Lunch</div>
+                        <div class="task-time">1:30 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_food3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Healthy Snack</div>
+                        <div class="task-time">5:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_food4" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Light Dinner</div>
+                        <div class="task-time">8:00 PM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-category">
+                <div class="category-title">💊 Medicines</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_med1" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Iron Tablet</div>
+                        <div class="task-time">9:30 AM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_med2" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Vitamin B12</div>
+                        <div class="task-time">2:00 PM</div>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" id="sunday_med3" onchange="updateTask(this)">
+                    <div class="task-details">
+                        <div class="task-name">Folic Acid</div>
+                        <div class="task-time">10:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn btn-success" onclick="saveProgress()">💾 Save Progress</button>
+        <button class="btn btn-secondary" onclick="resetWeek()">🔄 Reset Week</button>
+        <button class="btn btn-primary" onclick="shareProgress()">📤 Share Progress</button>
+    </div>
+
+</div>
+
+<!-- Completion Celebration Modal -->
+<div class="completion-celebration" id="celebrationModal">
+    <div class="celebration-content">
+        <h2>🎉 Congratulations!</h2>
+        <p>You've completed your entire weekly health plan!</p>
+        <p>Keep up the great work!</p>
+        <button class="btn btn-success" onclick="closeCelebration()">Continue</button>
+    </div>
+</div>
+
+<script>
+// Get tracker ID from template and URL parameters
+const trackerId = '{{ tracker_id }}';
+const urlParams = new URLSearchParams(window.location.search);
+const userName = urlParams.get('name') || 'User';
+const userEmail = urlParams.get('email') || '';
+
+// Set user name and tracker ID
+document.getElementById('userName').textContent = userName;
+document.getElementById('trackerId').textContent = trackerId;
+
+// Initialize progress tracking
+let weeklyProgress = {};
+
+function showDay(day, button) {
+    // Hide all day contents
+    document.querySelectorAll('.day-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active from all buttons
+    document.querySelectorAll('.day-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected day and activate button
+    document.getElementById(day).classList.add('active');
+    button.classList.add('active');
+}
+
+function updateTask(checkbox) {
+    const taskId = checkbox.id;
+    const isCompleted = checkbox.checked;
+    
+    // Update local progress
+    weeklyProgress[taskId] = isCompleted;
+    
+    // Update visual state
+    const taskItem = checkbox.closest('.task-item');
+    if (isCompleted) {
+        taskItem.classList.add('completed');
+        showAlert('Task completed!', 'success');
+    } else {
+        taskItem.classList.remove('completed');
+        showAlert('Task unchecked', 'info');
+    }
+    
+    // Sync with server
+    syncWithServer(taskId, isCompleted);
+    updateProgressDisplay();
+    checkWeekCompletion();
+}
+
+function syncWithServer(taskId, completed) {
+    fetch(`/api/progress/${trackerId}/update/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            task_id: taskId,
+            completed: completed,
+            user_name: userName,
+            user_email: userEmail
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Progress synced with server');
+            if (data.completion_rate === 100) {
+                setTimeout(() => {
+                    document.getElementById('celebrationModal').style.display = 'flex';
+                }, 500);
+            }
+        } else {
+            console.error('Failed to sync with server:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error syncing with server:', error);
+    });
+}
+
+function loadProgressFromServer() {
+    fetch(`/api/progress/${trackerId}/get/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.data.tasks) {
+            weeklyProgress = data.data.tasks;
+            
+            // Update checkboxes
+            Object.keys(weeklyProgress).forEach(taskId => {
+                const checkbox = document.getElementById(taskId);
+                if (checkbox && weeklyProgress[taskId]) {
+                    checkbox.checked = true;
+                    checkbox.closest('.task-item').classList.add('completed');
+                }
+            });
+            
+            updateProgressDisplay();
+        }
+    })
+    .catch(error => {
+        console.error('Error loading progress from server:', error);
+    });
+}
+
+function updateProgressDisplay() {
+    const totalTasks = 63;
+    const completedTasks = Object.values(weeklyProgress).filter(Boolean).length;
+    const percentage = Math.round((completedTasks / totalTasks) * 100);
+    
+    // Update progress circle
+    const progressCircle = document.getElementById('progressCircle');
+    progressCircle.textContent = percentage + '%';
+    progressCircle.style.background = `conic-gradient(#10b981 ${percentage * 3.6}deg, #e5e7eb ${percentage * 3.6}deg)`;
+    
+    // Update stats
+    document.getElementById('completedTasks').textContent = completedTasks;
+    document.getElementById('totalTasks').textContent = totalTasks;
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+}
+
+function checkWeekCompletion() {
+    const totalTasks = 63;
+    const completedTasks = Object.values(weeklyProgress).filter(Boolean).length;
+    
+    if (completedTasks === totalTasks) {
+        setTimeout(() => {
+            document.getElementById('celebrationModal').style.display = 'flex';
+        }, 500);
+    }
+}
+
+function closeCelebration() {
+    document.getElementById('celebrationModal').style.display = 'none';
+}
+
+function saveProgress() {
+    showAlert('Progress automatically synced with server!', 'success');
+}
+
+function resetWeek() {
+    if (confirm('Are you sure you want to reset all progress for this week?')) {
+        weeklyProgress = {};
+        
+        // Reset all checkboxes
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.closest('.task-item').classList.remove('completed');
+            syncWithServer(checkbox.id, false);
+        });
+        
+        updateProgressDisplay();
+        showAlert('Week progress reset successfully!', 'info');
+    }
+}
+
+function shareProgress() {
+    const totalTasks = 63;
+    const completedTasks = Object.values(weeklyProgress).filter(Boolean).length;
+    const percentage = Math.round((completedTasks / totalTasks) * 100);
+    
+    const shareText = `My Weekly Health Progress: ${percentage}% complete (${completedTasks}/${totalTasks} tasks)\n\nTracker ID: ${trackerId}\n\n#HealthTracker #Wellness`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'My Health Progress',
+            text: shareText,
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(shareText).then(() => {
+            showAlert('Progress copied to clipboard!', 'success');
+        });
+    }
+}
+
+function showAlert(message, type) {
+    const alertContainer = document.getElementById('alertContainer');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.textContent = message;
+    
+    alertContainer.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadProgressFromServer();
+});
+
+// Auto-refresh progress every 30 seconds
+setInterval(() => {
+    loadProgressFromServer();
+}, 30000);
+</script>
+
+</body>
+</html>

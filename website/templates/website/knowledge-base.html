@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base - DocusAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* [SAME HEADER/CSS FROM PREVIOUS PAGES - TRUNCATED FOR SPACE] */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #1a1a1a; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); padding: 1rem 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
+        .nav-link { padding: 0.75rem 1.25rem; color: #374151; font-weight: 500; text-decoration: none; border-radius: 12px; transition: all 0.3s ease; margin: 0 0.5rem; }
+        .nav-link:hover { background: rgba(0,123,255,0.08); color: #007bff; }
+        .cta-button { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 0.875rem 2rem; border-radius: 50px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,123,255,0.3); }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,123,255,0.4); }
+        
+        .hero { background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%); padding: 8rem 0 6rem; text-align: center; }
+        .hero h1 { font-size: clamp(2.8rem, 6vw, 4rem); font-weight: 800; background: linear-gradient(135deg, #007bff, #00c851); -webkitbackground-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; }
+        .hero p { font-size: 1.3rem; color: #4b5563; max-width: 700px; margin: 0 auto 3rem; }
+        
+        .section { padding: 6rem 0; }
+        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 3rem; font-weight: 700; color: #1e293b; }
+        
+        .kb-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .kb-category { background: white; padding: 3rem; border-radius: 24px; box-shadow: 0 15px 50px rgba(0,0,0,0.08); transition: all 0.3s ease; border-left: 5px solid #007bff; cursor: pointer; }
+        .kb-category:hover { transform: translateY(-10px); box-shadow: 0 25px 70px rgba(0,0,0,0.15); }
+        .kb-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #007bff, #00c851); border-radius: 20px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; }
+        .kb-category h3 { font-size: 1.5rem; margin-bottom: 1rem; color: #1e293b; }
+        .kb-count { color: #64748b; font-weight: 600; }
+        
+        .kb-search { max-width: 600px; margin: 0 auto 4rem; }
+        .kb-search input { width: 100%; padding: 1.5rem 2rem 1.5rem 4rem; border: 2px solid #e2e8f0; border-radius: 50px; font-size: 1.1rem; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .kb-search input:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 4px rgba(0,123,255,0.1); }
+        
+        .kb-articles { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+        .kb-article { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border-left: 4px solid #e2e8f0; }
+        .kb-article h4 { font-size: 1.25rem; margin-bottom: 1rem; color: #1e293b; }
+        
+        footer { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; text-align: center; padding: 4rem 0 2rem; }
+        @media (max-width: 768px) { nav { flex-direction: column; gap: 1rem; } }
+    </style>
+</head>
+<body>
+    <!-- [HEADER SAME AS OTHER PAGES] -->
+    <header>
+        <nav class="container">
+            <div class="logo"><a href="index.html">DocusAI</a></div>
+            <a href="{% url 'website:index' %}" class="nav-link nav-home">Home</a>
+            <a href="{% url 'website:blog' %}" class="nav-link">Blog</a>
+            <div class="auth-buttons">
+                <a href="{% url 'website:signin' %}" class="nav-link">Sign In</a>
+                <a href="{% url 'website:signup' %}" class="cta-button">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>DocusAI Knowledge Base</h1>
+            <p>Comprehensive guides, FAQs, and technical documentation for all DocusAI features</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Quick Access Categories</h2>
+            <div class="kb-categories">
+                <div class="kb-category">
+                    <div class="kb-icon">🤖</div>
+                    <h3>AI Doctor</h3>
+                    <p>Setup, usage, and troubleshooting for your personal AI Doctor</p>
+                    <div class="kb-count">12 Articles</div>
+                </div>
+                <div class="kb-category">
+                    <div class="kb-icon">🧪</div>
+                    <h3>Lab Test Analysis</h3>
+                    <p>Supported tests, upload formats, and result interpretation</p>
+                    <div class="kb-count">18 Articles</div>
+                </div>
+                <div class="kb-category">
+                    <div class="kb-icon">👨‍⚕️</div>
+                    <h3>Second Opinions</h3>
+                    <p>Doctor consultations, case submission, and follow-ups</p>
+                    <div class="kb-count">8 Articles</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="kb-search">
+                <input type="text" placeholder="Search knowledge base...">
+            </div>
+            <h2 class="section-title">Popular Articles</h2>
+            <div class="kb-articles">
+                <article class="kb-article">
+                    <h4>How to upload lab test results for AI analysis</h4>
+                    <p>Supported formats, file size limits, and troubleshooting...</p>
+                </article>
+                <article class="kb-article">
+                    <h4>Understanding your AI Doctor health profile</h4>
+                    <p>Complete setup guide for personalized recommendations...</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <h3>Need Help?</h3>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 2rem 0;">
+                <a href="#about" class="cta-button">Contact Support</a>
+                <a href="{% url 'website:signup' %}" class="cta-button" style="background: transparent; border: 2px solid white; color: white;">Submit Request</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

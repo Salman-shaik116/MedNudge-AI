@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Health Planner Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f4f6fb;
+      color: #222;
+    }
+
+    /* Top navigation */
+    .topbar {
+      background: #1e293b;
+      color: #fff;
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .topbar-profile {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* Main layout */
+    .wrapper {
+      max-width: 1200px;
+      margin: 20px auto 32px;
+      padding: 0 16px;
+    }
+
+    /* Week selector */
+    .week-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .week-title {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .week-days {
+      display: flex;
+      gap: 6px;
+    }
+    .day-pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      background: #e5e7eb;
+      color: #111827;
+      cursor: pointer;
+      border: none;
+    }
+    .day-pill.active {
+      background: #2563eb;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    /* Cards layout */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+      padding: 14px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      min-height: 260px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .card-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .card-header small {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    /* Items list */
+    .item-list {
+      list-style: none;
+      margin-top: 4px;
+      overflow-y: auto;
+      max-height: 280px;
+      padding-right: 4px;
+    }
+
+    .item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+      gap: 8px;
+    }
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .item-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      flex: 1;
+    }
+    .item-left input[type="checkbox"] {
+      margin-top: 3px;
+      cursor: pointer;
+    }
+
+    .item-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .item-name {
+      font-weight: 500;
+      color: #111827;
+    }
+
+    .item-detail {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e0ebff;
+      color: #1d4ed8;
+      margin-left: 4px;
+    }
+
+    .item-right {
+      text-align: right;
+      font-size: 12px;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+
+    .item.done .item-name,
+    .item.done .item-detail {
+      text-decoration: line-through;
+      color: #9ca3af;
+    }
+
+    .item.done .item-right {
+      color: #9ca3af;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-title">Health Planner Dashboard</div>
+    <div class="topbar-profile">
+      User: <strong>John Doe</strong> · <span id="todayText"></span>
+    </div>
+  </header>
+
+  <main class="wrapper">
+    <!-- Week selector -->
+    <section class="week-bar">
+      <div class="week-title">This week</div>
+      <div class="week-days" id="weekDays"></div>
+    </section>
+
+    <!-- Cards -->
+    <section class="cards">
+      <!-- Exercises -->
+      <article class="card">
+        <div class="card-header">
+          <h2>Exercises</h2>
+          <small id="exerciseCount"></small>
+        </div>
+        <p class="card-subtitle">Planned physical activity for the selected day.</p>
+        <ul class="item-list" id="exerciseList"></ul>
+      </article>
+
+      <!-- Food -->
+      <article class="card">
+        <div class="card-header">
+          <h2>Food Plan</h2>
+          <small id="foodCount"></small>
+        </div>
+        <p class="card-subtitle">Meals and snacks based on your blood‑health plan.</p>
+        <ul class="item-list" id="foodList"></ul>
+      </article>
+
+      <!-- Tablets -->
+      <article class="card">
+        <div class="card-header">
+          <h2>Tablets / Medicines</h2>
+          <small id="tabletCount"></small>
+        </div>
+        <p class="card-subtitle">Medication schedule (confirm with your doctor).</p>
+        <ul class="item-list" id="tabletList"></ul>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    // --------- SAMPLE DATA (replace with API data later) ----------
+    // Days: 0 = Monday ... 6 = Sunday
+    const samplePlan = {
+      0: { // Monday
+        exercises: [
+          { id: "ex1", name: "Brisk walking", detail: "20 minutes, moderate pace", tag: "Cardio", time: "7:00 AM" },
+          { id: "ex2", name: "Light stretching", detail: "Full body, 10 minutes", tag: "Mobility", time: "7:30 PM" }
+        ],
+        foods: [
+          { id: "f1", name: "Breakfast", detail: "Oats, dry fruits, banana", tag: "High iron", time: "8:30 AM" },
+          { id: "f2", name: "Lunch", detail: "Dal, leafy greens, brown rice", tag: "Balanced", time: "1:00 PM" },
+          { id: "f3", name: "Snack", detail: "Fruit + handful of nuts", tag: "Snack", time: "5:00 PM" },
+          { id: "f4", name: "Dinner", detail: "Chapati + vegetables + salad", tag: "Light", time: "8:30 PM" }
+        ],
+        tablets: [
+          { id: "t1", name: "Iron tablet", detail: "1 tablet after breakfast", tag: "Prescription", time: "9:00 AM" },
+          { id: "t2", name: "Vitamin B12", detail: "1 tablet after lunch", tag: "Supplement", time: "1:30 PM" },
+          { id: "t3", name: "Folic acid", detail: "1 tablet at bedtime", tag: "Supplement", time: "10:00 PM" }
+        ]
+      },
+      1: { // Tuesday (can be different or same)
+        exercises: [
+          { id: "ex4", name: "Slow cycling", detail: "15 minutes", tag: "Cardio", time: "7:30 AM" }
+        ],
+        foods: [
+          { id: "f5", name: "Breakfast", detail: "Idli, sambar, fruit", tag: "Balanced", time: "8:30 AM" },
+          { id: "f6", name: "Lunch", detail: "Rajma, rice, salad", tag: "High protein", time: "1:00 PM" },
+          { id: "f7", name: "Dinner", detail: "Chapati, dal, sabzi", tag: "Light", time: "8:30 PM" }
+        ],
+        tablets: [
+          { id: "t4", name: "Iron tablet", detail: "1 tablet after breakfast", tag: "Prescription", time: "9:00 AM" },
+          { id: "t5", name: "Vitamin D", detail: "Weekly dose (if prescribed)", tag: "Supplement", time: "2:00 PM" }
+        ]
+      }
+      // You can define 2..6 for other days similarly
+    };
+
+    // Simple in‑memory "done" state (per session)
+    const doneState = new Set();
+
+    // ---------- DATE / WEEK SETUP ----------
+    const today = new Date();
+    const todayText = today.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+    document.getElementById("todayText").textContent = todayText;
+
+    // Build week (Mon–Sun) pills
+    const weekDaysContainer = document.getElementById("weekDays");
+    const weekLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    // Map JS weekday (0=Sun..6=Sat) to our index (Mon=0..Sun=6)
+    const jsDay = today.getDay(); // 0..6
+    let defaultIndex = jsDay === 0 ? 6 : jsDay - 1;
+
+    let currentDayIndex = defaultIndex;
+
+    weekLabels.forEach((label, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "day-pill" + (idx === currentDayIndex ? " active" : "");
+      btn.textContent = label;
+      btn.addEventListener("click", () => {
+        currentDayIndex = idx;
+        document
+          .querySelectorAll(".day-pill")
+          .forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderDay(currentDayIndex);
+      });
+      weekDaysContainer.appendChild(btn);
+    });
+
+    // ---------- RENDER FUNCTIONS ----------
+    function renderDay(dayIndex) {
+      const dayPlan = samplePlan[dayIndex] || { exercises: [], foods: [], tablets: [] };
+      renderSection("exerciseList", "exerciseCount", dayPlan.exercises, "exercise");
+      renderSection("foodList", "foodCount", dayPlan.foods, "food");
+      renderSection("tabletList", "tabletCount", dayPlan.tablets, "tablet");
+    }
+
+    function renderSection(listId, countId, items, type) {
+      const listEl = document.getElementById(listId);
+      const countEl = document.getElementById(countId);
+
+      listEl.innerHTML = "";
+
+      countEl.textContent = items.length ? `${items.length} items` : "No items";
+
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "item";
+        if (doneState.has(item.id)) {
+          li.classList.add("done");
+        }
+
+        const left = document.createElement("div");
+        left.className = "item-left";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = doneState.has(item.id);
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            doneState.add(item.id);
+            li.classList.add("done");
+          } else {
+            doneState.delete(item.id);
+            li.classList.remove("done");
+          }
+        });
+
+        const main = document.createElement("div");
+        main.className = "item-main";
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "item-name";
+        nameEl.textContent = item.name;
+
+        if (item.tag) {
+          const tagEl = document.createElement("span");
+          tagEl.className = "tag";
+          tagEl.textContent = item.tag;
+          nameEl.appendChild(tagEl);
+        }
+
+        const detailEl = document.createElement("div");
+        detailEl.className = "item-detail";
+        detailEl.textContent = item.detail || "";
+
+        main.appendChild(nameEl);
+        if (item.detail) main.appendChild(detailEl);
+
+        left.appendChild(checkbox);
+        left.appendChild(main);
+
+        const right = document.createElement("div");
+        right.className = "item-right";
+        right.textContent = item.time || "";
+
+        li.appendChild(left);
+        li.appendChild(right);
+
+        listEl.appendChild(li);
+      });
+    }
+
+    // Initial render
+    renderDay(currentDayIndex);
+  </script>
+</body>
+</html>

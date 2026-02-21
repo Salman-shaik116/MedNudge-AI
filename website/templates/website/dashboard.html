@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Dashboard • Docus</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: #f6f9fc;
+    color: #1f2937;
+}
+
+/* TOP BAR */
+.topbar {
+    background: #ffffff;
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: #6b7280;
+}
+
+/* MAIN */
+.container {
+    padding: 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* PROFILE CARD */
+.profile-card {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    margin-bottom: 25px;
+}
+
+.profile-text h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f766e;
+}
+
+.profile-text p {
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* PROGRESS */
+.progress {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: conic-gradient(#f87171 12%, #e5e7eb 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* CARD */
+.card {
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card.highlight {
+    background: #eaf4f2;
+}
+
+.card h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.card p {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 6px;
+}
+
+.card img {
+    width: 70px;
+}
+
+/* FULL WIDTH */
+.full {
+    grid-column: span 2;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="topbar-left">
+        🏠 My Dashboard
+    </div>
+    <div class="topbar-right">
+        💬 🔔 {{ request.user.username }}
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <!-- PROFILE -->
+    <div class="profile-card">
+        <div class="profile-text">
+            <h2>{{ request.user.username|title }}'s</h2>
+            <p>Health Profile</p>
+        </div>
+        <div class="progress">12%</div>
+        <a href="{% url 'website:upload' %}">Report Uploading</a>
+    </div>
+
+    <!-- GRID -->
+    <div class="grid">
+
+        <div class="card highlight">
+            <div>
+                <h3>Chat with<br>AI Doctor</h3>
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png">
+        </div>
+
+        <div class="card">
+            <div>
+                <h3>Lab Tests &<br>Screenings</h3>
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/2920/2920281.png">
+        </div>
+
+        <div class="card">
+            <div>
+                <h3>Checkup Plan</h3>
+                <p>⏱ Coming soon</p>
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png">
+        </div>
+
+        <div class="card">
+            <div>
+                <h3>Health Reports</h3>
+                <p>⏱ Coming soon</p>
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
+        </div>
+
+        <div class="card full">
+            <div>
+                <h3>Consult Top Doctors</h3>
+                <p>Online consultation with top doctors from US & Europe</p>
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png">
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

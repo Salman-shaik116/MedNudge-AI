@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Dashboard • Docus</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: #f6f9fc;
+    color: #1f2937;
+}
+
+.topbar {
+    background: #ffffff;
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: #6b7280;
+}
+
+.container {
+    padding: 30px;
+    max-width: 1600px;
+    margin: auto;
+}
+
+.profile-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    margin-bottom: 30px;
+    color: white;
+}
+
+.profile-text h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.profile-text p {
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.section-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group input, .form-group select {
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.report-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.report-info h4 {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.report-info p {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.report-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.weekly-tracker {
+    grid-column: span 2;
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.week-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.day-tab {
+    padding: 10px 20px;
+    border-radius: 25px;
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+}
+
+.day-tab.active {
+    background: #667eea;
+    color: white;
+}
+
+.day-content {
+    display: none;
+}
+
+.day-content.active {
+    display: block;
+}
+
+.tracking-sections {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.tracking-section {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+
+.tracking-section h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1f2937;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: #667eea;
+}
+
+.task-info {
+    flex: 1;
+}
+
+.task-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.task-time {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.task-item.completed .task-name {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+@media (max-width: 1200px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tracking-sections {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="topbar-left">
+        🏠 My Dashboard
+    </div>
+    <div class="topbar-right">
+        💬 🔔 {{ request.user.username }}
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <!-- PROFILE -->
+    <div class="profile-card">
+        <div class="profile-text">
+            <h2>Welcome back, {{ request.user.username|title }}!</h2>
+            <p>Your comprehensive health management dashboard</p>
+            <p style="margin-top: 10px; font-size: 14px;">📊 Overall Completion Rate: {{ completion_rate }}%</p>
+        </div>
+        <div style="text-align: right;">
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 24px; font-weight: bold;">{{ completion_rate }}%</div>
+                <div style="font-size: 12px; opacity: 0.8;">Weekly Progress</div>
+            </div>
+            <a href="{% url 'website:upload' %}" class="btn btn-success">📊 Upload New Report</a>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+        
+        <!-- EMAIL REMINDER SECTION -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3 class="section-title">📧 Send Health Reminders</h3>
+            </div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="POST" action="{% url 'website:send_reminder' %}" class="email-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="recipient_email">Recipient Email</label>
+                    <input type="email" id="recipient_email" name="recipient_email" 
+                           placeholder="Enter email address" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="recipient_name">Recipient Name</label>
+                    <input type="text" id="recipient_name" name="recipient_name" 
+                           placeholder="Enter recipient name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="recipient_username">Username</label>
+                    <input type="text" id="recipient_username" name="recipient_username" 
+                           placeholder="Enter username" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    📤 Send Health Reminder
+                </button>
+            </form>
+        </div>
+
+        <!-- REPORTS HISTORY -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3 class="section-title">📋 Recent Reports & Progress</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="refreshProgressData()" title="Refresh Progress Data">🔄 Refresh</button>
+                    <a href="{% url 'website:reports' %}" class="btn btn-secondary">View All</a>
+                </div>
+            </div>
+            
+            <!-- Task Progress Records -->
+            {% if task_progress %}
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">📈 Task Progress Records</h4>
+                    {% for progress in task_progress %}
+                        <div class="report-item" style="border-left-color: {% if progress.completion_rate == 100 %}#10b981{% elif progress.completion_rate >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">
+                            <div class="report-info">
+                                <h4>{{ progress.user_name }} ({{ progress.user_email }})</h4>
+                                <p>Progress: {{ progress.completed_tasks }}/{{ progress.total_tasks }} tasks ({{ progress.completion_rate }}%)</p>
+                                <p>Tracker ID: {{ progress.tracker_id }} | Last updated: {{ progress.last_updated }}</p>
+                            </div>
+                            <div class="report-actions">
+                                <div style="text-align: center; padding: 10px;">
+                                    <div style="font-size: 18px; font-weight: bold; color: {% if progress.completion_rate == 100 %}#10b981{% elif progress.completion_rate >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">{{ progress.completion_rate }}%</div>
+                                    <div style="font-size: 10px; color: #6b7280;">Complete</div>
+                                </div>
+                                <a href="/progress/{{ progress.tracker_id }}/" class="btn btn-primary" target="_blank">View Tracker</a>
+                                <form method="POST" action="{% url 'website:delete_tracker' progress.tracker_id %}" style="display: inline;" 
+                                      onsubmit="return confirm('Are you sure you want to delete this tracker?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Medical Reports -->
+            <div class="reports-list">
+                <h4 style="color: #667eea; margin-bottom: 15px;">📄 Medical Reports</h4>
+                {% for report in recent_reports %}
+                    <div class="report-item">
+                        <div class="report-info">
+                            <h4>Medical Report #{{ report.id }}</h4>
+                            <p>Uploaded {{ report.uploaded_at|timesince }} ago</p>
+                        </div>
+                        <div class="report-actions">
+                            <a href="{% url 'website:view_report' report.id %}" class="btn btn-secondary">View</a>
+                            <a href="{% url 'website:reminder' %}?report_id={{ report.id }}" class="btn btn-primary">Reminder</a>
+                            <form method="POST" action="{% url 'website:delete_report' report.id %}" style="display: inline;" 
+                                  onsubmit="return confirm('Are you sure you want to delete this report?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div style="text-align: center; padding: 40px; color: #6b7280;">
+                        <p>No reports uploaded yet</p>
+                        <a href="{% url 'website:upload' %}" class="btn btn-primary" style="margin-top: 15px;">
+                            Upload Your First Report
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- WEEKLY TRACKER -->
+    <div class="weekly-tracker">
+        <div class="section-header">
+            <h3 class="section-title">📅 Weekly Health Tracker</h3>
+            <div>
+                <button class="btn btn-secondary" onclick="saveProgress()">💾 Save Progress</button>
+                <button class="btn btn-primary" onclick="resetWeek()">🔄 Reset Week</button>
+            </div>
+        </div>
+        
+        <!-- Week Tabs -->
+        <div class="week-tabs">
+            <button class="day-tab active" onclick="showDay('monday')">Monday</button>
+            <button class="day-tab" onclick="showDay('tuesday')">Tuesday</button>
+            <button class="day-tab" onclick="showDay('wednesday')">Wednesday</button>
+            <button class="day-tab" onclick="showDay('thursday')">Thursday</button>
+            <button class="day-tab" onclick="showDay('friday')">Friday</button>
+            <button class="day-tab" onclick="showDay('saturday')">Saturday</button>
+            <button class="day-tab" onclick="showDay('sunday')">Sunday</button>
+        </div>
+
+        <!-- Day Content -->
+        {% for day in week_days %}
+        <div class="day-content {% if forloop.first %}active{% endif %}" id="{{ day }}">
+            <div class="tracking-sections">
+                
+                <!-- Exercises -->
+                <div class="tracking-section">
+                    <h4>🏃 Exercises</h4>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_ex1" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Brisk Walking</div>
+                            <div class="task-time">7:00 AM - 30 min</div>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_ex2" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Light Stretching</div>
+                            <div class="task-time">7:30 PM - 10 min</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Food -->
+                <div class="tracking-section">
+                    <h4>🥗 Food</h4>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_food1" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Breakfast</div>
+                            <div class="task-time">8:30 AM</div>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_food2" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Lunch</div>
+                            <div class="task-time">1:00 PM</div>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_food3" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Snack</div>
+                            <div class="task-time">5:00 PM</div>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_food4" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Dinner</div>
+                            <div class="task-time">8:30 PM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medicines -->
+                <div class="tracking-section">
+                    <h4>💊 Medicines</h4>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_med1" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Iron Tablet</div>
+                            <div class="task-time">9:00 AM</div>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_med2" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Vitamin B12</div>
+                            <div class="task-time">1:30 PM</div>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="{{ day }}_med3" onchange="updateTask(this)">
+                        <div class="task-info">
+                            <div class="task-name">Folic Acid</div>
+                            <div class="task-time">10:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+// Day switching
+function showDay(day) {
+    // Hide all day contents
+    document.querySelectorAll('.day-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active from all tabs
+    document.querySelectorAll('.day-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected day
+    document.getElementById(day).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Task tracking
+let weeklyProgress = JSON.parse(localStorage.getItem('weeklyProgress') || '{}');
+
+function updateTask(checkbox) {
+    const taskId = checkbox.id;
+    const isCompleted = checkbox.checked;
+    
+    // Update progress
+    weeklyProgress[taskId] = isCompleted;
+    
+    // Update visual state
+    const taskItem = checkbox.closest('.task-item');
+    if (isCompleted) {
+        taskItem.classList.add('completed');
+    } else {
+        taskItem.classList.remove('completed');
+    }
+    
+    // Auto-save
+    localStorage.setItem('weeklyProgress', JSON.stringify(weeklyProgress));
+}
+
+function loadProgress() {
+    Object.keys(weeklyProgress).forEach(taskId => {
+        const checkbox = document.getElementById(taskId);
+        if (checkbox && weeklyProgress[taskId]) {
+            checkbox.checked = true;
+            checkbox.closest('.task-item').classList.add('completed');
+        }
+    });
+}
+
+function saveProgress() {
+    localStorage.setItem('weeklyProgress', JSON.stringify(weeklyProgress));
+    alert('Progress saved successfully!');
+}
+
+function resetWeek() {
+    if (confirm('Are you sure you want to reset all progress for this week?')) {
+        weeklyProgress = {};
+        localStorage.removeItem('weeklyProgress');
+        
+        // Uncheck all checkboxes
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.closest('.task-item').classList.remove('completed');
+        });
+        
+        alert('Week progress reset successfully!');
+    }
+}
+
+// Auto-refresh progress data every 30 seconds
+function refreshProgressData() {
+    // Show loading indicator
+    const refreshBtn = document.querySelector('button[onclick="refreshProgressData()"]');
+    if (refreshBtn) {
+        refreshBtn.innerHTML = '⏳ Loading...';
+        refreshBtn.disabled = true;
+    }
+    
+    fetch(window.location.href)
+    .then(response => response.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Update progress records section
+        const newProgressSection = doc.querySelector('.reports-list').parentElement;
+        const currentProgressSection = document.querySelector('.reports-list').parentElement;
+        
+        if (newProgressSection && currentProgressSection) {
+            currentProgressSection.innerHTML = newProgressSection.innerHTML;
+        }
+        
+        // Update overall completion rate
+        const newCompletionRate = doc.querySelector('.profile-text p:last-child');
+        const currentCompletionRate = document.querySelector('.profile-text p:last-child');
+        if (newCompletionRate && currentCompletionRate) {
+            currentCompletionRate.innerHTML = newCompletionRate.innerHTML;
+        }
+        
+        // Update completion percentage display
+        const newPercentageDisplay = doc.querySelector('.profile-card div[style*="text-align: right"] div:first-child div:first-child');
+        const currentPercentageDisplay = document.querySelector('.profile-card div[style*="text-align: right"] div:first-child div:first-child');
+        if (newPercentageDisplay && currentPercentageDisplay) {
+            currentPercentageDisplay.innerHTML = newPercentageDisplay.innerHTML;
+        }
+        
+        console.log('Progress data refreshed successfully');
+    })
+    .catch(error => {
+        console.error('Error refreshing progress data:', error);
+    })
+    .finally(() => {
+        // Reset refresh button
+        if (refreshBtn) {
+            refreshBtn.innerHTML = '🔄 Refresh';
+            refreshBtn.disabled = false;
+        }
+    });
+}
+
+// Load progress on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadProgress();
+    
+    // Start auto-refresh for progress data
+    setInterval(refreshProgressData, 30000); // Refresh every 30 seconds
+});
+</script>
+
+</body>
+</html>

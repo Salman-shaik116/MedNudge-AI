@@ -1,0 +1,356 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Doctor - DocusAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* HEADER - SAME AS LANDING */
+        header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
+        .nav-home { margin-right: auto; margin-left: 2rem; }
+        .nav-link, .auth-link {
+            padding: 0.75rem 1.25rem;
+            color: #374151;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .nav-link:hover, .auth-link:hover {
+            background: rgba(0,123,255,0.08);
+            color: #007bff;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+        }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,123,255,0.4); }
+        
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #e8f5e8 100%);
+            padding: 8rem 0 6rem;
+            text-align: center;
+            position: relative;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.2rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #007bff, #00c851);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            color: #4b5563;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .privacy-note {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 2rem 2.5rem;
+            border-radius: 20px;
+            border-left: 5px solid #007bff;
+            max-width: 650px;
+            margin: 4rem auto 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        /* CHAT DEMO */
+        .chat-demo {
+            background: linear-gradient(135deg, #f8faff 0%, #f0f9ff 100%);
+            padding: 3rem;
+            border-radius: 24px;
+            margin: 5rem auto;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,123,255,0.1);
+        }
+        .chat-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .chat-header h2 {
+            font-size: 2rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        .chat-bubble {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            margin: 1.5rem 0;
+            max-width: 75%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        .ai-bubble {
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+            margin-left: auto;
+            margin-right: 0;
+            border-bottom-right-radius: 8px;
+        }
+        .user-bubble {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            color: #1e293b;
+            margin-right: auto;
+            margin-left: 0;
+            border-bottom-left-radius: 8px;
+        }
+        .chat-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        /* STEPS SECTION */
+        .section { padding: 7rem 0; }
+        .section:nth-child(even) { background: #f8fafc; }
+        .section-title {
+            font-size: clamp(2.2rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+        .step-card {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .step-card:hover { transform: translateY(-10px); box-shadow: 0 25px 70px rgba(0,0,0,0.15); }
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 auto 2rem;
+            box-shadow: 0 10px 30px rgba(0,123,255,0.3);
+        }
+        .step-card h3 { font-size: 1.5rem; margin-bottom: 1.5rem; color: #1e293b; }
+        
+        /* BENEFITS */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        .feature-card {
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .feature-card:hover { transform: translateY(-12px); box-shadow: 0 30px 80px rgba(0,0,0,0.15); }
+        .feature-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #007bff, #00c851);
+            border-radius: 20px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.25rem;
+            color: white;
+        }
+        
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 0 3rem;
+        }
+        
+        /* MOBILE */
+        @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 1.5rem; }
+            .hero-buttons, .chat-buttons { flex-direction: column; align-items: center; }
+            .steps-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <a href="{% url 'website:blog' %}">DocusAI</a>
+            </div>
+            <a href="{% url 'website:index' %}" class="nav-link nav-home">Home</a>
+            <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
+            <div class="auth-buttons">
+                <a href="{% url 'website:signin' %}" class="auth-link">Sign in</a>
+                <a href="{% url 'website:signup' %}" class="cta-button">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h1>AI Doctor for all your health questions</h1>
+            <p>DocusAI AI Doctor can be your first step toward an accurate diagnosis. Get recommendations, validate with top doctors, and stay healthy.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'website:signup' %}" class="cta-button">Try AI Doctor for Free</a>
+                <a href="{% url 'website:blog' %}" class="cta-button" style="background: transparent; border: 2px solid #007bff; color: #007bff;">Watch Demo</a>
+            </div>
+            <div class="privacy-note">
+                <strong>🔒 Privacy Note:</strong> Your data is confidential and secured by SOC 2, HIPAA and GDPR standards.
+            </div>
+        </div>
+    </section>
+
+    <!-- CHAT DEMO -->
+    <section class="chat-demo" id="chat">
+        <div class="container">
+            <div class="chat-header">
+                <h2>Experience AI Doctor in Action</h2>
+                <p>Chat directly. Ask any health-related question and see real-time AI-driven responses.</p>
+            </div>
+            
+            <div class="chat-bubble ai-bubble">
+                👋 I'm here to support with any health-related questions.
+            </div>
+            <div class="chat-bubble user-bubble">
+                I have more questions
+            </div>
+            <div class="chat-bubble ai-bubble">
+                What should I do next?
+            </div>
+            <div class="chat-bubble user-bubble">
+                Can you analyze my test results?
+            </div>
+            <div class="chat-bubble ai-bubble">
+                I need advice from a top doctor
+            </div>
+            
+            <div class="chat-buttons">
+                <a href="{% url 'website:signup' %}" class="cta-button">Sign up to continue</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3 STEPS PROCESS -->
+    <section class="section" id="steps">
+        <div class="container">
+            <h2 class="section-title">Transforming Healthcare with AI Doctor</h2>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Personalize Your Health Journey</h3>
+                    <p>Complete your health profile to unlock a customized AI Doctor experience, tailored to your health needs.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Consult Your AI Doctor</h3>
+                    <p>Share your symptoms, health condition, and questions while chatting with your AI Doctor.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Validate Your Recommendations</h3>
+                    <p>Validate your potential diagnosis with top doctors from US and Europe for expert second opinions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Benefits of DocusAI AI Doctor</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>24/7 Availability</h3>
+                    <p>Dr. AI has no working hours and never gets tired. Use our chatbot anytime, anywhere.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Personalization</h3>
+                    <p>AI Doctor screenings are tailored to your specific needs, health history, and lifestyle habits.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Powered by NLP</h3>
+                    <p>Driven by advanced natural language models for intelligent health inquiry understanding.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Start chatting with your AI Doctor today</h2>
+            <a href="{% url 'website:signup' %}" class="cta-button" style="font-size: 1.2rem; padding: 1.25rem 3rem;">Start Free Trial</a>
+            <p style="margin-top: 3rem; opacity: 0.8;">© 2025 DocusAI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

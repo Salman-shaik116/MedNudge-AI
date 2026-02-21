@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - DocusAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* HEADER */
+        header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
+        .nav-home { margin-right: auto; margin-left: 2rem; }
+        .nav-link, .auth-link {
+            padding: 0.75rem 1.25rem;
+            color: #374151;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .nav-link:hover, .auth-link:hover {
+            background: rgba(0,123,255,0.08);
+            color: #007bff;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+        }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,123,255,0.4); }
+        
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 8rem 0 6rem;
+            text-align: center;
+            position: relative;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.2rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #007bff, #00c851);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: #4b5563;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 1.5rem 2.5rem 1.5rem 5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1.25rem;
+        }
+        
+        /* BLOG CATEGORIES */
+        .section { padding: 6rem 0; }
+        .section-title {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: #64748b;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 5rem;
+        }
+        .category-btn {
+            padding: 1rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-align: center;
+        }
+        .category-btn.active,
+        .category-btn:hover {
+            border-color: #007bff;
+            background: linear-gradient(135deg, rgba(0,123,255,0.05), rgba(0,200,81,0.05));
+            color: #007bff;
+        }
+        
+        /* BLOG POSTS */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+        .blog-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        .blog-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 35px 90px rgba(0,0,0,0.2);
+        }
+        .blog-image {
+            height: 220px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .blog-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+        }
+        .blog-category {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: rgba(255,255,255,0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #007bff;
+            z-index: 2;
+        }
+        .blog-image-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem;
+            color: white;
+            z-index: 2;
+        }
+        .blog-content {
+            padding: 2.5rem;
+        }
+        .blog-date {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+        .blog-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        .blog-excerpt {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+        .blog-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+        .read-time { display: flex; align-items: center; gap: 0.25rem; }
+        
+        /* SIDEBAR */
+        .blog-sidebar {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 4rem;
+            margin-top: 6rem;
+            padding-top: 4rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        @media (max-width: 1024px) {
+            .blog-sidebar { grid-template-columns: 1fr; gap: 3rem; }
+        }
+        .sidebar-widget {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+        }
+        .widget-title {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+        }
+        .recent-post {
+            display: flex;
+            gap: 1rem;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .recent-post:last-child { border-bottom: none; }
+        .recent-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            flex-shrink: 0;
+        }
+        .recent-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        .recent-info span { font-size: 0.875rem; color: #9ca3af; }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .tag {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .tag:hover {
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 0 3rem;
+        }
+        
+        /* MOBILE */
+        @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 1.5rem; }
+            .blog-grid { grid-template-columns: 1fr; }
+            .categories { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <a href="{% url 'website:index' %}">DocusAI</a>
+            </div>
+            <a href="{% url 'website:index' %}" class="nav-link nav-home">Home</a>
+            <a href="{% url 'website:ai_doctor' %}" class="nav-link">AI Doctor</a>
+            <a href="{% url 'website:lab_test' %}" class="nav-link">Lab Tests</a>
+            <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
+            <div class="auth-buttons">
+                <a href="{% url 'website:signin' %}" class="auth-link">Sign In</a>
+                <a href="{% url 'website:signup' %}" class="cta-button">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h1>Health Insights & AI Healthcare News</h1>
+            <p>Stay updated with the latest in AI-powered healthcare, medical research, and health technology innovations</p>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search articles, topics, or keywords...">
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Explore Topics</h2>
+            <div class="categories">
+                <div class="category-btn active">All</div>
+                <div class="category-btn">AI Doctor</div>
+                <div class="category-btn">Lab Tests</div>
+                <div class="category-btn">Health Tips</div>
+                <div class="category-btn">Research</div>
+                <div class="category-btn">Prevention</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOG POSTS -->
+    <section class="section">
+        <div class="container">
+            <div class="blog-grid">
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <div class="blog-category">AI DOCTOR</div>
+                        <div class="blog-image-icon">🤖</div>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-date">Dec 28, 2025 • 8 min read</div>
+                        <h2 class="blog-title">How AI Doctors Are Revolutionizing Preventive Healthcare</h2>
+                        <p class="blog-excerpt">Discover how AI-powered symptom checkers and virtual doctors are catching health issues before they become problems...</p>
+                        <div class="blog-meta">
+                            <span class="read-time">🕐 8 min</span>
+                            <span>2.4K views</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <div class="blog-category">LAB TESTS</div>
+                        <div class="blog-image-icon">🧪</div>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-date">Dec 25, 2025 • 6 min read</div>
+                        <h2 class="blog-title">Understanding Your Blood Test Results: A Complete Guide</h2>
+                        <p class="blog-excerpt">Learn to decode 20+ common blood biomarkers and what your numbers really mean for your health...</p>
+                        <div class="blog-meta">
+                            <span class="read-time">🕐 6 min</span>
+                            <span>5.2K views</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <div class="blog-category">PREVENTION</div>
+                        <div class="blog-image-icon">🛡️</div>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-date">Dec 22, 2025 • 10 min read</div>
+                        <h2 class="blog-title">Top 5 AI Tools That Could Add 10 Years to Your Life</h2>
+                        <p class="blog-excerpt">Evidence-based AI technologies that are transforming longevity medicine and preventive care...</p>
+                        <div class="blog-meta">
+                            <span class="read-time">🕐 10 min</span>
+                            <span>12K views</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <div class="blog-category">RESEARCH</div>
+                        <div class="blog-image-icon">🔬</div>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-date">Dec 20, 2025 • 7 min read</div>
+                        <h2 class="blog-title">Why Lab Test Interpretation Accuracy Matters More Than Ever</h2>
+                        <p class="blog-excerpt">New study reveals 68% of patients misunderstand their lab results. Here's what doctors aren't telling you...</p>
+                        <div class="blog-meta">
+                            <span class="read-time">🕐 7 min</span>
+                            <span>3.8K views</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="blog-sidebar">
+                <div></div>
+                <div class="sidebar-content">
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">Recent Posts</h3>
+                        <div class="recent-post">
+                            <div class="recent-thumb"></div>
+                            <div class="recent-info">
+                                <h4>AI vs Human Doctors: The 2025 Showdown</h4>
+                                <span>Dec 29 • 5 min</span>
+                            </div>
+                        </div>
+                        <div class="recent-post">
+                            <div class="recent-thumb"></div>
+                            <div class="recent-info">
+                                <h4>Cholesterol Myths You Need to Stop Believing</h4>
+                                <span>Dec 27 • 4 min</span>
+                            </div>
+                        </div>
+                        <div class="recent-post">
+                            <div class="recent-thumb"></div>
+                            <div class="recent-info">
+                                <h4>5 Blood Tests Everyone Should Get Yearly</h4>
+                                <span>Dec 25 • 6 min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">Popular Tags</h3>
+                        <div class="tags">
+                            <a href="{% url 'website:ai_doctor' %}" class="tag">#AIDoctor</a>
+                            <a href="{% url 'website:lab_test' %}" class="tag">#LabTests</a>
+                            <a href="{% url 'website:knowledge_base' %}" class="tag">#HealthTips</a>
+                            <a href="{% url 'website:symptoms_guide' %}" class="tag">#Prevention</a>
+                            <a href="{% url 'website:glossary' %}" class="tag">#Longevity</a>
+                            <a href="{% url 'website:lab_test' %}" class="tag">#Biomarkers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <h2 style="font-size: 2.25rem; margin-bottom: 2rem;">Stay Informed About Your Health</h2>
+            <div style="max-width: 500px; margin: 0 auto;">
+                <div class="search-container" style="margin-bottom: 2rem;">
+                    <span class="search-icon">📧</span>
+                    <input type="email" class="search-input" placeholder="Get health insights in your inbox">
+                </div>
+                <a href="{% url 'website:signup' %}" class="cta-button" style="width: 100%; padding: 1.25rem;">Subscribe Now</a>
+            </div>
+            <p style="margin-top: 3rem; opacity: 0.8;">© 2025 DocusAI Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Category filter
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                alert('🔍 Searching for "' + e.target.value + '"...');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - DocusAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* HEADER */
+        header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
+        .nav-home { margin-right: auto; margin-left: 2rem; }
+        .nav-link, .auth-link {
+            padding: 0.75rem 1.25rem;
+            color: #374151;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .nav-link:hover, .auth-link:hover {
+            background: rgba(0,123,255,0.08);
+            color: #007bff;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+        }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,123,255,0.4); }
+        
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 8rem 0 6rem;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.2rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #007bff, #00c851);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            color: #4b5563;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .toggle-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 4rem;
+        }
+        .toggle-option {
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .toggle-option.active {
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+        }
+        
+        /* PRICING CARDS */
+        .section { padding: 7rem 0; }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .pricing-card {
+            background: white;
+            padding: 3.5rem 3rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+        }
+        .pricing-card.popular {
+            transform: scale(1.05);
+            border-color: #007bff;
+            box-shadow: 0 30px 90px rgba(0,123,255,0.25);
+        }
+        .pricing-card:hover:not(.popular) { 
+            transform: translateY(-10px); 
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15); 
+        }
+        .plan-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+            padding: 0.5rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            box-shadow: 0 5px 20px rgba(0,123,255,0.3);
+        }
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        .price {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+        .price-period { font-size: 1.125rem; color: #64748b; }
+        .features-list {
+            list-style: none;
+            margin: 2.5rem 0 2.5rem;
+        }
+        .features-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .features-list li:last-child { border-bottom: none; }
+        .feature-check { color: #10b981; font-size: 1.25rem; }
+        .feature-cross { color: #ef4444; font-size: 1.25rem; }
+        .pricing-footer {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        
+        /* COMPARISON TABLE */
+        .comparison-table {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            margin: 5rem 0;
+        }
+        .table-header {
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 2rem;
+            padding: 2rem;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .table-row:last-child { border-bottom: none; }
+        .table-feature { font-weight: 600; color: #1e293b; }
+        .table-check { color: #10b981; font-size: 1.25rem; }
+        .table-cross { color: #ef4444; font-size: 1.25rem; }
+        
+        /* FAQ */
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        .faq-item {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border-left: 5px solid #007bff;
+        }
+        
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 0 3rem;
+        }
+        
+        /* MOBILE */
+        @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 1.5rem; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .comparison-table { margin: 3rem 0; }
+            .table-row { 
+                grid-template-columns: 1fr; 
+                gap: 1rem; 
+                text-align: center; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <a href="{% url 'website:blog' %}">DocusAI</a>
+            </div>
+            <a href="{% url 'website:index' %}" class="nav-link nav-home">Home</a>
+            <a href="{% url 'website:ai_doctor' %}" class="nav-link">AI Doctor</a>
+            <a href="{% url 'website:lab_test' %}" class="nav-link">Lab Tests</a>
+            <a href="{% url 'website:second_opinion' %}" class="nav-link">Second Opinion</a>
+            <div class="auth-buttons">
+                <a href="{% url 'website:signin' %}" class="auth-link">Sign in</a>
+                <a href="{% url 'website:signup' %}" class="cta-button">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h1>Simple, Transparent Pricing</h1>
+            <p>Choose the perfect plan for your health journey. No hidden fees, cancel anytime.</p>
+            
+            <div class="toggle-switch">
+                <div class="toggle-option active" data-plan="monthly">Monthly</div>
+                <div class="toggle-option" data-plan="yearly">Yearly <span style="font-size: 0.875rem; opacity: 0.8;">(Save 20%)</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING CARDS -->
+    <section class="section">
+        <div class="container">
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="plan-name">Starter</div>
+                    <div class="price">$9<span class="price-period">/month</span></div>
+                    <ul class="features-list">
+                        <li><span class="feature-check">✅</span> AI Doctor (50 chats/mo)</li>
+                        <li><span class="feature-check">✅</span> Lab Test Analysis (5 tests)</li>
+                        <li><span class="feature-cross">❌</span> Second Opinions</li>
+                        <li><span class="feature-cross">❌</span> Priority Support</li>
+                    </ul>
+                    <div class="pricing-footer">
+                        <a href="{% url 'website:signup' %}" class="cta-button">Get Started</a>
+                    </div>
+                </div>
+
+                <div class="pricing-card popular" id="popular">
+                    <div class="plan-badge">Most Popular</div>
+                    <div class="plan-name">Professional</div>
+                    <div class="price">$29<span class="price-period">/month</span></div>
+                    <ul class="features-list">
+                        <li><span class="feature-check">✅</span> AI Doctor (Unlimited)</li>
+                        <li><span class="feature-check">✅</span> Lab Test Analysis (Unlimited)</li>
+                        <li><span class="feature-check">✅</span> Second Opinions (3/mo)</li>
+                        <li><span class="feature-check">✅</span> Priority 24h Support</li>
+                    </ul>
+                    <div class="pricing-footer">
+                        <a href="{% url 'website:second_opinion' %}" class="cta-button">Get Professional</a>
+                    </div>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="plan-name">Enterprise</div>
+                    <div class="price">$99<span class="price-period">/month</span></div>
+                    <ul class="features-list">
+                        <li><span class="feature-check">✅</span> Everything in Professional</li>
+                        <li><span class="feature-check">✅</span> Second Opinions (10/mo)</li>
+                        <li><span class="feature-check">✅</span> API Access</li>
+                        <li><span class="feature-check">✅</span> Dedicated Support</li>
+                    </ul>
+                    <div class="pricing-footer">
+                        <a href="{% url 'website:blog' %}" class="cta-button">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPARISON TABLE -->
+    <section class="section">
+        <div class="container">
+            <div class="comparison-table">
+                <div class="table-header">
+                    <h2 style="margin: 0; font-size: 1.75rem;">Compare All Features</h2>
+                </div>
+                <div class="table-row">
+                    <div class="table-feature">Features</div>
+                    <div>Starter</div>
+                    <div>Professional</div>
+                    <div>Enterprise</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-feature">AI Doctor Chats</div>
+                    <div><span class="table-cross">❌ 50/mo</span></div>
+                    <div><span class="table-check">✅ Unlimited</span></div>
+                    <div><span class="table-check">✅ Unlimited</span></div>
+                </div>
+                <div class="table-row">
+                    <div class="table-feature">Lab Test Analysis</div>
+                    <div><span class="table-cross">❌ 5/mo</span></div>
+                    <div><span class="table-check">✅ Unlimited</span></div>
+                    <div><span class="table-check">✅ Unlimited</span></div>
+                </div>
+                <div class="table-row">
+                    <div class="table-feature">Second Opinions</div>
+                    <div><span class="table-cross">❌</span></div>
+                    <div><span class="table-check">✅ 3/mo</span></div>
+                    <div><span class="table-check">✅ 10/mo</span></div>
+                </div>
+                <div class="table-row">
+                    <div class="table-feature">Priority Support</div>
+                    <div><span class="table-cross">❌</span></div>
+                    <div><span class="table-check">✅ 24h</span></div>
+                    <div><span class="table-check">✅ Dedicated</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center;">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Can I cancel anytime?</h3>
+                    <p>Yes! Cancel your subscription anytime. No questions asked, no long-term commitments.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What payment methods do you accept?</h3>
+                    <p>We accept all major credit cards, PayPal, Apple Pay, and Google Pay. Secure 256-bit SSL encryption.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Is there a free trial?</h3>
+                    <p>Yes! All plans come with a 14-day free trial. No credit card required to start.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What happens if I exceed my limits?</h3>
+                    <p>No problem! You'll be prompted to upgrade seamlessly without losing any data or conversations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Ready to get started?</h2>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#popular" class="cta-button" style="font-size: 1.2rem; padding: 1.25rem 3rem;">Start Free Trial</a>
+                <a href="#" class="cta-button" style="background: transparent; border: 2px solid white; color: white;">Contact Sales</a>
+            </div>
+            <p style="margin-top: 3rem; opacity: 0.8;">© 2025 DocusAI. All rights reserved. | 14-day money back guarantee</p>
+        </div>
+    </footer>
+
+    <script>
+        // Pricing toggle functionality
+        const toggles = document.querySelectorAll('.toggle-option');
+        const prices = document.querySelectorAll('.price');
+        
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggles.forEach(t => t.classList.remove('active'));
+                toggle.classList.add('active');
+                
+                const plan = toggle.dataset.plan;
+                prices.forEach((price, index) => {
+                    if (plan === 'monthly') {
+                        price.innerHTML = index === 0 ? '$9<span class="price-period">/month</span>' :
+                                        index === 1 ? '$29<span class="price-period">/month</span>' :
+                                        '$99<span class="price-period">/month</span>';
+                    } else {
+                        price.innerHTML = index === 0 ? '$90<span class="price-period">/year</span>' :
+                                        index === 1 ? '$290<span class="price-period">/year</span>' :
+                                        '$990<span class="price-period">/year</span>';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

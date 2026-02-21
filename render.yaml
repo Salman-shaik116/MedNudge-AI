@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: docusai
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn docusai_project.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: ALLOWED_HOSTS
+        sync: false
+
+databases:
+  - name: docusai-db
+    databaseName: docusai_db
+    user: docusai_user

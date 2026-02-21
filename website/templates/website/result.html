@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis Result • Docus</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+
+        body {
+            background: #f6f9fc;
+            color: #1f2937;
+        }
+
+        .topbar {
+            background: #ffffff;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            color: #0f766e;
+            margin-bottom: 12px;
+        }
+
+        .analysis-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            white-space: pre-line;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #0f766e;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .warning {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div><strong>📊 Analysis Result</strong></div>
+    <div>{{ request.user.username }}</div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>Medical Report Analysis</h2>
+        <p>Below is the AI-generated summary of your uploaded medical report.</p>
+
+        {% if analysis %}
+            <div class="analysis-box">
+                {{ analysis }}
+            </div>
+        {% else %}
+            <div class="warning">
+                No analysis data available. Please upload a valid report.
+            </div>
+        {% endif %}
+
+        <div class="buttons">
+            <a href="{% url 'website:reminder' %}" class="btn btn-primary">
+                💊 Smart Reminder
+            </a>
+            
+            <a href="{% url 'website:upload' %}" class="btn btn-secondary">
+                ⬅ Upload Another Report
+            </a>
+
+            <a href="{% url 'website:dashboard' %}" class="btn btn-primary">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

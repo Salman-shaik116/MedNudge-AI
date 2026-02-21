@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Glossary - DocusAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* [SAME HEADER/CSS BASE] */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #1a1a1a; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        /* [HEADER SAME AS ABOVE] */
+        
+        .hero { background: linear-gradient(135deg, #f0f7ff 0%, #e8f4e8 100%); padding: 8rem 0 6rem; text-align: center; }
+        .hero h1 { font-size: clamp(2.8rem, 6vw, 4rem); font-weight: 800; background: linear-gradient(135deg, #007bff, #28a745); -webkitbackground-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; }
+        
+        .glossary-tabs { display: flex; gap: 0.5rem; max-width: 800px; margin: 0 auto 4rem; overflow-x: auto; padding: 1rem 0; }
+        .tab-btn { padding: 1rem 2rem; border: 2px solid #e2e8f0; border-radius: 50px; background: white; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; font-weight: 600; }
+        .tab-btn.active { border-color: #007bff; background: linear-gradient(135deg, #007bff, #00c851); color: white; }
+        
+        .glossary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .glossary-term { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border-left: 5px solid #007bff; cursor: pointer; transition: all 0.3s ease; }
+        .glossary-term:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .term-name { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; }
+        .term-definition { color: #64748b; line-height: 1.7; }
+        
+        .search-container { max-width: 600px; margin: 0 auto 4rem; }
+        .search-input { width: 100%; padding: 1.5rem 2rem 1.5rem 4rem; border: 2px solid #e2e8f0; border-radius: 50px; font-size: 1.1rem; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        footer { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; text-align: center; padding: 4rem 0 2rem; }
+    </style>
+</head>
+<body>
+    <!-- [HEADER] -->
+    <header><!-- SAME AS ABOVE --></header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Medical Glossary</h1>
+            <p>Clear definitions for 500+ medical terms, biomarkers, and health concepts</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search medical terms...">
+            </div>
+            
+            <div class="glossary-tabs">
+                <div class="tab-btn active">A-Z</div>
+                <div class="tab-btn">Biomarkers</div>
+                <div class="tab-btn">Conditions</div>
+                <div class="tab-btn">Tests</div>
+            </div>
+            
+            <div class="glossary-grid">
+                <div class="glossary-term">
+                    <div class="term-name">HbA1c (Hemoglobin A1c)</div>
+                    <div class="term-definition">Measures average blood sugar levels over past 2-3 months. Normal range: 4.0-5.6%. Used to diagnose & monitor diabetes.</div>
+                </div>
+                <div class="glossary-term">
+                    <div class="term-name">LDL Cholesterol</div>
+                    <div class="term-definition">"Bad" cholesterol that contributes to plaque buildup in arteries. Optimal: <100 mg/dL. High levels increase heart disease risk.</div>
+                </div>
+                <div class="glossary-term">
+                    <div class="term-name">CRP (C-Reactive Protein)</div>
+                    <div class="term-definition">Marker of inflammation in body. High-sensitivity CRP (hs-CRP) <1 mg/L = low risk, >3 mg/L = high cardiovascular risk.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 DocusAI Medical Glossary</p>
+        </div>
+    </footer>
+</body>
+</html>

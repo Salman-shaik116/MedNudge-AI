@@ -1,0 +1,594 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocusAI – AI-Powered Health Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* HEADER */
+        header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo a {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+            margin: 0 1rem;
+        }
+        .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            color: #374151;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .dropdown-trigger:hover {
+            background: rgba(0,123,255,0.08);
+            color: #007bff;
+        }
+        .dropdown-trigger svg {
+            transition: transform 0.3s ease;
+            width: 12px;
+            height: 12px;
+        }
+        .dropdown-container:hover .dropdown-trigger svg {
+            transform: rotate(180deg);
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            border: 1px solid #f1f5f9;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            min-width: 240px;
+            margin-top: 0.75rem;
+        }
+        .dropdown-container:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f8fafc;
+            text-decoration: none;
+            color: #374151;
+        }
+        .dropdown-item:hover {
+            background: linear-gradient(90deg, rgba(0,123,255,0.1), rgba(0,200,81,0.1));
+            color: #007bff;
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-icon {
+            font-size: 1.25rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+            flex-shrink: 0;
+        }
+        .nav-link, .auth-link {
+            padding: 0.75rem 1.25rem;
+            color: #374151;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .nav-link:hover, .auth-link:hover {
+            background: rgba(0,123,255,0.08);
+            color: #007bff;
+        }
+        .auth-buttons { display: flex; gap: 1rem; align-items: center; }
+        .cta-button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,123,255,0.4);
+        }
+        
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f3e8ff 100%);
+            padding: 8rem 0 6rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120,119,198,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,119,198,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120,219,255,0.3) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #007bff, #00c851, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 2;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            color: #4b5563;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 2;
+        }
+        .privacy-note {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 2rem 2.5rem;
+            border-radius: 20px;
+            border-left: 5px solid #007bff;
+            max-width: 650px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            font-weight: 500;
+        }
+        
+        /* SECTIONS */
+        .section { padding: 7rem 0; }
+        .section:nth-child(even) { background: #f8fafc; }
+        .section-title {
+            font-size: clamp(2.2rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            background: linear-gradient(135deg, #1e293b, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 4rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+        .feature-card {
+            background: white;
+            padding: 3.5rem 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f1f5f9;
+        }
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+        }
+        .feature-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #007bff, #00c851);
+            border-radius: 24px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 15px 40px rgba(0,123,255,0.3);
+        }
+        .feature-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            font-weight: 700;
+        }
+        
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+            margin: 5rem 0;
+        }
+        .stat {
+            background: linear-gradient(135deg, #007bff, #00c851);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,123,255,0.4);
+        }
+        .stat-number {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            display: block;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* TESTIMONIAL */
+        .testimonial {
+            background: white;
+            padding: 4rem 3rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.1);
+            margin: 3rem auto;
+            text-align: center;
+            max-width: 700px;
+        }
+        .testimonial-text {
+            font-size: 1.25rem;
+            font-style: italic;
+            margin-bottom: 2rem;
+            color: #475569;
+            line-height: 1.8;
+        }
+        .testimonial-author {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.125rem;
+        }
+        
+        /* FAQ */
+        .faq-item {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+            border-left: 5px solid #e2e8f0;
+        }
+        .faq-item h3 {
+            margin-bottom: 1.25rem;
+            color: #1e293b;
+            font-size: 1.375rem;
+            font-weight: 700;
+        }
+        
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 0 3rem;
+        }
+        footer h2 {
+            font-size: 2.25rem;
+            margin-bottom: 2.5rem;
+            font-weight: 700;
+        }
+        
+        /* MOBILE */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 1.5rem;
+                padding: 1.5rem 0;
+            }
+            .hero { padding: 5rem 0 4rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .features-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <a href="#hero">DocusAI</a>
+            </div>
+            
+            <!-- Solutions Dropdown -->
+            <div class="dropdown-container">
+                <div class="dropdown-trigger">
+                    <span>Solutions</span>
+                    <svg viewBox="0 0 12 12" fill="none">
+                        <path d="M1 4L6 9L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="{% url 'website:ai_doctor' %}" class="dropdown-item">
+                        <div class="dropdown-icon">💬</div>
+                        <span>AI Doctor</span>
+                    </a>
+                    <a href="{% url 'website:lab_test' %}" class="dropdown-item">
+                        <div class="dropdown-icon">🧪</div>
+                        <span>Lab Test Interpretation</span>
+                    </a>
+                    <a href="{% url 'website:second_opinion' %}" class="dropdown-item">
+                        <div class="dropdown-icon">👥</div>
+                        <span>Second Opinion</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Resources Dropdown -->
+            <div class="dropdown-container">
+                <div class="dropdown-trigger">
+                    <span>Resources</span>
+                    <svg viewBox="0 0 12 12" fill="none">
+                        <path d="M1 4L6 9L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="{% url 'website:blog' %}" class="dropdown-item">
+                        <div class="dropdown-icon">📝</div>
+                        <span>Blog</span>
+                    </a>
+                    <a href="{% url 'website:symptoms_guide' %}" class="dropdown-item">
+                        <div class="dropdown-icon">🔍</div>
+                        <span>Symptoms Guide</span>
+                    </a>
+                    <a href="{% url 'website:knowledge_base' %}" class="dropdown-item">
+                        <div class="dropdown-icon">📚</div>
+                        <span>Knowledge Base</span>
+                    </a>
+                </div>
+            </div>
+
+            <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
+            <a href="{% url 'website:doctors_list' %}" class="nav-link">Labs</a>
+            <a href="{% url 'website:doctors_list' %}" class="nav-link">Doctors Page</a>
+            <div class="auth-buttons">
+                <a href="{% url 'website:signin' %}" class="auth-link">Sign in</a>
+                
+                <!-- Registration Dropdown -->
+                <div class="dropdown-container" style="margin: 0;">
+                    <div class="dropdown-trigger cta-button" style="margin: 0; cursor: pointer;">
+                        <span>Getting Started For Free</span>
+                        <svg viewBox="0 0 12 12" fill="none" style="filter: brightness(0) invert(1);">
+                            <path d="M1 4L6 9L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu" style="right: 0; left: auto;">
+                        <a href="{% url 'website:signup' %}" class="dropdown-item">
+                            <div class="dropdown-icon">👤</div>
+                            <span>Register as Patient</span>
+                        </a>
+                        <a href="{% url 'website:doctor_register' %}" class="dropdown-item">
+                            <div class="dropdown-icon">👨‍⚕️</div>
+                            <span>Register as Doctor</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <h1>Your All-in-One Health Platform Powered by AI</h1>
+            <p>For patients, doctors, labs, and healthcare companies: DocusAI delivers trusted medical AI tools where you need them most.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'website:signin' %}" class="cta-button">Try DocusAI for Free</a>
+                <a href="{% url 'website:signin' %}" class="cta-button" style="background: transparent; border: 2px solid #007bff; color: #007bff; box-shadow: none;">Become a Partner</a>
+            </div>
+            <div class="privacy-note">
+                <strong>🔒 Privacy Note:</strong> Your data is confidential and secured by SOC 2, HIPAA and GDPR standards.
+            </div>
+        </div>
+    </section>
+
+    <!-- PATIENTS -->
+    <section class="section" id="patients">
+        <div class="container">
+            <h2 class="section-title">DocusAI for Patients</h2>
+            <p class="subtitle">Your Personal AI Health Assistant - Prevent potential health issues with personalized insights</p>
+            
+            <div class="features-grid">
+                <div class="feature-card" id="ai-doctor">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Personal AI Doctor</h3>
+                    <p>Customize your personal AI Doctor. Complete your health profile, ask any health-related questions, and receive personalized, data-driven insights.</p>
+                    <a href="{% url 'website:ai_doctor' %}" class="cta-button" style="margin-top: 1.5rem; display: inline-block;">Chat with AI Doctor</a>
+                </div>
+                <div class="feature-card" id="lab-test">
+                    <div class="feature-icon">🧪</div>
+                    <h3>Lab Test Interpretation</h3>
+                    <p>Upload your lab results to receive in-depth biomarker analysis and detailed interpretation reports.</p>
+                    <a href="{% url 'website:lab_test' %}" class="cta-button" style="margin-top: 1.5rem; display: inline-block;">Interpret Lab Tests</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>AI Symptom Checker</h3>
+                    <p>Describe your symptoms, answer targeted questions, and instantly identify potential health issues.</p>
+                    <a href="{% url 'website:symptoms_guide' %}" class="cta-button" style="margin-top: 1.5rem; display: inline-block;">Check My Symptoms</a>
+                </div>
+                <div class="feature-card" id="second-opinion">
+                    <div class="feature-icon">👨‍⚕️</div>
+                    <h3>Expert Second Opinion</h3>
+                    <p>Get a second opinion from our network of 350+ top doctors from US & Europe. Validate your diagnosis.</p>
+                    <a href="{% url 'website:second_opinion' %}" class="cta-button" style="margin-top: 1.5rem; display: inline-block;">Get Second Opinion</a>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number">600K+</span>
+                    Satisfied Patients
+                </div>
+                <div class="stat">
+                    <span class="stat-number">1M+</span>
+                    Interpreted Tests
+                </div>
+                <div class="stat">
+                    <span class="stat-number">5M+</span>
+                    Questions Answered
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOCTORS -->
+    <section class="section" id="doctors">
+        <div class="container">
+            <h2 class="section-title">DocusAI For Doctors</h2>
+            <p class="subtitle">Save Time and Get Decision Support</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🩺</div>
+                    <h3>AI Medical Assistant</h3>
+                    <p>Get instant, patient-specific clinical insights and decision support.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Research Assistant</h3>
+                    <p>Stay up-to-date with clinical trials, guidelines, medical literature, and drug data.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Lab Test Interpretation</h3>
+                    <p>Convert lab results into structured, AI-interpreted reports. Skip manual analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Smart Patient Communication</h3>
+                    <p>Securely share health updates with intelligent AI auto-complete support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section">
+        <div class="container">
+            <div class="testimonial">
+                <p class="testimonial-text">"Dealing with health anxiety used to send me down a rabbit hole of worry. DocusAI transformed my well-being with clear, calm insights."</p>
+                <div class="testimonial-author">- Alex T., 34 years old, USA</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="features-grid">
+                <div class="faq-item">
+                    <h3>What is DocusAI?</h3>
+                    <p>DocusAI is an AI-powered health platform for patients, doctors, labs, and healthcare companies offering AI Health Assistant and Clinical tools.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can DocusAI replace my doctor?</h3>
+                    <p>No. DocusAI provides AI-driven insights to support proactive health management but is not a substitute for professional diagnosis.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Is my data secure?</h3>
+                    <p>Yes. All data is protected by enterprise-grade security protocols compliant with HIPAA, GDPR, and SOC 2 standards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="pricing">
+        <div class="container">
+            <h2>Ready to Transform Healthcare?</h2>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;">
+                <a href="{% url 'website:signup' %}" class="cta-button">Start Free Trial</a>
+                <a href="{% url 'website:blog' %}" class="cta-button" style="background: transparent; border: 2px solid white; color: white;">Contact Sales</a>
+            </div>
+            <p style="opacity: 0.8; font-size: 0.95rem;">© 2025 DocusAI. All rights reserved. | <a href="{% url 'website:blog' %}" style="color: #94a3b8;">Privacy Policy</a> | <a href="#" style="color: #94a3b8;">Terms</a></p>
+        </div>
+    </footer>
+</body>
+</html>

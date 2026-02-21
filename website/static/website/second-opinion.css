@@ -1,0 +1,3 @@
+.so-hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr); gap: 32px; align-items: flex-start; }
+.so-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 18px; }
+.doctor-card { border-radius: 14px; padding: 12px 14px; background: radial-gradient(circle at top, #111827, #020617 70%); border: 1px solid rgba(148, 163, 184, 0.35); font-size: 0.85rem; }

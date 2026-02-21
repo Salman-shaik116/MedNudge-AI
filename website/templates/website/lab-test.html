@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Test Interpretation - DocusAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* HEADER */
+        header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
+        .nav-home { margin-right: auto; margin-left: 2rem; }
+        .nav-link, .auth-link {
+            padding: 0.75rem 1.25rem;
+            color: #374151;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .nav-link:hover, .auth-link:hover {
+            background: rgba(0,123,255,0.08);
+            color: #007bff;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+        }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,123,255,0.4); }
+        
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 50%, #e8f5e8 100%);
+            padding: 8rem 0 6rem;
+            text-align: center;
+            position: relative;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.2rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ff6b35, #00c851);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            color: #4b5563;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .upload-demo {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            margin: 3rem auto;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border: 2px dashed #e2e8f0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .upload-demo:hover { border-color: #007bff; transform: translateY(-5px); }
+        .upload-icon { font-size: 4rem; color: #cbd5e1; margin-bottom: 1.5rem; }
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .privacy-note {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 2rem 2.5rem;
+            border-radius: 20px;
+            border-left: 5px solid #ff6b35;
+            max-width: 650px;
+            margin: 4rem auto 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        /* 3 STEPS */
+        .section { padding: 7rem 0; }
+        .section:nth-child(even) { background: #f8fafc; }
+        .section-title {
+            font-size: clamp(2.2rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .steps-container {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 2rem;
+        }
+        .step-number {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ff6b35, #00c851);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(255,107,53,0.4);
+        }
+        .step h3 { font-size: 1.375rem; margin-bottom: 1rem; color: #1e293b; }
+        
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            text-align: center;
+            margin: 4rem 0;
+        }
+        .stat {
+            background: linear-gradient(135deg, #ff6b35, #00c851);
+            color: white;
+            padding: 2.5rem 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(255,107,53,0.3);
+        }
+        .stat-number {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            display: block;
+        }
+        
+        /* FEATURES */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+        .feature-card {
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .feature-card:hover { 
+            transform: translateY(-12px); 
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15); 
+        }
+        .feature-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #ff6b35, #00c851);
+            border-radius: 20px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.25rem;
+            color: white;
+        }
+        .feature-card h3 { font-size: 1.5rem; margin-bottom: 1.25rem; color: #1e293b; }
+        
+        /* LAB TYPES */
+        .lab-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        .lab-type-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            border-top: 4px solid #ff6b35;
+            transition: all 0.3s ease;
+        }
+        .lab-type-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .lab-type-icon { font-size: 3rem; margin-bottom: 1.5rem; }
+        
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 0 3rem;
+        }
+        
+        /* MOBILE */
+        @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 1.5rem; }
+            .steps-container { flex-direction: column; gap: 2rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <a href="{% url 'website:blog' %}">DocusAI</a>
+            </div>
+            <a href="{% url 'website:index' %}" class="nav-link nav-home">Home</a>
+            <a href="{% url 'website:ai_doctor' %}" class="nav-link">AI Doctor</a>
+            <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
+            <div class="auth-buttons">
+                <a href="{% url 'website:signin' %}" class="auth-link">Sign in</a>
+                <a href="{% url 'website:lab_test' %}" class="cta-button">Upload Tests</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h1>Get Actionable Insights from Your Lab Tests</h1>
+            <p>Our AI Doctor can easily analyze and interpret your lab tests, providing clear and actionable health information.</p>
+            
+            <div class="upload-demo">
+                <div class="upload-icon">📁</div>
+                <h3>Upload your lab tests</h3>
+                <p>PDFs, images, screenshots, or snap a picture</p>
+                <a href="#" class="cta-button" style="margin-top: 1.5rem;">Choose Files</a>
+            </div>
+            
+            <div class="hero-buttons">
+                <a href="{% url 'website:signup' %}" class="cta-button">Get Started</a>
+                <a href="{% url 'website:lab_test' %}" class="cta-button" style="background: transparent; border: 2px solid #007bff; color: #007bff;">Join as Partner Lab</a>
+            </div>
+            
+            <div class="privacy-note">
+                <strong>🔒 Privacy Note:</strong> Your data is confidential and secured by SOC 2, HIPAA and GDPR standards.
+            </div>
+        </div>
+    </section>
+
+    <!-- 3 STEPS -->
+    <section class="section" id="steps">
+        <div class="container">
+            <h2 class="section-title">Simple Steps to Better Health</h2>
+            <p style="text-align: center; font-size: 1.25rem; color: #64748b; margin-bottom: 4rem;">
+                Experience a streamlined process that turns your lab results into actionable health insights
+            </p>
+            
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <h3>Upload Your Tests</h3>
+                    <p>Upload your lab test results as PDFs, images, screenshots, or simply snap a picture.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <h3>Get AI-Powered Analysis</h3>
+                    <p>Our AI Doctor analyzes your results using the latest medical guidelines and identifies patterns.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <h3>Receive Detailed Report</h3>
+                    <p>Get a comprehensive lab test report with clear insights and practical health suggestions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="section">
+        <div class="container">
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number">100K+</span>
+                    Blood Tests
+                </div>
+                <div class="stat">
+                    <span class="stat-number">30K+</span>
+                    Urine Tests
+                </div>
+                <div class="stat">
+                    <span class="stat-number">50K+</span>
+                    Other Tests
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Unlock the Power of DocusAI Lab Analysis</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>In-depth Biomarker Analysis</h3>
+                    <p>Detailed biomarker information, explanations for out-of-range values, and trend tracking with dynamic graphs.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Detailed Lab Test Reports</h3>
+                    <p>Comprehensive reports including test interpretation, clinical significance, and actionable recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Talk to AI Doctor</h3>
+                    <p>Get detailed explanations, tailored advice, and specialist referrals for any questions about your results.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SUPPORTED LAB TYPES -->
+    <section class="section" id="labs">
+        <div class="container">
+            <h2 class="section-title">Supported Lab Test Types</h2>
+            <div class="lab-types">
+                <div class="lab-type-card">
+                    <div class="lab-type-icon">🩸</div>
+                    <h3>Blood Test</h3>
+                    <p>Overall health, immune system, organ function</p>
+                </div>
+                <div class="lab-type-card">
+                    <div class="lab-type-icon">🧪</div>
+                    <h3>Urine Test</h3>
+                    <p>Kidney function, urinary tract infections</p>
+                </div>
+                <div class="lab-type-card">
+                    <div class="lab-type-icon">🦠</div>
+                    <h3>Swab Test</h3>
+                    <p>Bacterial infections, viruses, fungal infections</p>
+                </div>
+                <div class="lab-type-card">
+                    <div class="lab-type-icon">💩</div>
+                    <h3>Stool Test</h3>
+                    <p>Digestive conditions, infections, parasites</p>
+                </div>
+                <div class="lab-type-card">
+                    <div class="lab-type-icon">🔬</div>
+                    <h3>Pap Smear</h3>
+                    <p>Precancerous conditions, cervical cancer, HPV</p>
+                </div>
+                <div class="lab-type-card">
+                    <div class="lab-type-icon">🧬</div>
+                    <h3>Semen Analysis</h3>
+                    <p>Sperm count, motility, fertility issues</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Upload your first lab test today</h2>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'website:lab_test' %}" class="cta-button" style="font-size: 1.2rem; padding: 1.25rem 3rem;">Upload Lab Tests</a>
+                <a href="{% url 'website:blog' %}" class="cta-button" style="background: transparent; border: 2px solid white; color: white;">Learn More</a>
+            </div>
+            <p style="margin-top: 3rem; opacity: 0.8;">© 2025 DocusAI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Medical Reports</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .reports-container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .report-card {
+            background: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-id {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .report-date {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .analysis-box {
+            background: #f9fafb;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .download-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-reports {
+            text-align: center;
+            color: #777;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📁 My Medical Reports</h1>
+
+<div class="reports-container">
+    {% if reports %}
+        {% for report in reports %}
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-id">
+                        Report #{{ report.id }}
+                    </div>
+                    <div class="report-date">
+                        {{ report.uploaded_at|date:"d M Y, h:i A" }}
+                    </div>
+                </div>
+
+                {% if report.report_file %}
+                    <a class="download-link" href="{{ report.report_file.url }}" target="_blank">
+                        📄 Download Uploaded Report
+                    </a>
+                {% endif %}
+
+                <div class="analysis-box">
+                    {{ report.analysis }}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-reports">
+            No medical reports found.
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

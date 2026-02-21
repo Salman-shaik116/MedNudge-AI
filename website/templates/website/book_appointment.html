@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 500px; width: 100%; }
+        h1 { color: #333; margin-bottom: 20px; text-align: center; }
+        .doctor-info { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .doctor-info img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; display: block; margin: 0 auto 10px; }
+        .doctor-info p { margin: 5px 0; color: #555; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #218838; }
+        a { display: inline-block; margin-top: 15px; color: #667eea; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Book Appointment</h1>
+        <div class="doctor-info">
+            <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}">
+            <p><strong>Dr. {{ doctor.name }}</strong></p>
+            <p>{{ doctor.specialization }}</p>
+            <p>Date: {{ date }}</p>
+            <p>Time: {{ time_slot }}</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="appointment_date" value="{{ date }}">
+            <input type="hidden" name="time_slot" value="{{ time_slot }}">
+            <div class="form-group">
+                <label for="id_patient_name">Your Name *</label>
+                {{ form.patient_name }}
+            </div>
+            <div class="form-group">
+                <label for="id_patient_email">Your Email *</label>
+                {{ form.patient_email }}
+            </div>
+            <div class="form-group">
+                <label for="id_patient_phone">Your Phone *</label>
+                {{ form.patient_phone }}
+            </div>
+            <button type="submit">Confirm Appointment</button>
+        </form>
+        <a href="{% url 'website:doctors_list' %}">← Back to Doctors</a>
+        
+        <!-- Inform Doctor Section -->
+        <div style="margin-top: 30px; padding: 20px; background: #f0f9ff; border-radius: 10px; border-left: 4px solid #667eea;">
+            <h3 style="color: #667eea; margin-bottom: 15px;">📧 Notify Doctor</h3>
+            <p style="color: #555; margin-bottom: 15px;">Meeting details will be automatically sent to:</p>
+            <ul style="color: #555; margin-left: 20px;">
+                <li><strong>Doctor:</strong> {{ doctor.email }}</li>
+                <li><strong>Patient:</strong> (Your email will be used)</li>
+            </ul>
+            <p style="color: #667eea; font-size: 14px; margin-top: 10px;">✓ Both parties will receive appointment confirmation via email</p>
+        </div>
+    </div>
+</body>
+</html>

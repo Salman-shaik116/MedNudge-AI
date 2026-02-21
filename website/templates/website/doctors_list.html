@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - DocusAI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 30px; text-align: center; }
+        .doctors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .doctor-card { border: 1px solid #ddd; border-radius: 10px; padding: 20px; background: #f9f9f9; }
+        .doctor-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; display: block; margin: 0 auto 15px; }
+        .doctor-info { margin-bottom: 15px; }
+        .doctor-info p { margin: 5px 0; color: #555; }
+        .doctor-info strong { color: #333; }
+        .appointment-section { margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; }
+        .appointment-section h3 { color: #667eea; margin-bottom: 10px; font-size: 16px; }
+        .time-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .time-slot { padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .time-slot:hover { background: #5568d3; }
+        .time-slot.selected { background: #4a5ab8; }
+        input[type="date"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px; }
+        .book-btn { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .book-btn:hover { background: #218838; }
+        .no-data { text-align: center; padding: 40px; color: #666; }
+        .top-links { text-align: center; margin-bottom: 20px; }
+        .top-links a { display: inline-block; margin: 0 10px; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+        .top-links a:hover { background: #5568d3; }
+        .message { padding: 10px; margin-top: 10px; border-radius: 5px; text-align: center; display: none; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Book Appointment with Doctor</h1>
+        <div class="top-links">
+            <a href="{% url 'website:index' %}">← Back to Home</a>
+            <a href="{% url 'website:doctor_register' %}">Register as Doctor</a>
+        </div>
+        
+        {% if my_appointments %}
+        <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+            <h2 style="color: #2e7d32; margin-bottom: 20px; text-align: center;">📅 My Appointments</h2>
+            <div style="display: grid; gap: 15px;">
+                {% for appointment in my_appointments %}
+                <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #4caf50; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 5px;">Doctor</p>
+                            <p style="color: #333; font-weight: bold; font-size: 16px;">Dr. {{ appointment.doctor.name }}</p>
+                            <p style="color: #667eea; font-size: 14px;">{{ appointment.doctor.specialization }}</p>
+                        </div>
+                        <div>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 5px;">Date & Time</p>
+                            <p style="color: #333; font-weight: bold; font-size: 16px;">{{ appointment.appointment_date }}</p>
+                            <p style="color: #667eea; font-size: 14px;">{{ appointment.time_slot }}</p>
+                        </div>
+                        <div>
+                            <p style="color: #666; font-size: 12px; margin-bottom: 5px;">Patient Details</p>
+                            <p style="color: #333; font-weight: bold; font-size: 16px;">{{ appointment.patient_name }}</p>
+                            <p style="color: #667eea; font-size: 14px;">{{ appointment.patient_phone }}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <p style="color: #666; font-size: 12px;">Booked on: {{ appointment.created_at|date:"M d, Y - h:i A" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <h2 style="color: #333; margin-bottom: 20px; text-align: center;">Available Doctors</h2>
+        {% if doctors %}
+        <div class="doctors-grid">
+            {% for doctor in doctors %}
+            <div class="doctor-card">
+                <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}">
+                <div class="doctor-info">
+                    <p><strong>Name:</strong> Dr. {{ doctor.name }}</p>
+                    <p><strong>Email:</strong> {{ doctor.email }}</p>
+                    <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+                    <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+                    <p><strong>Experience:</strong> {{ doctor.experience }} years</p>
+                    <p><strong>Qualification:</strong> {{ doctor.qualification }}</p>
+                </div>
+                <div class="appointment-section">
+                    <h3>Book Appointment</h3>
+                    <input type="date" class="appointment-date" data-doctor="{{ doctor.id }}">
+                    <div class="time-slots">
+                        <button class="time-slot" data-time="09:00-11:00">9:00 AM - 11:00 AM</button>
+                        <button class="time-slot" data-time="11:00-13:00">11:00 AM - 1:00 PM</button>
+                        <button class="time-slot" data-time="13:00-15:00">1:00 PM - 3:00 PM</button>
+                        <button class="time-slot" data-time="15:00-17:00">3:00 PM - 5:00 PM</button>
+                    </div>
+                    <button class="book-btn" data-doctor="{{ doctor.id }}" data-name="{{ doctor.name }}">Book Appointment</button>
+                    <div class="message" id="msg-{{ doctor.id }}"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-data">No doctors registered yet.</div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.book-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const doctorId = this.dataset.doctor;
+                const dateInput = document.querySelector(`.appointment-date[data-doctor="${doctorId}"]`);
+                const selectedSlot = this.parentElement.querySelector('.time-slot.selected');
+                const msgDiv = document.getElementById(`msg-${doctorId}`);
+                
+                if (!dateInput.value) {
+                    msgDiv.className = 'message error';
+                    msgDiv.textContent = 'Please select a date';
+                    msgDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (!selectedSlot) {
+                    msgDiv.className = 'message error';
+                    msgDiv.textContent = 'Please select a time slot';
+                    msgDiv.style.display = 'block';
+                    return;
+                }
+                
+                window.location.href = `/book-appointment/${doctorId}/?date=${dateInput.value}&time_slot=${selectedSlot.dataset.time}`;
+            });
+        });
+    </script>
+</body>
+</html>
