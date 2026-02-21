@@ -9,8 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-import pymysql
-pymysql.install_as_MySQLdb()
+
 
 import os
 from pathlib import Path
@@ -80,26 +79,13 @@ WSGI_APPLICATION = 'docusai_project.wsgi.application'
 
 
 # Database configuration
-if os.environ.get('DATABASE_URL'):
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600
-        )
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'signup_db',
-            'USER': 'root',
-            'PASSWORD': 'Luke_2021',
-            'HOST': 'localhost',
-            'PORT': '3306',
-        }
-    }
 
 
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
+}
 
 
 
