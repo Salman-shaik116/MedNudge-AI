@@ -79,7 +79,7 @@ def signin(request):
 
         if user is not None:
             login(request, user)
-            return redirect('website:doctors_list')
+            return redirect('website:dashboard')
         else:
             messages.error(request, "Invalid credentials")
             return redirect('website:signin')
@@ -685,21 +685,13 @@ def book_appointment(request, doctor_id):
             appointment.doctor = doctor
             appointment.appointment_date = request.POST.get('appointment_date')
             appointment.time_slot = request.POST.get('time_slot')
+            
+            # Use your permanent Google Meet link
+            meet_link = "https://meet.google.com/fox-bczh-rrv"  # Replace with your actual Meet link
+            appointment.meet_link = meet_link
             appointment.save()
             
-            # Generate Google Calendar link with auto-generated Meet
-            from urllib.parse import quote
-            event_title = quote(f"Medical Appointment with Dr. {doctor.name}")
-            event_details = quote(f"Patient: {appointment.patient_name}\nPhone: {appointment.patient_phone}\nSpecialization: {doctor.specialization}")
-            
-            # Format date and time for Google Calendar (YYYYMMDDTHHMMSS)
-            date_str = appointment.appointment_date.replace('-', '')
-            time_start = appointment.time_slot.split('-')[0].strip().replace(':', '')
-            time_end = appointment.time_slot.split('-')[1].strip().replace(':', '')
-            
-            meet_link = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={event_title}&dates={date_str}T{time_start}00/{date_str}T{time_end}00&details={event_details}&add={appointment.patient_email},{doctor.email}"
-            
-            # Send email to patient
+            # Send email to patient and doctor
             try:
                 sender_email = "geethageetha7817@gmail.com"
                 sender_password = "egkw lkki fzxp giir"
@@ -721,7 +713,7 @@ def book_appointment(request, doctor_id):
                     <li><strong>Date:</strong> {appointment.appointment_date}</li>
                     <li><strong>Time:</strong> {appointment.time_slot}</li>
                 </ul>
-                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Add to Calendar & Get Meet Link</a></p>
+                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Join Google Meet</a></p>
                 </body></html>
                 """
                 msg_patient.attach(MIMEText(html_patient, 'html'))
@@ -744,7 +736,7 @@ def book_appointment(request, doctor_id):
                     <li><strong>Date:</strong> {appointment.appointment_date}</li>
                     <li><strong>Time:</strong> {appointment.time_slot}</li>
                 </ul>
-                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Add to Calendar & Get Meet Link</a></p>
+                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Join Google Meet</a></p>
                 </body></html>
                 """
                 msg_doctor.attach(MIMEText(html_doctor, 'html'))
@@ -773,13 +765,7 @@ def book_appointment(request, doctor_id):
 def appointment_meeting(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     
-    # Generate Google Calendar link
-    from urllib.parse import quote
-    event_title = quote(f"Medical Appointment with Dr. {appointment.doctor.name}")
-    event_details = quote(f"Patient: {appointment.patient_name}\nPhone: {appointment.patient_phone}")
-    date_str = appointment.appointment_date.replace('-', '')
-    time_start = appointment.time_slot.split('-')[0].strip().replace(':', '')
-    time_end = appointment.time_slot.split('-')[1].strip().replace(':', '')
-    meet_link = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={event_title}&dates={date_str}T{time_start}00/{date_str}T{time_end}00&details={event_details}&add={appointment.patient_email},{appointment.doctor.email}"
+    # Use saved meet link or default
+    meet_link = appointment.meet_link or "https://meet.google.com/your-meeting-code"  # Replace with your actual Meet link
     
     return render(request, 'website/appointment_meeting.html', {'appointment': appointment, 'meet_link': meet_link})

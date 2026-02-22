@@ -118,6 +118,13 @@
     .back-link:hover {
         text-decoration: underline;
     }
+
+    .file-name {
+        margin-top: 10px;
+        color: #0f766e;
+        font-weight: 600;
+        font-size: 14px;
+    }
 </style>
 </head>
 
@@ -131,12 +138,13 @@
         <form method="POST" action="{% url 'website:analyze' %}" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="file-upload">
+            <div class="file-upload" id="fileUpload">
                 <label for="report">
                     📄 <strong>Click to upload</strong> or drag & drop
                     <span>PDF, JPG, PNG (Max 10MB)</span>
                 </label>
                 <input type="file" id="report" name="report" required>
+                <div class="file-name" id="fileName"></div>
             </div>
 
             <button type="submit" class="btn">
@@ -151,6 +159,20 @@
         </a>
     </div>
 </div>
+
+<script>
+const fileInput = document.getElementById('report');
+const fileName = document.getElementById('fileName');
+const fileUpload = document.getElementById('fileUpload');
+
+fileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+        fileName.textContent = '✓ ' + this.files[0].name;
+        fileUpload.style.borderColor = '#0f766e';
+        fileUpload.style.background = '#f0fdfa';
+    }
+});
+</script>
 
 </body>
 </html>

@@ -49,6 +49,7 @@ class Appointment(models.Model):
     patient_phone = models.CharField(max_length=20)
     appointment_date = models.DateField()
     time_slot = models.CharField(max_length=20)
+    meet_link = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
