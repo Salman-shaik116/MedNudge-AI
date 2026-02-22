@@ -10,6 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import hashlib
 import time
+import threading
 
 
 @login_required(login_url='website:result')
@@ -126,144 +127,148 @@ def send_reminder(request):
             messages.error(request, 'Please fill in all required fields')
             return redirect('website:dashboard')
         
-        try:
-            # Generate unique progress link
-            timestamp = str(int(time.time()))
-            unique_id = hashlib.md5(f"{recipient_email}{timestamp}".encode()).hexdigest()[:8]
-            # Get the current site domain
-            domain = request.get_host()
-            protocol = 'https' if request.is_secure() else 'http'
-            progress_url = f"{protocol}://{domain}/progress/{unique_id}/?name={recipient_name}&email={recipient_email}"
-            
-            # Email configuration
-            sender_email = "geethageetha7817@gmail.com"
-            sender_password = "egkw lkki fzxp giir"
-            
-            # Create email
-            msg = MIMEMultipart('alternative')
-            msg['From'] = sender_email
-            msg['To'] = recipient_email
-            msg['Subject'] = f'🏥 Your Weekly Health Plan - {recipient_name}'
-            
-            # Create HTML email
-            html_body = f"""
-            <html>
-            <head>
-                <style>
-                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                    .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                               padding: 30px; border-radius: 15px; text-align: center; color: white; margin-bottom: 30px; }}
-                    .tracker-btn {{
-                        display: inline-block;
-                        background: #10b981;
-                        color: white;
-                        padding: 20px 40px;
-                        text-decoration: none;
-                        border-radius: 30px;
-                        font-weight: bold;
-                        font-size: 18px;
-                        margin: 25px 0;
-                        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-                    }}
-                    .section {{ background: #f8fafc; padding: 25px; margin: 20px 0; border-radius: 12px; border-left: 5px solid #667eea; }}
-                    .task {{ background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
-                    .time {{ color: #667eea; font-weight: bold; font-size: 16px; }}
-                    .footer {{ text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }}
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>🏥 Your Weekly Health Plan</h1>
-                    <p>Hello {recipient_name} (@{recipient_username})! 👋</p>
-                    <p>Week starting {time.strftime('%B %d, %Y')}</p>
-                </div>
+        # Generate unique progress link
+        timestamp = str(int(time.time()))
+        unique_id = hashlib.md5(f"{recipient_email}{timestamp}".encode()).hexdigest()[:8]
+        
+        # Get the current site domain
+        domain = request.get_host()
+        protocol = 'https' if request.is_secure() else 'http'
+        progress_url = f"{protocol}://{domain}/progress/{unique_id}/?name={recipient_name}&email={recipient_email}"
+        
+        # Send email in background thread to avoid timeout
+        def send_email_async():
+            try:
+                sender_email = "geethageetha7817@gmail.com"
+                sender_password = "egkw lkki fzxp giir"
                 
-                <div style="text-align: center; padding: 30px;">
-                    <h2 style="color: #667eea; margin-bottom: 20px;">📊 Your Personal Health Tracker</h2>
-                    <p style="font-size: 16px; margin-bottom: 25px;">Click below to access your personalized weekly health tracker with progress monitoring:</p>
-                    <a href="{progress_url}" class="tracker-btn">
-                        🚀 Start Your Health Journey
-                    </a>
-                    <p style="font-size: 14px; color: #6b7280; margin-top: 15px;">
-                        <strong>Unique Tracker ID:</strong> HT-{unique_id.upper()}<br>
-                        This link is personalized for you and tracks your progress automatically!
-                    </p>
-                </div>
+                msg = MIMEMultipart('alternative')
+                msg['From'] = sender_email
+                msg['To'] = recipient_email
+                msg['Subject'] = f'🏥 Your Weekly Health Plan - {recipient_name}'
                 
-                <div style="padding: 20px;">
-                    <div class="section">
-                        <h2 style="color: #667eea; margin-bottom: 20px;">🏃 Weekly Exercise Plan</h2>
-                        <div class="task">
-                            <div class="time">⏰ Daily Morning Exercise</div>
-                            <p>30 minutes of brisk walking, cycling, or swimming</p>
+                html_body = f"""
+                <html>
+                <head>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                   padding: 30px; border-radius: 15px; text-align: center; color: white; margin-bottom: 30px; }}
+                        .tracker-btn {{
+                            display: inline-block;
+                            background: #10b981;
+                            color: white;
+                            padding: 20px 40px;
+                            text-decoration: none;
+                            border-radius: 30px;
+                            font-weight: bold;
+                            font-size: 18px;
+                            margin: 25px 0;
+                            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+                        }}
+                        .section {{ background: #f8fafc; padding: 25px; margin: 20px 0; border-radius: 12px; border-left: 5px solid #667eea; }}
+                        .task {{ background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+                        .time {{ color: #667eea; font-weight: bold; font-size: 16px; }}
+                        .footer {{ text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>🏥 Your Weekly Health Plan</h1>
+                        <p>Hello {recipient_name} (@{recipient_username})! 👋</p>
+                        <p>Week starting {time.strftime('%B %d, %Y')}</p>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 30px;">
+                        <h2 style="color: #667eea; margin-bottom: 20px;">📊 Your Personal Health Tracker</h2>
+                        <p style="font-size: 16px; margin-bottom: 25px;">Click below to access your personalized weekly health tracker with progress monitoring:</p>
+                        <a href="{progress_url}" class="tracker-btn">
+                            🚀 Start Your Health Journey
+                        </a>
+                        <p style="font-size: 14px; color: #6b7280; margin-top: 15px;">
+                            <strong>Unique Tracker ID:</strong> HT-{unique_id.upper()}<br>
+                            This link is personalized for you and tracks your progress automatically!
+                        </p>
+                    </div>
+                    
+                    <div style="padding: 20px;">
+                        <div class="section">
+                            <h2 style="color: #667eea; margin-bottom: 20px;">🏃 Weekly Exercise Plan</h2>
+                            <div class="task">
+                                <div class="time">⏰ Daily Morning Exercise</div>
+                                <p>30 minutes of brisk walking, cycling, or swimming</p>
+                            </div>
+                            <div class="task">
+                                <div class="time">⏰ Evening Relaxation</div>
+                                <p>10-15 minutes of stretching, yoga, or meditation</p>
+                            </div>
                         </div>
-                        <div class="task">
-                            <div class="time">⏰ Evening Relaxation</div>
-                            <p>10-15 minutes of stretching, yoga, or meditation</p>
+                        
+                        <div class="section">
+                            <h2 style="color: #667eea; margin-bottom: 20px;">🥗 Nutrition Plan</h2>
+                            <div class="task">
+                                <div class="time">⏰ 8:30 AM - Healthy Breakfast</div>
+                                <p>Oats with fruits, nuts, or whole grain options</p>
+                            </div>
+                            <div class="task">
+                                <div class="time">⏰ 1:00 PM - Nutritious Lunch</div>
+                                <p>Balanced meal with proteins, vegetables, and grains</p>
+                            </div>
+                            <div class="task">
+                                <div class="time">⏰ 5:00 PM - Healthy Snack</div>
+                                <p>Fresh fruits, nuts, or yogurt</p>
+                            </div>
+                            <div class="task">
+                                <div class="time">⏰ 8:30 PM - Light Dinner</div>
+                                <p>Light meal with vegetables and lean proteins</p>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h2 style="color: #667eea; margin-bottom: 20px;">💊 Medication Schedule</h2>
+                            <div class="task">
+                                <div class="time">⏰ 9:00 AM - Morning Supplements</div>
+                                <p>Iron tablet after breakfast</p>
+                            </div>
+                            <div class="task">
+                                <div class="time">⏰ 1:30 PM - Afternoon Vitamins</div>
+                                <p>Vitamin B12 or other prescribed supplements</p>
+                            </div>
+                            <div class="task">
+                                <div class="time">⏰ 10:00 PM - Evening Supplements</div>
+                                <p>Folic acid or bedtime medications</p>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="section">
-                        <h2 style="color: #667eea; margin-bottom: 20px;">🥗 Nutrition Plan</h2>
-                        <div class="task">
-                            <div class="time">⏰ 8:30 AM - Healthy Breakfast</div>
-                            <p>Oats with fruits, nuts, or whole grain options</p>
-                        </div>
-                        <div class="task">
-                            <div class="time">⏰ 1:00 PM - Nutritious Lunch</div>
-                            <p>Balanced meal with proteins, vegetables, and grains</p>
-                        </div>
-                        <div class="task">
-                            <div class="time">⏰ 5:00 PM - Healthy Snack</div>
-                            <p>Fresh fruits, nuts, or yogurt</p>
-                        </div>
-                        <div class="task">
-                            <div class="time">⏰ 8:30 PM - Light Dinner</div>
-                            <p>Light meal with vegetables and lean proteins</p>
-                        </div>
+                    <div class="footer">
+                        <p>💡 <strong>Pro Tip:</strong> Your progress is automatically saved and synced with the main dashboard!</p>
+                        <p>📱 Add this link to your phone's home screen for quick access</p>
+                        <p>🎯 Complete all 63 weekly tasks to achieve 100% health score!</p>
                     </div>
-                    
-                    <div class="section">
-                        <h2 style="color: #667eea; margin-bottom: 20px;">💊 Medication Schedule</h2>
-                        <div class="task">
-                            <div class="time">⏰ 9:00 AM - Morning Supplements</div>
-                            <p>Iron tablet after breakfast</p>
-                        </div>
-                        <div class="task">
-                            <div class="time">⏰ 1:30 PM - Afternoon Vitamins</div>
-                            <p>Vitamin B12 or other prescribed supplements</p>
-                        </div>
-                        <div class="task">
-                            <div class="time">⏰ 10:00 PM - Evening Supplements</div>
-                            <p>Folic acid or bedtime medications</p>
-                        </div>
-                    </div>
-                </div>
+                </body>
+                </html>
+                """
                 
-                <div class="footer">
-                    <p>💡 <strong>Pro Tip:</strong> Your progress is automatically saved and synced with the main dashboard!</p>
-                    <p>📱 Add this link to your phone's home screen for quick access</p>
-                    <p>🎯 Complete all 63 weekly tasks to achieve 100% health score!</p>
-                </div>
-            </body>
-            </html>
-            """
-            
-            msg.attach(MIMEText(html_body, 'html'))
-            
-            # Send email
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.send_message(msg)
-            server.quit()
-            
-            messages.success(request, f'Health tracker email sent successfully to {recipient_name}!')
-            messages.info(request, f'Progress URL: {progress_url}')
-            messages.info(request, f'Unique Tracker ID: HT-{unique_id.upper()}')
-            
-        except Exception as e:
-            messages.error(request, f'Failed to send email: {str(e)}')
+                msg.attach(MIMEText(html_body, 'html'))
+                
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.set_debuglevel(0)
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.send_message(msg)
+                server.quit()
+            except Exception as e:
+                print(f"Email error: {e}")
+        
+        # Start email sending in background
+        thread = threading.Thread(target=send_email_async)
+        thread.daemon = True
+        thread.start()
+        
+        # Respond immediately
+        messages.success(request, f'Health tracker email is being sent to {recipient_name}!')
+        messages.info(request, f'Unique Tracker ID: HT-{unique_id.upper()}')
     
     return redirect('website:dashboard')
 
