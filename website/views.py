@@ -130,7 +130,10 @@ def send_reminder(request):
             # Generate unique progress link
             timestamp = str(int(time.time()))
             unique_id = hashlib.md5(f"{recipient_email}{timestamp}".encode()).hexdigest()[:8]
-            progress_url = f"http://localhost:8000/progress/{unique_id}/?name={recipient_name}&email={recipient_email}"
+            # Get the current site domain
+            domain = request.get_host()
+            protocol = 'https' if request.is_secure() else 'http'
+            progress_url = f"{protocol}://{domain}/progress/{unique_id}/?name={recipient_name}&email={recipient_email}"
             
             # Email configuration
             sender_email = "geethageetha7817@gmail.com"
