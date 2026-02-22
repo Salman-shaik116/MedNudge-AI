@@ -28,12 +28,12 @@
             <p>🕐 {{ appointment.time_slot }}</p>
         </div>
         <p>Emails sent to both you and the doctor with meeting details.</p>
-        <a href="https://meet.google.com/new" class="meet-btn" target="_blank">Join Google Meet Now</a>
+        <a href="{{ meet_link }}" class="meet-btn" target="_blank">📅 Add to Calendar & Get Meet Link</a>
         <p style="margin-top: 20px;"><a href="{% url 'website:doctors_list' %}" style="color: #667eea;">← Back to Doctors</a></p>
     </div>
     <script>
         setTimeout(() => {
-            window.open('https://meet.google.com/new', '_blank');
+            window.open('{{ meet_link }}', '_blank');
         }, 2000);
     </script>
 </body>

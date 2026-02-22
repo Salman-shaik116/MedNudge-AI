@@ -54,8 +54,8 @@ def signup(request):
         email = request.POST['email']
         password = request.POST['password']
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered")
             return redirect('website:signup')
 
         user = User.objects.create_user(
@@ -79,12 +79,17 @@ def signin(request):
 
         if user is not None:
             login(request, user)
-            return redirect('website:dashboard')
+            return redirect('website:doctors_list')
         else:
             messages.error(request, "Invalid credentials")
             return redirect('website:signin')
 
     return render(request, 'website/signin.html')
+
+def signout(request):
+    logout(request)
+    messages.success(request, "Logged out successfully")
+    return redirect('website:signin')
 
 
 @login_required(login_url='website:signin')
@@ -104,8 +109,8 @@ def dashboard(request):
         'recent_reports': recent_reports,
         'all_users': all_users,
         'week_days': week_days,
-        'task_progress': load_all_progress(),
-        'completion_rate': calculate_overall_completion_rate(),
+        'task_progress': load_user_progress(request.user.email),
+        'completion_rate': calculate_user_completion_rate(request.user.email),
     }
     
     return render(request, 'website/dashboard_complete.html', context)
@@ -397,8 +402,8 @@ def get_progress_api(request, tracker_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
-def load_all_progress():
-    """Load all progress data for dashboard"""
+def load_user_progress(user_email):
+    """Load progress data for specific user"""
     try:
         progress_file = os.path.join(os.path.dirname(__file__), 'progress_data.json')
         
@@ -408,22 +413,22 @@ def load_all_progress():
                 
             progress_list = []
             for tracker_id, data in progress_data.items():
-                completed_tasks = sum(1 for v in data.get('tasks', {}).values() if v)
-                total_tasks = 63
-                completion_rate = int((completed_tasks / total_tasks) * 100)
-                
-                progress_list.append({
-                    'tracker_id': tracker_id,
-                    'user_name': data.get('user_name', 'Unknown'),
-                    'user_email': data.get('user_email', ''),
-                    'completed_tasks': completed_tasks,
-                    'total_tasks': total_tasks,
-                    'completion_rate': completion_rate,
-                    'last_updated': data.get('last_updated', 'Never'),
-                    'created_at': data.get('created_at', 'Unknown')
-                })
+                if data.get('user_email', '') == user_email:
+                    completed_tasks = sum(1 for v in data.get('tasks', {}).values() if v)
+                    total_tasks = 63
+                    completion_rate = int((completed_tasks / total_tasks) * 100)
+                    
+                    progress_list.append({
+                        'tracker_id': tracker_id,
+                        'user_name': data.get('user_name', 'Unknown'),
+                        'user_email': data.get('user_email', ''),
+                        'completed_tasks': completed_tasks,
+                        'total_tasks': total_tasks,
+                        'completion_rate': completion_rate,
+                        'last_updated': data.get('last_updated', 'Never'),
+                        'created_at': data.get('created_at', 'Unknown')
+                    })
             
-            # Sort by last updated (most recent first)
             progress_list.sort(key=lambda x: x['last_updated'], reverse=True)
             return progress_list
     except Exception as e:
@@ -431,9 +436,9 @@ def load_all_progress():
     
     return []
 
-def calculate_overall_completion_rate():
-    """Calculate overall completion rate from all trackers"""
-    progress_list = load_all_progress()
+def calculate_user_completion_rate(user_email):
+    """Calculate completion rate for specific user"""
+    progress_list = load_user_progress(user_email)
     if not progress_list:
         return 0
     
@@ -454,6 +459,150 @@ def second_opinion(request):
 
 def blog(request):
     return render(request, 'website/blog.html')
+
+def article(request, article_id):
+    articles = {
+        '1': {
+            'title': 'How AI Doctors Are Revolutionizing Preventive Healthcare',
+            'category': 'AI DOCTOR',
+            'icon': '🤖',
+            'date': 'Dec 28, 2025',
+            'read_time': '8',
+            'views': '2.4K',
+            'content': '''<h2>The Rise of AI in Healthcare</h2>
+<p>Artificial Intelligence is transforming the healthcare landscape in unprecedented ways. AI-powered symptom checkers and virtual doctors are now capable of catching health issues before they become serious problems, marking a new era in preventive medicine.</p>
+
+<h3>Early Detection Saves Lives</h3>
+<p>Studies show that early detection of diseases can improve survival rates by up to 90%. AI doctors analyze patterns in your symptoms, medical history, and lifestyle factors to identify potential health risks months or even years before traditional methods.</p>
+
+<h3>Key Benefits of AI Doctors</h3>
+<ul>
+<li><strong>24/7 Availability:</strong> Get medical advice anytime, anywhere without waiting for appointments</li>
+<li><strong>Personalized Care:</strong> AI analyzes your unique health profile to provide tailored recommendations</li>
+<li><strong>Cost-Effective:</strong> Reduce unnecessary doctor visits and catch issues early when treatment is less expensive</li>
+<li><strong>Data-Driven Insights:</strong> Leverage millions of medical cases to provide accurate assessments</li>
+</ul>
+
+<h3>Real-World Impact</h3>
+<p>Healthcare providers using AI diagnostic tools have reported a 40% reduction in misdiagnosis rates. Patients benefit from faster, more accurate assessments that lead to better health outcomes.</p>
+
+<h2>The Future is Here</h2>
+<p>As AI technology continues to evolve, we're moving toward a future where preventive healthcare is accessible to everyone. The combination of human expertise and AI capabilities creates a powerful tool for maintaining optimal health.</p>'''
+        },
+        '2': {
+            'title': 'Understanding Your Blood Test Results: A Complete Guide',
+            'category': 'LAB TESTS',
+            'icon': '🧪',
+            'date': 'Dec 25, 2025',
+            'read_time': '6',
+            'views': '5.2K',
+            'content': '''<h2>Decoding Your Blood Work</h2>
+<p>Blood tests are one of the most powerful diagnostic tools available, yet many people struggle to understand what their results mean. This comprehensive guide will help you decode 20+ common blood biomarkers.</p>
+
+<h3>Complete Blood Count (CBC)</h3>
+<p>The CBC measures different components of your blood:</p>
+<ul>
+<li><strong>Red Blood Cells (RBC):</strong> Carry oxygen throughout your body. Low levels may indicate anemia.</li>
+<li><strong>White Blood Cells (WBC):</strong> Fight infections. High levels may suggest infection or inflammation.</li>
+<li><strong>Platelets:</strong> Help blood clot. Abnormal levels can affect bleeding and clotting.</li>
+<li><strong>Hemoglobin:</strong> Protein in red blood cells. Low levels cause fatigue and weakness.</li>
+</ul>
+
+<h3>Metabolic Panel</h3>
+<p>This panel checks your body's chemical balance and metabolism:</p>
+<ul>
+<li><strong>Glucose:</strong> Blood sugar levels. High levels may indicate diabetes risk.</li>
+<li><strong>Calcium:</strong> Important for bones and muscles. Abnormal levels affect many body functions.</li>
+<li><strong>Electrolytes:</strong> Sodium, potassium, chloride maintain fluid balance.</li>
+</ul>
+
+<h3>Lipid Panel</h3>
+<p>Measures cholesterol and triglycerides to assess heart disease risk:</p>
+<ul>
+<li><strong>Total Cholesterol:</strong> Should be below 200 mg/dL</li>
+<li><strong>LDL (Bad Cholesterol):</strong> Should be below 100 mg/dL</li>
+<li><strong>HDL (Good Cholesterol):</strong> Should be above 60 mg/dL</li>
+<li><strong>Triglycerides:</strong> Should be below 150 mg/dL</li>
+</ul>
+
+<h2>Taking Action</h2>
+<p>Understanding your blood test results empowers you to make informed decisions about your health. Always discuss results with your healthcare provider to create a personalized health plan.</p>'''
+        },
+        '3': {
+            'title': 'Top 5 AI Tools That Could Add 10 Years to Your Life',
+            'category': 'PREVENTION',
+            'icon': '🛡️',
+            'date': 'Dec 22, 2025',
+            'read_time': '10',
+            'views': '12K',
+            'content': '''<h2>The Longevity Revolution</h2>
+<p>Advances in AI technology are transforming longevity medicine and preventive care. These evidence-based tools are helping people live longer, healthier lives.</p>
+
+<h3>1. AI-Powered Health Monitoring</h3>
+<p>Wearable devices combined with AI algorithms continuously monitor vital signs and detect anomalies before they become serious. Studies show users catch health issues 3x faster than traditional methods.</p>
+
+<h3>2. Personalized Nutrition Planning</h3>
+<p>AI analyzes your genetics, microbiome, and lifestyle to create customized meal plans that optimize your health. Users report 40% improvement in energy levels and 25% reduction in chronic inflammation.</p>
+
+<h3>3. Predictive Disease Modeling</h3>
+<p>Machine learning models analyze your health data to predict disease risk years in advance. Early intervention can prevent or delay onset of chronic conditions like diabetes and heart disease.</p>
+
+<h3>4. Mental Health Support</h3>
+<p>AI-powered mental health apps provide 24/7 support, cognitive behavioral therapy, and stress management techniques. Regular use reduces anxiety and depression symptoms by up to 50%.</p>
+
+<h3>5. Sleep Optimization</h3>
+<p>AI sleep coaches analyze your sleep patterns and provide personalized recommendations to improve sleep quality. Better sleep is linked to reduced disease risk and increased lifespan.</p>
+
+<h2>The Science Behind Longevity</h2>
+<p>Research shows that lifestyle factors account for 70% of longevity outcomes. These AI tools help you optimize the controllable factors that determine how long and how well you live.</p>
+
+<h3>Getting Started</h3>
+<p>You don't need to use all these tools at once. Start with one or two that address your biggest health concerns, then gradually incorporate others as you build healthy habits.</p>'''
+        },
+        '4': {
+            'title': 'Why Lab Test Interpretation Accuracy Matters More Than Ever',
+            'category': 'RESEARCH',
+            'icon': '🔬',
+            'date': 'Dec 20, 2025',
+            'read_time': '7',
+            'views': '3.8K',
+            'content': '''<h2>The Hidden Crisis in Healthcare</h2>
+<p>A groundbreaking new study reveals that 68% of patients misunderstand their lab results, leading to delayed treatment, unnecessary anxiety, and poor health outcomes.</p>
+
+<h3>The Communication Gap</h3>
+<p>Despite advances in medical testing, there's a significant gap between test results and patient understanding. Doctors often lack time to explain results thoroughly, leaving patients confused and uncertain about their health status.</p>
+
+<h3>What Doctors Aren't Telling You</h3>
+<ul>
+<li><strong>Reference Ranges Vary:</strong> "Normal" ranges differ by lab, age, gender, and ethnicity</li>
+<li><strong>Trends Matter More:</strong> A single result means less than tracking changes over time</li>
+<li><strong>Context is Critical:</strong> Results must be interpreted alongside symptoms and medical history</li>
+<li><strong>Optimal vs. Normal:</strong> Being in the "normal" range doesn't mean optimal health</li>
+</ul>
+
+<h3>The Cost of Misunderstanding</h3>
+<p>Misinterpreted lab results lead to:</p>
+<ul>
+<li>Delayed diagnosis and treatment</li>
+<li>Unnecessary follow-up tests and procedures</li>
+<li>Increased healthcare costs</li>
+<li>Patient anxiety and stress</li>
+<li>Poor medication adherence</li>
+</ul>
+
+<h2>The Solution: AI-Powered Interpretation</h2>
+<p>Modern AI tools can analyze lab results in context, explain what numbers mean in plain language, and provide actionable recommendations. This bridges the communication gap and empowers patients to take control of their health.</p>
+
+<h3>Taking Control of Your Health</h3>
+<p>Don't just accept lab results at face value. Ask questions, seek second opinions, and use technology to better understand your health data. Your health is too important to leave to chance.</p>'''
+        }
+    }
+    
+    article = articles.get(article_id)
+    if not article:
+        return redirect('website:blog')
+    
+    return render(request, 'website/article.html', {'article': article})
 
 def symptoms_guide(request):
     return render(request, 'website/symptoms-guide.html')
@@ -538,8 +687,17 @@ def book_appointment(request, doctor_id):
             appointment.time_slot = request.POST.get('time_slot')
             appointment.save()
             
-            # Generate Google Meet link
-            meet_link = f"https://meet.google.com/new"
+            # Generate Google Calendar link with auto-generated Meet
+            from urllib.parse import quote
+            event_title = quote(f"Medical Appointment with Dr. {doctor.name}")
+            event_details = quote(f"Patient: {appointment.patient_name}\nPhone: {appointment.patient_phone}\nSpecialization: {doctor.specialization}")
+            
+            # Format date and time for Google Calendar (YYYYMMDDTHHMMSS)
+            date_str = appointment.appointment_date.replace('-', '')
+            time_start = appointment.time_slot.split('-')[0].strip().replace(':', '')
+            time_end = appointment.time_slot.split('-')[1].strip().replace(':', '')
+            
+            meet_link = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={event_title}&dates={date_str}T{time_start}00/{date_str}T{time_end}00&details={event_details}&add={appointment.patient_email},{doctor.email}"
             
             # Send email to patient
             try:
@@ -563,7 +721,7 @@ def book_appointment(request, doctor_id):
                     <li><strong>Date:</strong> {appointment.appointment_date}</li>
                     <li><strong>Time:</strong> {appointment.time_slot}</li>
                 </ul>
-                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Join Google Meet</a></p>
+                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Add to Calendar & Get Meet Link</a></p>
                 </body></html>
                 """
                 msg_patient.attach(MIMEText(html_patient, 'html'))
@@ -586,7 +744,7 @@ def book_appointment(request, doctor_id):
                     <li><strong>Date:</strong> {appointment.appointment_date}</li>
                     <li><strong>Time:</strong> {appointment.time_slot}</li>
                 </ul>
-                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Join Google Meet</a></p>
+                <p><a href="{meet_link}" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Add to Calendar & Get Meet Link</a></p>
                 </body></html>
                 """
                 msg_doctor.attach(MIMEText(html_doctor, 'html'))
@@ -614,4 +772,14 @@ def book_appointment(request, doctor_id):
 
 def appointment_meeting(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
-    return render(request, 'website/appointment_meeting.html', {'appointment': appointment})
+    
+    # Generate Google Calendar link
+    from urllib.parse import quote
+    event_title = quote(f"Medical Appointment with Dr. {appointment.doctor.name}")
+    event_details = quote(f"Patient: {appointment.patient_name}\nPhone: {appointment.patient_phone}")
+    date_str = appointment.appointment_date.replace('-', '')
+    time_start = appointment.time_slot.split('-')[0].strip().replace(':', '')
+    time_end = appointment.time_slot.split('-')[1].strip().replace(':', '')
+    meet_link = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={event_title}&dates={date_str}T{time_start}00/{date_str}T{time_end}00&details={event_details}&add={appointment.patient_email},{appointment.doctor.email}"
+    
+    return render(request, 'website/appointment_meeting.html', {'appointment': appointment, 'meet_link': meet_link})

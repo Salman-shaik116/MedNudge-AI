@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} - DocusAI Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.8; color: #1a1a1a; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        header { background: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
+        .back-btn { padding: 0.75rem 1.5rem; background: #f1f5f9; color: #374151; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.3s; }
+        .back-btn:hover { background: #e2e8f0; }
+        .article-header { padding: 4rem 0 2rem; text-align: center; }
+        .article-category { display: inline-block; padding: 0.5rem 1rem; background: linear-gradient(135deg, #007bff, #00c851); color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .article-title { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; line-height: 1.2; }
+        .article-meta { display: flex; justify-content: center; gap: 2rem; color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; }
+        .article-image { width: 100%; height: 400px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 20px; margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+        .article-content { padding: 2rem 0; }
+        .article-content h2 { font-size: 1.75rem; font-weight: 700; color: #1e293b; margin: 2.5rem 0 1rem; }
+        .article-content h3 { font-size: 1.4rem; font-weight: 600; color: #334155; margin: 2rem 0 1rem; }
+        .article-content p { margin-bottom: 1.5rem; color: #475569; font-size: 1.1rem; }
+        .article-content ul, .article-content ol { margin: 1.5rem 0 1.5rem 2rem; }
+        .article-content li { margin-bottom: 0.75rem; color: #475569; }
+        .article-content strong { color: #1e293b; font-weight: 600; }
+        .share-section { padding: 3rem 0; border-top: 2px solid #f1f5f9; margin-top: 3rem; text-align: center; }
+        .share-section h3 { font-size: 1.5rem; margin-bottom: 1.5rem; color: #1e293b; }
+        .share-buttons { display: flex; justify-content: center; gap: 1rem; }
+        .share-btn { padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.3s; }
+        .share-twitter { background: #1da1f2; color: white; }
+        .share-facebook { background: #4267B2; color: white; }
+        .share-linkedin { background: #0077b5; color: white; }
+        .share-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        footer { background: #1e293b; color: white; text-align: center; padding: 3rem 0; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div>
+            <a href="{% url 'website:blog' %}" class="back-btn">← Back to Blog</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="article-header">
+            <div class="article-category">{{ article.category }}</div>
+            <h1 class="article-title">{{ article.title }}</h1>
+            <div class="article-meta">
+                <span>📅 {{ article.date }}</span>
+                <span>🕐 {{ article.read_time }} min read</span>
+                <span>👁️ {{ article.views }} views</span>
+            </div>
+        </div>
+
+        <div class="article-image">{{ article.icon }}</div>
+
+        <div class="article-content">
+            {{ article.content|safe }}
+        </div>
+
+        <div class="share-section">
+            <h3>Share this article</h3>
+            <div class="share-buttons">
+                <a href="#" class="share-btn share-twitter">Share on Twitter</a>
+                <a href="#" class="share-btn share-facebook">Share on Facebook</a>
+                <a href="#" class="share-btn share-linkedin">Share on LinkedIn</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 DocusAI Blog. All rights reserved.</p>
+    </footer>
+</body>
+</html>

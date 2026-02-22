@@ -333,7 +333,13 @@ body {
         🏠 My Dashboard
     </div>
     <div class="topbar-right">
-        💬 🔔 {{ request.user.username }}
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="text-align: right;">
+                <div style="font-weight: 600; color: #1f2937;">{{ request.user.username }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ request.user.email }}</div>
+            </div>
+            <a href="{% url 'website:signout' %}" class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;">Logout</a>
+        </div>
     </div>
 </div>
 
