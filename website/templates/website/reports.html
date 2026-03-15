@@ -1,111 +1,720 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Medical Reports</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
+        :root {
+            --bg-main: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --primary-blue: #2563EB;
+            --primary-blue-hover: #1D4ED8;
+            --primary-blue-light: #EFF6FF;
+            --card-bg: #FFFFFF;
+            --card-hover: #FFFFFF;
+            --section-alt-bg: #F8FAFC;
+            --footer-bg: #0F172A;
+            --footer-text: #F8FAFC;
+            --footer-muted: #94A3B8;
+            --border-color: #E2E8F0;
+            --border-color-hover: #CBD5E1;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --white-bg: #FFFFFF;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --box-shadow-hover: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 10px 10px -5px rgba(15, 23, 42, 0.05);
+            --radius-main: 12px;
+            --radius-btn: 6px;
+            --success-bg: #ECFDF5;
+            --success-text: #047857;
+            --tag-bg: #EFF6FF;
+            --tag-text: #2563EB;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0B1120;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --primary-blue: #3B82F6;
+            --primary-blue-hover: #60A5FA;
+            --primary-blue-light: rgba(59, 130, 246, 0.15);
+            --card-bg: #1E293B;
+            --card-hover: #1E293B;
+            --section-alt-bg: #0F172A;
+            --footer-bg: #0B1120;
+            --footer-text: #F8FAFC;
+            --footer-muted: #64748B;
+            --border-color: #334155;
+            --border-color-hover: #475569;
+            --header-bg: rgba(11, 17, 32, 0.85);
+            --white-bg: #1E293B;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+            --box-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+            --success-bg: rgba(16, 185, 129, 0.12);
+            --success-text: #6EE7B7;
+            --tag-bg: rgba(59, 130, 246, 0.16);
+            --tag-text: #93C5FD;
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        .reports-container {
-            max-width: 1000px;
-            margin: auto;
+        a {
+            text-decoration: none;
+            color: inherit;
         }
 
-        .report-card {
-            background: #ffffff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
         }
 
-        .report-header {
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1.5rem;
         }
 
-        .report-id {
-            font-weight: bold;
-            color: #333;
+        .logo a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo a::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background: var(--primary-blue);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .nav-links,
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--card-hover);
+            color: var(--text-main);
+            border-color: var(--border-color-hover);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.35rem;
+            border-radius: var(--radius-btn);
+            background: var(--primary-blue);
+            color: #FFFFFF;
+            border: 1px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-blue-hover);
+        }
+
+        .cta-outline {
+            background: transparent;
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+
+        .cta-outline:hover {
+            background: var(--card-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .page-shell {
+            min-height: calc(100vh - 88px);
+            padding: 2rem 0 4rem;
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 28%),
+                linear-gradient(180deg, var(--section-alt-bg) 0%, var(--bg-main) 24%);
+        }
+
+        .hero-card,
+        .summary-card,
+        .report-card,
+        .empty-card,
+        .support-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .hero-card {
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .hero-copy h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero-copy p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 720px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .hero-aside {
+            padding: 1.5rem;
+            border-radius: 18px;
+            background: linear-gradient(180deg, var(--section-alt-bg) 0%, rgba(37, 99, 235, 0.06) 100%);
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-aside h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-aside p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .hero-list-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        .hero-list-item strong {
+            color: var(--text-main);
+        }
+
+        .hero-list-item::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--primary-blue);
+            flex-shrink: 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-card {
+            padding: 1.4rem;
+        }
+
+        .summary-card strong {
+            display: block;
+            font-size: 1.8rem;
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+
+        .summary-card span {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.7rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+        }
+
+        .reports-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .report-card {
+            padding: 1.5rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .report-card:hover,
+        .support-card:hover,
+        .empty-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--box-shadow-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .report-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .report-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .report-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.4rem;
         }
 
         .report-date {
-            font-size: 14px;
-            color: #777;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            text-align: right;
         }
 
         .analysis-box {
-            background: #f9fafb;
-            border-left: 4px solid #4CAF50;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 1rem 1.1rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--section-alt-bg);
+            color: var(--text-main);
             white-space: pre-wrap;
+            margin-bottom: 1rem;
         }
 
-        .download-link {
-            display: inline-block;
-            margin-top: 10px;
-            color: #1a73e8;
-            text-decoration: none;
-            font-weight: bold;
+        .report-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
         }
 
-        .download-link:hover {
-            text-decoration: underline;
+        .link-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.92rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
-        .no-reports {
-            text-align: center;
-            color: #777;
-            margin-top: 50px;
+        .link-button:hover {
+            border-color: var(--border-color-hover);
+            background: var(--section-alt-bg);
+        }
+
+        .download-button {
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-color: transparent;
+        }
+
+        .download-button:hover {
+            background: rgba(37, 99, 235, 0.16);
+            border-color: transparent;
+        }
+
+        .empty-card,
+        .support-card {
+            padding: 1.75rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .empty-card h3,
+        .support-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-card p,
+        .support-card p {
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .support-card {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .support-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 3rem 0;
+            border-top: 1px solid #1E293B;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--footer-muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--footer-muted);
+        }
+
+        .footer-links a:hover {
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 980px) {
+            .hero-grid,
+            .summary-grid,
+            .support-card {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .support-card {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav,
+            .report-top,
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links,
+            .header-actions,
+            .footer-links {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .report-date {
+                text-align: left;
+            }
+
+            .footer-bottom {
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="{% url 'website:index' %}">DocusAI</a>
+                </div>
 
-<h1>📁 My Medical Reports</h1>
+                <div class="nav-links">
+                    <a href="{% url 'website:index' %}" class="nav-link">Home</a>
+                    <a href="{% url 'website:dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'website:lab_test' %}" class="nav-link">Lab Test</a>
+                    <a href="{% url 'website:reports' %}" class="nav-link">Reports</a>
+                    <a href="{% url 'website:knowledge_base' %}" class="nav-link">Knowledge Base</a>
+                </div>
 
-<div class="reports-container">
-    {% if reports %}
-        {% for report in reports %}
-            <div class="report-card">
-                <div class="report-header">
-                    <div class="report-id">
-                        Report #{{ report.id }}
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                        </svg>
+                    </button>
+                    <a href="{% url 'website:ai_doctor' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">AI Doctor</a>
+                    <a href="{% url 'website:upload' %}" class="cta-button">Upload Report</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <div class="container">
+            <section class="hero-card">
+                <div class="hero-grid">
+                    <div class="hero-copy">
+                        <span class="eyebrow">Medical history and AI analysis</span>
+                        <h1>Your reports, organized for faster review.</h1>
+                        <p>Track uploaded medical reports, revisit AI-generated analysis, and move directly into the next step whether that means another upload, an AI Doctor conversation, or a second opinion workflow.</p>
+                        <div class="hero-actions">
+                            <a href="{% url 'website:upload' %}" class="cta-button">Upload New Report</a>
+                            <a href="{% url 'website:lab_test' %}" class="cta-button cta-outline">Analyze Another Test</a>
+                        </div>
                     </div>
-                    <div class="report-date">
-                        {{ report.uploaded_at|date:"d M Y, h:i A" }}
+
+                    <div class="hero-aside">
+                        <h2>What you can do here</h2>
+                        <p>Use this space as your report archive and follow-up center across the DocusAI workflow.</p>
+                        <div class="hero-list">
+                            <div class="hero-list-item"><strong>Review</strong> uploaded reports and timestamps</div>
+                            <div class="hero-list-item"><strong>Download</strong> original files when needed</div>
+                            <div class="hero-list-item"><strong>Continue</strong> into AI Doctor or a second opinion request</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="summary-grid">
+                <article class="summary-card">
+                    <strong>{% if reports %}{{ reports|length }}{% else %}0{% endif %}</strong>
+                    <span>Total uploaded reports in your account history</span>
+                </article>
+                <article class="summary-card">
+                    <strong>AI Ready</strong>
+                    <span>Each report is stored with accessible analysis for fast re-checks</span>
+                </article>
+                <article class="summary-card">
+                    <strong>Next Step</strong>
+                    <span>Use AI Doctor or second opinions when a report needs deeper review</span>
+                </article>
+            </section>
+
+            <section>
+                <div class="section-header">
+                    <div>
+                        <h2>Report history</h2>
+                        <p>Browse saved analyses and open the original report file whenever you need it.</p>
                     </div>
                 </div>
 
-                {% if report.report_file %}
-                    <a class="download-link" href="{{ report.report_file.url }}" target="_blank">
-                        📄 Download Uploaded Report
-                    </a>
-                {% endif %}
+                {% if reports %}
+                    <div class="reports-grid">
+                        {% for report in reports %}
+                            <article class="report-card">
+                                <div class="report-top">
+                                    <div>
+                                        <span class="report-label">Report {{ report.id }}</span>
+                                        <h3>Medical analysis summary</h3>
+                                    </div>
+                                    <div class="report-date">{{ report.uploaded_at|date:"d M Y, h:i A" }}</div>
+                                </div>
 
-                <div class="analysis-box">
-                    {{ report.analysis }}
+                                <div class="analysis-box">{{ report.analysis }}</div>
+
+                                <div class="report-actions">
+                                    {% if report.report_file %}
+                                        <a class="link-button download-button" href="{{ report.report_file.url }}" target="_blank" rel="noopener noreferrer">Download original report</a>
+                                    {% endif %}
+                                    <a href="{% url 'website:ai_doctor' %}" class="link-button">Discuss with AI Doctor</a>
+                                    <a href="{% url 'website:second_opinion' %}" class="link-button">Request second opinion</a>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <article class="empty-card">
+                        <h3>No reports yet</h3>
+                        <p>Your uploaded medical reports will appear here once analysis is complete. Start by uploading a lab result or report file to build your personal report history.</p>
+                        <div class="hero-actions">
+                            <a href="{% url 'website:upload' %}" class="cta-button">Upload First Report</a>
+                            <a href="{% url 'website:knowledge_base' %}" class="cta-button cta-outline">Read Help Guides</a>
+                        </div>
+                    </article>
+                {% endif %}
+            </section>
+
+            <section class="support-card">
+                <div>
+                    <h3>Need help understanding a result?</h3>
+                    <p>Move from stored reports into AI guidance, additional analysis, or help content when you need more context around an upload.</p>
+                </div>
+                <div class="support-actions">
+                    <a href="{% url 'website:ai_doctor' %}" class="cta-button">Ask AI Doctor</a>
+                    <a href="{% url 'website:knowledge_base' %}" class="cta-button cta-outline">Knowledge Base</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <div>&copy; 2026 DocusAI Reports</div>
+                <div class="footer-links">
+                    <a href="{% url 'website:pricing' %}">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}">Support</a>
+                    <a href="{% url 'website:blog' %}">Resources</a>
                 </div>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="no-reports">
-            No medical reports found.
         </div>
-    {% endif %}
-</div>
+    </footer>
 
+    <script>
+        const themeToggleBtn = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+        const htmlElement = document.documentElement;
+
+        const moonPath = "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z";
+        const sunPath = "M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";
+
+        function updateIcon(isDark) {
+            themeIcon.innerHTML = `<path d="${isDark ? sunPath : moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${isDark ? "none" : "currentColor"}"/>`;
+        }
+
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+            htmlElement.setAttribute("data-theme", "dark");
+            updateIcon(true);
+        } else {
+            updateIcon(false);
+        }
+
+        themeToggleBtn.addEventListener("click", () => {
+            if (htmlElement.getAttribute("data-theme") === "dark") {
+                htmlElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                updateIcon(false);
+            } else {
+                htmlElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                updateIcon(true);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -4,63 +4,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Appointment</title>
+    <title>Book Appointment - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 500px; width: 100%; }
-        h1 { color: #333; margin-bottom: 20px; text-align: center; }
-        .doctor-info { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        .doctor-info img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; display: block; margin: 0 auto 10px; }
-        .doctor-info p { margin: 5px 0; color: #555; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #218838; }
-        a { display: inline-block; margin-top: 15px; color: #667eea; text-decoration: none; }
+        :root{--bg-main:#fff;--text-main:#0F172A;--text-muted:#64748B;--primary-blue:#2563EB;--primary-blue-hover:#1D4ED8;--primary-blue-light:#EFF6FF;--success:#10B981;--card-bg:#fff;--section-alt-bg:#F8FAFC;--footer-bg:#0F172A;--footer-text:#F8FAFC;--footer-muted:#94A3B8;--border-color:#E2E8F0;--border-color-hover:#CBD5E1;--header-bg:rgba(255,255,255,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--radius-btn:6px;--input-bg:#fff;--input-border:#CBD5E1}
+        [data-theme="dark"]{--bg-main:#0B1120;--text-main:#F8FAFC;--text-muted:#94A3B8;--primary-blue:#3B82F6;--primary-blue-hover:#60A5FA;--primary-blue-light:rgba(59,130,246,.15);--success:#34D399;--card-bg:#1E293B;--section-alt-bg:#0F172A;--footer-bg:#0B1120;--footer-text:#F8FAFC;--footer-muted:#64748B;--border-color:#334155;--border-color-hover:#475569;--header-bg:rgba(11,17,32,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.4),0 1px 2px -1px rgba(0,0,0,.3);--input-bg:#0F172A;--input-border:#475569}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:"Inter",sans-serif;background:var(--bg-main);color:var(--text-main);line-height:1.6;transition:background-color .4s ease,color .4s ease}a{text-decoration:none;color:inherit}.container{max-width:1180px;margin:0 auto;padding:0 24px}header{background:var(--header-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:1rem 0;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border-color)}nav,.nav-links,.header-actions,.footer-links,.hero-actions{display:flex;align-items:center}nav{justify-content:space-between;gap:1.5rem}.logo a{font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.5rem}.logo a::before{content:"";width:22px;height:22px;background:var(--primary-blue);border-radius:4px;display:inline-block}.nav-links,.header-actions,.footer-links,.hero-actions{gap:1rem}.nav-link{color:var(--text-muted);font-size:.95rem;font-weight:500}.theme-toggle,.cta-button,.secondary-button{border-radius:var(--radius-btn);transition:all .2s ease}.theme-toggle{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}.theme-toggle svg{width:18px;height:18px}.cta-button,.secondary-button{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 1.25rem;font-size:.95rem;font-weight:600;border:1px solid transparent;cursor:pointer}.cta-button{background:var(--primary-blue);color:#fff}.cta-button:hover{background:var(--primary-blue-hover)}.secondary-button{background:transparent;color:var(--text-main);border-color:var(--border-color)}.page-shell{padding:2rem 0 4rem;background:radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 28%),linear-gradient(180deg,var(--section-alt-bg) 0%,var(--bg-main) 24%)}.layout{display:grid;grid-template-columns:360px 1fr;gap:1.5rem}.card,.doctor-card,.notice-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;box-shadow:var(--box-shadow)}.doctor-card,.card,.notice-card{padding:1.5rem}.doctor-photo{width:100%;aspect-ratio:1/1;border-radius:18px;object-fit:cover;border:1px solid var(--border-color);margin-bottom:1rem}.eyebrow{display:inline-block;padding:.35rem .8rem;background:var(--primary-blue-light);color:var(--primary-blue);border-radius:999px;font-size:.84rem;font-weight:700;margin-bottom:1rem}.doctor-card h1{font-size:1.8rem;line-height:1.1;margin-bottom:.5rem}.doctor-meta,.notice-card p,.form-help{color:var(--text-muted)}.meta-list{display:grid;gap:.75rem;margin-top:1rem}.meta-item{padding:.9rem 1rem;border-radius:14px;border:1px solid var(--border-color);background:var(--section-alt-bg)}.meta-item strong{display:block;margin-bottom:.2rem}.form-grid{display:grid;gap:1rem}.form-group{display:grid;gap:.45rem}.form-group label{font-size:.92rem;font-weight:600}.form-group input{width:100%;padding:.9rem 1rem;border-radius:12px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font:inherit}.form-group input:focus{outline:none;border-color:var(--primary-blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}footer{background:var(--footer-bg);color:var(--footer-text);padding:3rem 0;border-top:1px solid #1E293B;margin-top:4rem}.footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--footer-muted);font-size:.95rem}.footer-links a{color:var(--footer-muted)}@media (max-width:900px){.layout{grid-template-columns:1fr}nav,.footer-bottom{flex-direction:column;align-items:flex-start}.nav-links,.header-actions,.footer-links,.hero-actions{width:100%;flex-wrap:wrap}.footer-bottom{align-items:center;text-align:center}.footer-links{justify-content:center}}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Book Appointment</h1>
-        <div class="doctor-info">
-            <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}">
-            <p><strong>Dr. {{ doctor.name }}</strong></p>
-            <p>{{ doctor.specialization }}</p>
-            <p>Date: {{ date }}</p>
-            <p>Time: {{ time_slot }}</p>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div>
+                <div class="nav-links">
+                    <a href="{% url 'website:index' %}" class="nav-link">Home</a>
+                    <a href="{% url 'website:doctors_list' %}" class="nav-link">Doctors</a>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+                    </button>
+                    <a href="{% url 'website:doctors_list' %}" class="secondary-button">Back to Doctors</a>
+                </div>
+            </nav>
         </div>
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="appointment_date" value="{{ date }}">
-            <input type="hidden" name="time_slot" value="{{ time_slot }}">
-            <div class="form-group">
-                <label for="id_patient_name">Your Name *</label>
-                {{ form.patient_name }}
+    </header>
+
+    <main class="page-shell">
+        <div class="container">
+            <div class="layout">
+                <aside class="doctor-card">
+                    <span class="eyebrow">Appointment request</span>
+                    <img class="doctor-photo" src="{{ doctor.photo.url }}" alt="{{ doctor.name }}">
+                    <h1>Dr. {{ doctor.name }}</h1>
+                    <div class="doctor-meta">{{ doctor.specialization }}</div>
+                    <div class="meta-list">
+                        <div class="meta-item"><strong>Date</strong><span>{{ date }}</span></div>
+                        <div class="meta-item"><strong>Time</strong><span>{{ time_slot }}</span></div>
+                        <div class="meta-item"><strong>Notification email</strong><span>{{ doctor.email }}</span></div>
+                    </div>
+                </aside>
+
+                <section class="card">
+                    <span class="eyebrow">Patient details</span>
+                    <h2 style="font-size:2rem;margin-bottom:.5rem;">Confirm your appointment</h2>
+                    <p class="form-help" style="margin-bottom:1rem;">Fill in your details below. Both doctor and patient will receive appointment information by email.</p>
+                    <form method="post" class="form-grid">
+                        {% csrf_token %}
+                        <input type="hidden" name="appointment_date" value="{{ date }}">
+                        <input type="hidden" name="time_slot" value="{{ time_slot }}">
+                        <div class="form-group">
+                            <label for="id_patient_name">Your Name</label>
+                            {{ form.patient_name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_patient_email">Your Email</label>
+                            {{ form.patient_email }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_patient_phone">Your Phone</label>
+                            {{ form.patient_phone }}
+                        </div>
+                        <div class="hero-actions" style="margin-top:.5rem;">
+                            <button type="submit" class="cta-button">Confirm Appointment</button>
+                            <a href="{% url 'website:doctors_list' %}" class="secondary-button">Cancel</a>
+                        </div>
+                    </form>
+                </section>
             </div>
-            <div class="form-group">
-                <label for="id_patient_email">Your Email *</label>
-                {{ form.patient_email }}
-            </div>
-            <div class="form-group">
-                <label for="id_patient_phone">Your Phone *</label>
-                {{ form.patient_phone }}
-            </div>
-            <button type="submit">Confirm Appointment</button>
-        </form>
-        <a href="{% url 'website:doctors_list' %}">← Back to Doctors</a>
-        
-        <!-- Inform Doctor Section -->
-        <div style="margin-top: 30px; padding: 20px; background: #f0f9ff; border-radius: 10px; border-left: 4px solid #667eea;">
-            <h3 style="color: #667eea; margin-bottom: 15px;">📧 Notify Doctor</h3>
-            <p style="color: #555; margin-bottom: 15px;">Meeting details will be automatically sent to:</p>
-            <ul style="color: #555; margin-left: 20px;">
-                <li><strong>Doctor:</strong> {{ doctor.email }}</li>
-                <li><strong>Patient:</strong> (Your email will be used)</li>
-            </ul>
-            <p style="color: #667eea; font-size: 14px; margin-top: 10px;">✓ Both parties will receive appointment confirmation via email</p>
+
+            <section class="notice-card" style="margin-top:1.5rem;">
+                <h3 style="margin-bottom:.5rem;">What happens next</h3>
+                <p>After confirmation, both parties receive appointment details and the Google Meet link used for the consultation.</p>
+            </section>
         </div>
-    </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <div>&copy; 2026 DocusAI Appointments</div>
+                <div class="footer-links">
+                    <a href="{% url 'website:pricing' %}">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}">Support</a>
+                    <a href="{% url 'website:blog' %}">Resources</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggleBtn=document.getElementById("theme-toggle"),themeIcon=document.getElementById("theme-icon"),htmlElement=document.documentElement,moonPath="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",sunPath="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";function updateIcon(e){themeIcon.innerHTML=`<path d="${e?sunPath:moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${e?"none":"currentColor"}"/>`}const savedTheme=localStorage.getItem("theme"),prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;"dark"===savedTheme||!savedTheme&&prefersDark?(htmlElement.setAttribute("data-theme","dark"),updateIcon(!0)):updateIcon(!1),themeToggleBtn.addEventListener("click",(()=>{"dark"===htmlElement.getAttribute("data-theme")?(htmlElement.removeAttribute("data-theme"),localStorage.setItem("theme","light"),updateIcon(!1)):(htmlElement.setAttribute("data-theme","dark"),localStorage.setItem("theme","dark"),updateIcon(!0))));
+    </script>
 </body>
 </html>

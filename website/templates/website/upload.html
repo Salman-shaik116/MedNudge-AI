@@ -1,178 +1,707 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Upload Medical Report • Docus</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Report - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --primary-blue: #2563EB;
+            --primary-blue-hover: #1D4ED8;
+            --primary-blue-light: #EFF6FF;
+            --card-bg: #FFFFFF;
+            --card-hover: #FFFFFF;
+            --section-alt-bg: #F8FAFC;
+            --footer-bg: #0F172A;
+            --footer-text: #F8FAFC;
+            --footer-muted: #94A3B8;
+            --border-color: #E2E8F0;
+            --border-color-hover: #CBD5E1;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --white-bg: #FFFFFF;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --box-shadow-hover: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 10px 10px -5px rgba(15, 23, 42, 0.05);
+            --radius-main: 12px;
+            --radius-btn: 6px;
+            --input-bg: #FFFFFF;
+            --input-border: #CBD5E1;
+            --danger-bg: #FEF2F2;
+            --danger-text: #B91C1C;
+            --success-bg: #ECFDF5;
+            --success-text: #047857;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        [data-theme="dark"] {
+            --bg-main: #0B1120;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --primary-blue: #3B82F6;
+            --primary-blue-hover: #60A5FA;
+            --primary-blue-light: rgba(59, 130, 246, 0.15);
+            --card-bg: #1E293B;
+            --card-hover: #1E293B;
+            --section-alt-bg: #0F172A;
+            --footer-bg: #0B1120;
+            --footer-text: #F8FAFC;
+            --footer-muted: #64748B;
+            --border-color: #334155;
+            --border-color-hover: #475569;
+            --header-bg: rgba(11, 17, 32, 0.85);
+            --white-bg: #1E293B;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+            --box-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+            --input-bg: #0F172A;
+            --input-border: #475569;
+            --danger-bg: rgba(239, 68, 68, 0.14);
+            --danger-text: #FCA5A5;
+            --success-bg: rgba(16, 185, 129, 0.12);
+            --success-text: #6EE7B7;
+        }
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Inter", sans-serif;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-        background: #f6f9fc;
-        color: #1f2937;
-    }
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
 
-    .container {
-        max-width: 600px;
-        margin: 80px auto;
-        padding: 20px;
-    }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-    .card {
-        background: #ffffff;
-        padding: 35px;
-        border-radius: 18px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        text-align: center;
-    }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
 
-    .card h2 {
-        color: #0f766e;
-        font-size: 26px;
-        margin-bottom: 10px;
-    }
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    .card p {
-        color: #6b7280;
-        font-size: 14px;
-        margin-bottom: 25px;
-    }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
 
-    /* FILE UPLOAD */
-    .file-upload {
-        border: 2px dashed #cbd5e1;
-        padding: 30px;
-        border-radius: 14px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-bottom: 20px;
-        position: relative;
-    }
+        .logo a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    .file-upload:hover {
-        border-color: #0f766e;
-        background: #f0fdfa;
-    }
+        .logo a::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background: var(--primary-blue);
+            border-radius: 4px;
+            display: inline-block;
+        }
 
-    .file-upload input {
-        display: none;
-    }
+        .nav-links,
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-    .file-upload label {
-        cursor: pointer;
-        display: block;
-    }
+        .nav-link {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
 
-    .file-upload span {
-        display: block;
-        font-size: 14px;
-        color: #6b7280;
-        margin-top: 10px;
-    }
+        .nav-link:hover {
+            color: var(--text-main);
+        }
 
-    .file-upload strong {
-        color: #0f766e;
-        font-weight: 600;
-    }
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
 
-    /* BUTTON */
-    .btn {
-        width: 100%;
-        padding: 14px;
-        border: none;
-        border-radius: 12px;
-        background: #0f766e;
-        color: #ffffff;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s ease;
-    }
+        .theme-toggle:hover {
+            background: var(--card-hover);
+            color: var(--text-main);
+            border-color: var(--border-color-hover);
+        }
 
-    .btn:hover {
-        background: #115e59;
-    }
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
 
-    .note {
-        font-size: 12px;
-        color: #9ca3af;
-        margin-top: 15px;
-    }
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.35rem;
+            border-radius: var(--radius-btn);
+            background: var(--primary-blue);
+            color: #FFFFFF;
+            border: 1px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
 
-    .back-link {
-        display: inline-block;
-        margin-top: 25px;
-        color: #0f766e;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
-    }
+        .cta-button:hover {
+            background: var(--primary-blue-hover);
+        }
 
-    .back-link:hover {
-        text-decoration: underline;
-    }
+        .cta-outline {
+            background: transparent;
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
 
-    .file-name {
-        margin-top: 10px;
-        color: #0f766e;
-        font-weight: 600;
-        font-size: 14px;
-    }
-</style>
+        .cta-outline:hover {
+            background: var(--card-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .page-shell {
+            min-height: calc(100vh - 88px);
+            padding: 2rem 0 4rem;
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 28%),
+                linear-gradient(180deg, var(--section-alt-bg) 0%, var(--bg-main) 24%);
+        }
+
+        .hero-card,
+        .upload-card,
+        .mini-card,
+        .support-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .hero-card {
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero-copy h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero-copy p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 760px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-points {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        .hero-point {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .hero-point::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--primary-blue);
+            flex-shrink: 0;
+        }
+
+        .hero-side {
+            padding: 1.5rem;
+            border-radius: 18px;
+            background: linear-gradient(180deg, var(--section-alt-bg) 0%, rgba(37, 99, 235, 0.06) 100%);
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-side h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-side p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .side-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .side-item {
+            padding: 0.85rem 1rem;
+            border-radius: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .mini-stack {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .mini-card,
+        .upload-card,
+        .support-card {
+            padding: 1.5rem;
+        }
+
+        .mini-card h3,
+        .upload-card h2,
+        .support-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mini-card p,
+        .upload-card p,
+        .support-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .feedback-banner {
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+
+        .feedback-error {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            border: 1px solid rgba(239, 68, 68, 0.18);
+        }
+
+        .upload-form {
+            margin-top: 1rem;
+        }
+
+        .dropzone {
+            display: block;
+            padding: 2rem;
+            border-radius: 18px;
+            border: 2px dashed var(--border-color);
+            background: var(--section-alt-bg);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary-blue);
+            background: rgba(37, 99, 235, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .dropzone input {
+            display: none;
+        }
+
+        .dropzone-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 1rem;
+            border-radius: 16px;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .dropzone strong {
+            display: block;
+            font-size: 1.05rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .dropzone-text {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        .submit-button {
+            width: 100%;
+            justify-content: center;
+            padding: 0.95rem 1.2rem;
+            cursor: pointer;
+        }
+
+        .trust-strip {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+
+        .trust-item {
+            padding: 1rem;
+            border-radius: 14px;
+            background: var(--section-alt-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .trust-item span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.35rem;
+        }
+
+        .trust-item strong {
+            font-size: 0.96rem;
+        }
+
+        .support-card {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .support-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--box-shadow-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .panel-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 3rem 0;
+            border-top: 1px solid #1E293B;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--footer-muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--footer-muted);
+        }
+
+        .footer-links a:hover {
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 980px) {
+            .hero-grid,
+            .content-grid,
+            .trust-strip,
+            .support-card {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .support-card {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav,
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links,
+            .header-actions,
+            .footer-links {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .footer-bottom {
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="{% url 'website:index' %}">DocusAI</a>
+                </div>
 
-<div class="container">
-    <div class="card">
-        <h2>Upload Medical Report</h2>
-        <p>Upload your lab report or prescription to get AI-powered insights</p>
+                <div class="nav-links">
+                    <a href="{% url 'website:index' %}" class="nav-link">Home</a>
+                    <a href="{% url 'website:lab_test' %}" class="nav-link">Lab Test</a>
+                    <a href="{% url 'website:reports' %}" class="nav-link">Reports</a>
+                    <a href="{% url 'website:knowledge_base' %}" class="nav-link">Knowledge Base</a>
+                </div>
 
-        <form method="POST" action="{% url 'website:analyze' %}" enctype="multipart/form-data">
-            {% csrf_token %}
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                        </svg>
+                    </button>
+                    <a href="{% url 'website:ai_doctor' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">AI Doctor</a>
+                    <a href="{% url 'website:reports' %}" class="cta-button">View Reports</a>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-            <div class="file-upload" id="fileUpload">
-                <label for="report">
-                    📄 <strong>Click to upload</strong> or drag & drop
-                    <span>PDF, JPG, PNG (Max 10MB)</span>
-                </label>
-                <input type="file" id="report" name="report" required>
-                <div class="file-name" id="fileName"></div>
+    <main class="page-shell">
+        <div class="container">
+            <section class="hero-card">
+                <div class="hero-grid">
+                    <div class="hero-copy">
+                        <span class="eyebrow">Secure report intake</span>
+                        <h1>Upload a medical report and turn it into clearer next steps.</h1>
+                        <p>Send in lab reports, scanned PDFs, discharge notes, prescriptions, or report images so DocusAI can organize the content into a more understandable summary and follow-up view.</p>
+
+                        <div class="hero-points">
+                            <div class="hero-point">Accepted formats include PDF, JPG, PNG, JPEG, and TXT</div>
+                            <div class="hero-point">Designed for clearer summaries, findings, and recommendations</div>
+                            <div class="hero-point">Best results come from readable files with complete report pages</div>
+                        </div>
+                    </div>
+
+                    <div class="hero-side">
+                        <h2>Before you upload</h2>
+                        <p>Use a complete, readable scan so extracted analysis is more accurate and easier to review later.</p>
+                        <div class="side-list">
+                            <div class="side-item">Avoid blurry photos or cropped report sections</div>
+                            <div class="side-item">Include the full page when uploading lab or imaging summaries</div>
+                            <div class="side-item">Review results afterward in the dedicated results and reports pages</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-grid">
+                <div class="mini-stack">
+                    <article class="mini-card">
+                        <h3>What users usually upload</h3>
+                        <p>Blood test reports, discharge summaries, prescriptions, radiology results, health-check PDFs, and text-based clinical notes.</p>
+                    </article>
+
+                    <article class="mini-card">
+                        <h3>What the platform returns</h3>
+                        <p>A patient-friendly summary, extracted findings, urgency-aware interpretation, and next-step recommendations you can revisit later.</p>
+                    </article>
+                </div>
+
+                <section class="upload-card">
+                    <span class="eyebrow">Upload workspace</span>
+                    <h2>Upload a report for analysis</h2>
+                    <p>Choose a report file below, then continue into automated interpretation and review.</p>
+
+                    {% if error %}
+                        <div class="feedback-banner feedback-error">{{ error }}</div>
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'website:analyze' %}" enctype="multipart/form-data" class="upload-form">
+                        {% csrf_token %}
+
+                        <label for="report" class="dropzone">
+                            <input type="file" id="report" name="report" required accept=".pdf,.png,.jpg,.jpeg,.txt">
+                            <span class="dropzone-icon">UP</span>
+                            <strong>Choose a report file</strong>
+                            <span id="file-name" class="dropzone-text">No file selected yet</span>
+                        </label>
+
+                        <button type="submit" class="cta-button submit-button">Analyze Report</button>
+                    </form>
+
+                    <div class="trust-strip">
+                        <div class="trust-item">
+                            <span>Output includes</span>
+                            <strong>Summary, findings, and recommendations</strong>
+                        </div>
+                        <div class="trust-item">
+                            <span>Reminder</span>
+                            <strong>AI support only. Always confirm with a doctor.</strong>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section class="support-card">
+                <div>
+                    <h3>Need help before or after upload?</h3>
+                    <p>Use AI Doctor for symptom context, or open your report archive after analysis to revisit findings and move into follow-up care options.</p>
+                </div>
+                <div class="panel-actions">
+                    <a href="{% url 'website:ai_doctor' %}" class="cta-button">Ask AI Doctor</a>
+                    <a href="{% url 'website:reports' %}" class="cta-button cta-outline">Open Reports</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <div>&copy; 2026 DocusAI Upload</div>
+                <div class="footer-links">
+                    <a href="{% url 'website:pricing' %}">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}">Support</a>
+                    <a href="{% url 'website:blog' %}">Resources</a>
+                </div>
             </div>
+        </div>
+    </footer>
 
-            <button type="submit" class="btn">
-                🔍 Analyze Report
-            </button>
-        </form>
+    <script>
+        const themeToggleBtn = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+        const htmlElement = document.documentElement;
+        const fileInput = document.getElementById("report");
+        const fileNameLabel = document.getElementById("file-name");
 
-        <p class="note">Your data is processed securely and privately.</p>
+        const moonPath = "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z";
+        const sunPath = "M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";
 
-        <a href="{% url 'website:dashboard' %}" class="back-link">
-            ⬅ Back to Dashboard
-        </a>
-    </div>
-</div>
+        function updateIcon(isDark) {
+            themeIcon.innerHTML = `<path d="${isDark ? sunPath : moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${isDark ? "none" : "currentColor"}"/>`;
+        }
 
-<script>
-const fileInput = document.getElementById('report');
-const fileName = document.getElementById('fileName');
-const fileUpload = document.getElementById('fileUpload');
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-fileInput.addEventListener('change', function() {
-    if (this.files && this.files[0]) {
-        fileName.textContent = '✓ ' + this.files[0].name;
-        fileUpload.style.borderColor = '#0f766e';
-        fileUpload.style.background = '#f0fdfa';
-    }
-});
-</script>
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+            htmlElement.setAttribute("data-theme", "dark");
+            updateIcon(true);
+        } else {
+            updateIcon(false);
+        }
 
+        themeToggleBtn.addEventListener("click", () => {
+            if (htmlElement.getAttribute("data-theme") === "dark") {
+                htmlElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                updateIcon(false);
+            } else {
+                htmlElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                updateIcon(true);
+            }
+        });
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                fileNameLabel.textContent = fileInput.files[0].name;
+            } else {
+                fileNameLabel.textContent = "No file selected yet";
+            }
+        });
+    </script>
 </body>
 </html>

@@ -3,77 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ article.title }} - DocusAI Blog</title>
+    <title>{{ article.title }} - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; line-height: 1.8; color: #1a1a1a; }
-        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        header { background: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
-        .back-btn { padding: 0.75rem 1.5rem; background: #f1f5f9; color: #374151; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.3s; }
-        .back-btn:hover { background: #e2e8f0; }
-        .article-header { padding: 4rem 0 2rem; text-align: center; }
-        .article-category { display: inline-block; padding: 0.5rem 1rem; background: linear-gradient(135deg, #007bff, #00c851); color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 700; margin-bottom: 1.5rem; }
-        .article-title { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; line-height: 1.2; }
-        .article-meta { display: flex; justify-content: center; gap: 2rem; color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; }
-        .article-image { width: 100%; height: 400px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 20px; margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
-        .article-content { padding: 2rem 0; }
-        .article-content h2 { font-size: 1.75rem; font-weight: 700; color: #1e293b; margin: 2.5rem 0 1rem; }
-        .article-content h3 { font-size: 1.4rem; font-weight: 600; color: #334155; margin: 2rem 0 1rem; }
-        .article-content p { margin-bottom: 1.5rem; color: #475569; font-size: 1.1rem; }
-        .article-content ul, .article-content ol { margin: 1.5rem 0 1.5rem 2rem; }
-        .article-content li { margin-bottom: 0.75rem; color: #475569; }
-        .article-content strong { color: #1e293b; font-weight: 600; }
-        .share-section { padding: 3rem 0; border-top: 2px solid #f1f5f9; margin-top: 3rem; text-align: center; }
-        .share-section h3 { font-size: 1.5rem; margin-bottom: 1.5rem; color: #1e293b; }
-        .share-buttons { display: flex; justify-content: center; gap: 1rem; }
-        .share-btn { padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.3s; }
-        .share-twitter { background: #1da1f2; color: white; }
-        .share-facebook { background: #4267B2; color: white; }
-        .share-linkedin { background: #0077b5; color: white; }
-        .share-btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        footer { background: #1e293b; color: white; text-align: center; padding: 3rem 0; margin-top: 4rem; }
+        :root{--bg-main:#fff;--text-main:#0F172A;--text-muted:#64748B;--primary-blue:#2563EB;--primary-blue-hover:#1D4ED8;--primary-blue-light:#EFF6FF;--card-bg:#fff;--section-alt-bg:#F8FAFC;--footer-bg:#0F172A;--footer-text:#F8FAFC;--footer-muted:#94A3B8;--border-color:#E2E8F0;--header-bg:rgba(255,255,255,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--box-shadow-hover:0 20px 25px -5px rgba(15,23,42,.12),0 10px 10px -5px rgba(15,23,42,.05);--radius-btn:6px}
+        [data-theme="dark"]{--bg-main:#0B1120;--text-main:#F8FAFC;--text-muted:#94A3B8;--primary-blue:#3B82F6;--primary-blue-hover:#60A5FA;--primary-blue-light:rgba(59,130,246,.15);--card-bg:#1E293B;--section-alt-bg:#0F172A;--footer-bg:#0B1120;--footer-text:#F8FAFC;--footer-muted:#64748B;--border-color:#334155;--header-bg:rgba(11,17,32,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.4),0 1px 2px -1px rgba(0,0,0,.3);--box-shadow-hover:0 20px 25px -5px rgba(0,0,0,.4),0 10px 10px -5px rgba(0,0,0,.25)}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:"Inter",sans-serif;background:var(--bg-main);color:var(--text-main);line-height:1.75;transition:background-color .4s ease,color .4s ease}a{text-decoration:none;color:inherit}.container{max-width:980px;margin:0 auto;padding:0 24px}header{background:var(--header-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:1rem 0;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border-color)}nav,.header-actions,.footer-links,.meta-row,.share-row{display:flex;align-items:center}nav{justify-content:space-between;gap:1rem}.logo a{font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.5rem}.logo a::before{content:"";width:22px;height:22px;background:var(--primary-blue);border-radius:4px;display:inline-block}.theme-toggle,.cta-button,.secondary-button,.share-btn{border-radius:var(--radius-btn);transition:all .2s ease}.theme-toggle{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}.theme-toggle svg{width:18px;height:18px}.cta-button,.secondary-button,.share-btn{display:inline-flex;align-items:center;justify-content:center;padding:.7rem 1.1rem;font-size:.92rem;font-weight:600;border:1px solid transparent;cursor:pointer}.cta-button{background:var(--primary-blue);color:#fff}.cta-button:hover{background:var(--primary-blue-hover)}.secondary-button{background:transparent;border-color:var(--border-color);color:var(--text-main)}.page-shell{padding:2rem 0 4rem;background:radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 28%),linear-gradient(180deg,var(--section-alt-bg) 0%,var(--bg-main) 24%)}.article-card,.share-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:24px;box-shadow:var(--box-shadow)}.article-card{padding:2rem}.eyebrow{display:inline-block;padding:.35rem .8rem;background:var(--primary-blue-light);color:var(--primary-blue);border-radius:999px;font-size:.84rem;font-weight:700;margin-bottom:1rem}.article-title{font-size:clamp(2.5rem,5vw,4rem);line-height:1.08;font-weight:800;margin-bottom:1rem}.meta-row{gap:1rem;flex-wrap:wrap;color:var(--text-muted);margin-bottom:2rem}.hero-icon{width:100%;min-height:240px;border-radius:20px;border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(135deg,var(--primary-blue-light),var(--section-alt-bg));margin-bottom:2rem}.article-content h2{font-size:1.85rem;margin:2rem 0 1rem}.article-content h3{font-size:1.35rem;margin:1.5rem 0 .8rem}.article-content p,.article-content li{color:var(--text-muted);font-size:1.05rem}.article-content ul,.article-content ol{margin:1rem 0 1rem 1.5rem}.article-content strong{color:var(--text-main)}.share-card{padding:1.5rem;margin-top:1.5rem}.share-row{gap:1rem;flex-wrap:wrap;margin-top:1rem}.share-btn{background:var(--section-alt-bg);border:1px solid var(--border-color);color:var(--text-main)}footer{background:var(--footer-bg);color:var(--footer-text);padding:3rem 0;border-top:1px solid #1E293B;margin-top:4rem}.footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--footer-muted);font-size:.95rem}.footer-links{gap:2rem}.footer-links a{color:var(--footer-muted)}.footer-links a:hover{color:#fff}@media (max-width:768px){nav,.footer-bottom{flex-direction:column;align-items:flex-start}.header-actions,.footer-links,.share-row{width:100%;flex-wrap:wrap}.footer-bottom{align-items:center;text-align:center}.footer-links{justify-content:center}}
     </style>
 </head>
 <body>
     <header>
-        <nav>
-            <div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div>
-            <a href="{% url 'website:blog' %}" class="back-btn">← Back to Blog</a>
-        </nav>
+        <div class="container">
+            <nav>
+                <div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+                    </button>
+                    <a href="{% url 'website:blog' %}" class="secondary-button">Back to Blog</a>
+                </div>
+            </nav>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="article-header">
-            <div class="article-category">{{ article.category }}</div>
-            <h1 class="article-title">{{ article.title }}</h1>
-            <div class="article-meta">
-                <span>📅 {{ article.date }}</span>
-                <span>🕐 {{ article.read_time }} min read</span>
-                <span>👁️ {{ article.views }} views</span>
-            </div>
-        </div>
+    <main class="page-shell">
+        <div class="container">
+            <article class="article-card">
+                <span class="eyebrow">{{ article.category }}</span>
+                <h1 class="article-title">{{ article.title }}</h1>
+                <div class="meta-row">
+                    <span>{{ article.date }}</span>
+                    <span>{{ article.read_time }} min read</span>
+                    <span>{{ article.views }} views</span>
+                </div>
+                <div class="hero-icon">{{ article.icon }}</div>
+                <div class="article-content">{{ article.content|safe }}</div>
+            </article>
 
-        <div class="article-image">{{ article.icon }}</div>
-
-        <div class="article-content">
-            {{ article.content|safe }}
+            <section class="share-card">
+                <h3>Share this article</h3>
+                <div class="share-row">
+                    <a href="#" class="share-btn">Twitter</a>
+                    <a href="#" class="share-btn">Facebook</a>
+                    <a href="#" class="share-btn">LinkedIn</a>
+                </div>
+            </section>
         </div>
-
-        <div class="share-section">
-            <h3>Share this article</h3>
-            <div class="share-buttons">
-                <a href="#" class="share-btn share-twitter">Share on Twitter</a>
-                <a href="#" class="share-btn share-facebook">Share on Facebook</a>
-                <a href="#" class="share-btn share-linkedin">Share on LinkedIn</a>
-            </div>
-        </div>
-    </div>
+    </main>
 
     <footer>
-        <p>© 2025 DocusAI Blog. All rights reserved.</p>
+        <div class="container">
+            <div class="footer-bottom">
+                <div>&copy; 2026 DocusAI Blog</div>
+                <div class="footer-links">
+                    <a href="{% url 'website:pricing' %}">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}">Support</a>
+                    <a href="{% url 'website:blog' %}">Resources</a>
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        const themeToggleBtn=document.getElementById("theme-toggle"),themeIcon=document.getElementById("theme-icon"),htmlElement=document.documentElement,moonPath="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",sunPath="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";function updateIcon(e){themeIcon.innerHTML=`<path d="${e?sunPath:moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${e?"none":"currentColor"}"/>`}const savedTheme=localStorage.getItem("theme"),prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;"dark"===savedTheme||!savedTheme&&prefersDark?(htmlElement.setAttribute("data-theme","dark"),updateIcon(!0)):updateIcon(!1),themeToggleBtn.addEventListener("click",(()=>{"dark"===htmlElement.getAttribute("data-theme")?(htmlElement.removeAttribute("data-theme"),localStorage.setItem("theme","light"),updateIcon(!1)):(htmlElement.setAttribute("data-theme","dark"),localStorage.setItem("theme","dark"),updateIcon(!0))));
+    </script>
 </body>
 </html>

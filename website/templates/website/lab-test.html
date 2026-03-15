@@ -1,406 +1,1000 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab Test Interpretation - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            overflow-x: hidden;
+        :root {
+            --bg-main: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --primary-blue: #2563EB;
+            --primary-blue-hover: #1D4ED8;
+            --primary-blue-light: #EFF6FF;
+            --card-bg: #FFFFFF;
+            --card-hover: #FFFFFF;
+            --section-alt-bg: #F8FAFC;
+            --footer-bg: #0F172A;
+            --footer-text: #F8FAFC;
+            --footer-muted: #94A3B8;
+            --border-color: #E2E8F0;
+            --border-color-hover: #CBD5E1;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --white-bg: #FFFFFF;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --box-shadow-hover: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 10px 10px -5px rgba(15, 23, 42, 0.05);
+            --radius-main: 12px;
+            --radius-btn: 6px;
+            --success-bg: #ECFDF5;
+            --success-text: #047857;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        /* HEADER */
+
+        [data-theme="dark"] {
+            --bg-main: #0B1120;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --primary-blue: #3B82F6;
+            --primary-blue-hover: #60A5FA;
+            --primary-blue-light: rgba(59, 130, 246, 0.15);
+            --card-bg: #1E293B;
+            --card-hover: #1E293B;
+            --section-alt-bg: #0F172A;
+            --footer-bg: #0B1120;
+            --footer-text: #F8FAFC;
+            --footer-muted: #64748B;
+            --border-color: #334155;
+            --border-color-hover: #475569;
+            --header-bg: rgba(11, 17, 32, 0.85);
+            --white-bg: #1E293B;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+            --box-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+            --success-bg: rgba(16, 185, 129, 0.12);
+            --success-text: #6EE7B7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
         header {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            border-bottom: 1px solid var(--border-color);
         }
-        nav { display: flex; justify-content: space-between; align-items: center; }
-        .logo a { font-size: 1.8rem; font-weight: 800; color: #007bff; text-decoration: none; }
-        .nav-home { margin-right: auto; margin-left: 2rem; }
-        .nav-link, .auth-link {
-            padding: 0.75rem 1.25rem;
-            color: #374151;
-            font-weight: 500;
-            text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            margin: 0 0.5rem;
-        }
-        .nav-link:hover, .auth-link:hover {
-            background: rgba(0,123,255,0.08);
-            color: #007bff;
-        }
-        .cta-button {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-            padding: 0.875rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
-        }
-        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,123,255,0.4); }
-        
-        /* HERO */
-        .hero {
-            background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 50%, #e8f5e8 100%);
-            padding: 8rem 0 6rem;
-            text-align: center;
-            position: relative;
-        }
-        .hero h1 {
-            font-size: clamp(2.8rem, 6vw, 4.2rem);
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #ff6b35, #00c851);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 3rem;
-            color: #4b5563;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .upload-demo {
-            background: white;
-            padding: 3rem;
-            border-radius: 24px;
-            margin: 3rem auto;
-            max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            border: 2px dashed #e2e8f0;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        .upload-demo:hover { border-color: #007bff; transform: translateY(-5px); }
-        .upload-icon { font-size: 4rem; color: #cbd5e1; margin-bottom: 1.5rem; }
-        .hero-buttons {
+
+        nav {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
             gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
         }
-        .privacy-note {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
-            padding: 2rem 2.5rem;
-            border-radius: 20px;
-            border-left: 5px solid #ff6b35;
-            max-width: 650px;
-            margin: 4rem auto 0;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-        }
-        
-        /* 3 STEPS */
-        .section { padding: 7rem 0; }
-        .section:nth-child(even) { background: #f8fafc; }
-        .section-title {
-            font-size: clamp(2.2rem, 5vw, 3rem);
-            text-align: center;
-            margin-bottom: 1.5rem;
+
+        .logo a {
+            font-size: 1.4rem;
             font-weight: 800;
-            color: #1e293b;
-        }
-        .steps-container {
+            color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 3rem;
-            margin-top: 4rem;
-            flex-wrap: wrap;
+            gap: 0.5rem;
         }
-        .step {
-            flex: 1;
-            text-align: center;
-            padding: 2rem;
+
+        .logo a::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            background: var(--primary-blue);
+            display: inline-block;
         }
-        .step-number {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #ff6b35, #00c851);
-            color: white;
-            border-radius: 50%;
+
+        .nav-links {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 30px rgba(255,107,53,0.4);
-        }
-        .step h3 { font-size: 1.375rem; margin-bottom: 1rem; color: #1e293b; }
-        
-        /* STATS */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 2rem;
-            text-align: center;
-            margin: 4rem 0;
         }
-        .stat {
-            background: linear-gradient(135deg, #ff6b35, #00c851);
-            color: white;
-            padding: 2.5rem 1.5rem;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(255,107,53,0.3);
+
+        .nav-link,
+        .dropdown-trigger {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
         }
-        .stat-number {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
+
+        .nav-link:hover,
+        .dropdown-trigger:hover {
+            color: var(--text-main);
+        }
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            min-width: 220px;
+            padding: 0.5rem;
+            background: var(--white-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-main);
+            box-shadow: var(--box-shadow-hover);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-container:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
             display: block;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-btn);
+            color: var(--text-main);
+            font-size: 0.92rem;
+            font-weight: 500;
         }
-        
-        /* FEATURES */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
-            margin-top: 4rem;
+
+        .dropdown-item:hover {
+            background: var(--section-alt-bg);
+            color: var(--primary-blue);
         }
-        .feature-card {
-            background: white;
-            padding: 3rem 2.5rem;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            text-align: center;
-            transition: all 0.4s ease;
-            border: 1px solid #f1f5f9;
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
-        .feature-card:hover { 
-            transform: translateY(-12px); 
-            box-shadow: 0 30px 80px rgba(0,0,0,0.15); 
-        }
-        .feature-icon {
-            width: 90px;
-            height: 90px;
-            background: linear-gradient(135deg, #ff6b35, #00c851);
-            border-radius: 20px;
-            margin: 0 auto 2rem;
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.25rem;
-            color: white;
+            transition: all 0.2s ease;
         }
-        .feature-card h3 { font-size: 1.5rem; margin-bottom: 1.25rem; color: #1e293b; }
-        
-        /* LAB TYPES */
-        .lab-types {
+
+        .theme-toggle:hover {
+            background: var(--card-hover);
+            color: var(--text-main);
+            border-color: var(--border-color-hover);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.35rem;
+            border-radius: var(--radius-btn);
+            background: var(--primary-blue);
+            color: #FFFFFF;
+            border: 1px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .cta-button:hover {
+            background: var(--primary-blue-hover);
+        }
+
+        .cta-outline {
+            background: transparent;
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+
+        .cta-outline:hover {
+            background: var(--card-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .hero {
+            padding: 5.5rem 0 4rem;
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 30%),
+                linear-gradient(180deg, var(--section-alt-bg) 0%, var(--bg-main) 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
+            grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
+            gap: 3rem;
+            align-items: center;
         }
-        .lab-type-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.4rem);
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 1.15rem;
+        }
+
+        .hero p {
+            max-width: 660px;
+            font-size: 1.06rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+            max-width: 760px;
+        }
+
+        .metric {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-main);
+            padding: 1rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric span {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        .upload-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .panel-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .status-chip {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .dropzone {
+            border: 1.5px dashed var(--border-color);
+            border-radius: 18px;
+            padding: 2rem 1.5rem;
             text-align: center;
-            border-top: 4px solid #ff6b35;
-            transition: all 0.3s ease;
+            background: var(--section-alt-bg);
+            margin-bottom: 1rem;
         }
-        .lab-type-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-        .lab-type-icon { font-size: 3rem; margin-bottom: 1.5rem; }
-        
-        /* FOOTER */
+
+        .dropzone-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .dropzone h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .dropzone p {
+            color: var(--text-muted);
+            font-size: 0.94rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .format-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .format-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1rem;
+            border-radius: 14px;
+            background: var(--section-alt-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .format-row strong {
+            display: block;
+            font-size: 0.92rem;
+        }
+
+        .format-row span {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-alt {
+            background: var(--section-alt-bg);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-heading {
+            max-width: 760px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+
+        .section-heading h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.9rem;
+        }
+
+        .section-heading p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .workflow-grid,
+        .feature-grid,
+        .lab-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .workflow-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .feature-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .lab-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .info-card,
+        .feature-card,
+        .lab-card,
+        .cta-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-main);
+            box-shadow: var(--box-shadow);
+        }
+
+        .info-card,
+        .feature-card,
+        .lab-card {
+            padding: 2rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .info-card:hover,
+        .feature-card:hover,
+        .lab-card:hover,
+        .cta-panel:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--box-shadow-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .step-box,
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .info-card h3,
+        .feature-card h3,
+        .lab-card h3 {
+            font-size: 1.18rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .info-card p,
+        .feature-card p,
+        .lab-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .stats-strip {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-main);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .stat-card strong {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.35rem;
+        }
+
+        .stat-card span {
+            color: var(--text-muted);
+            font-size: 0.94rem;
+        }
+
+        .cta-panel {
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .cta-panel h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.7rem;
+        }
+
+        .cta-panel p {
+            color: var(--text-muted);
+            max-width: 720px;
+        }
+
+        .cta-panel-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
         footer {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            color: white;
-            text-align: center;
-            padding: 6rem 0 3rem;
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 5rem 0 3rem;
+            border-top: 1px solid #1E293B;
         }
-        
-        /* MOBILE */
+
+        .footer-cta {
+            text-align: center;
+            margin-bottom: 5rem;
+            padding-bottom: 4rem;
+            border-bottom: 1px solid #1E293B;
+        }
+
+        .footer-cta h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+        }
+
+        .footer-cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-footer-outline {
+            background: transparent;
+            color: #FFFFFF;
+            border: 1px solid #475569;
+        }
+
+        .cta-footer-outline:hover {
+            background: #1E293B;
+            border-color: #64748B;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--footer-muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--footer-muted);
+        }
+
+        .footer-links a:hover {
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 1080px) {
+            .hero-grid,
+            .workflow-grid,
+            .feature-grid,
+            .lab-grid,
+            .stats-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-panel {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
         @media (max-width: 768px) {
-            nav { flex-direction: column; gap: 1.5rem; }
-            .steps-container { flex-direction: column; gap: 2rem; }
-            .hero-buttons { flex-direction: column; align-items: center; }
-            .stats { grid-template-columns: repeat(2, 1fr); }
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .hero-metrics,
+            .stats-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .section {
+                padding: 4rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- HEADER -->
     <header>
-        <nav class="container">
-            <div class="logo">
-                <a href="{% url 'website:blog' %}">DocusAI</a>
-            </div>
-            <a href="{% url 'website:index' %}" class="nav-link nav-home">Home</a>
-            <a href="{% url 'website:ai_doctor' %}" class="nav-link">AI Doctor</a>
-            <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
-            <div class="auth-buttons">
-                <a href="{% url 'website:signin' %}" class="auth-link">Sign in</a>
-                <a href="{% url 'website:lab_test' %}" class="cta-button">Upload Tests</a>
-            </div>
-        </nav>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="{% url 'website:index' %}">DocusAI</a>
+                </div>
+
+                <div class="nav-links">
+                    <div class="dropdown-container">
+                        <div class="dropdown-trigger">
+                            Solutions
+                            <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                                <path d="M1 1.5L6 5.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'website:ai_doctor' %}" class="dropdown-item">AI Doctor</a>
+                            <a href="{% url 'website:lab_test' %}" class="dropdown-item">Lab Test Interpretation</a>
+                            <a href="{% url 'website:second_opinion' %}" class="dropdown-item">Second Opinion</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-container">
+                        <div class="dropdown-trigger">
+                            Resources
+                            <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                                <path d="M1 1.5L6 5.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'website:blog' %}" class="dropdown-item">Blog</a>
+                            <a href="{% url 'website:glossary' %}" class="dropdown-item">Glossary</a>
+                            <a href="{% url 'website:knowledge_base' %}" class="dropdown-item">Knowledge Base</a>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
+                    <a href="#workflow" class="nav-link">How It Works</a>
+                </div>
+
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg>
+                    </button>
+                    <a href="{% url 'website:signin' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Sign in</a>
+                    <a href="{% url 'website:signup' %}" class="cta-button">Get started</a>
+                </div>
+            </nav>
+        </div>
     </header>
 
-    <!-- HERO -->
-    <section class="hero">
-        <div class="container">
-            <h1>Get Actionable Insights from Your Lab Tests</h1>
-            <p>Our AI Doctor can easily analyze and interpret your lab tests, providing clear and actionable health information.</p>
-            
-            <div class="upload-demo">
-                <div class="upload-icon">📁</div>
-                <h3>Upload your lab tests</h3>
-                <p>PDFs, images, screenshots, or snap a picture</p>
-                <a href="#" class="cta-button" style="margin-top: 1.5rem;">Choose Files</a>
-            </div>
-            
-            <div class="hero-buttons">
-                <a href="{% url 'website:signup' %}" class="cta-button">Get Started</a>
-                <a href="{% url 'website:lab_test' %}" class="cta-button" style="background: transparent; border: 2px solid #007bff; color: #007bff;">Join as Partner Lab</a>
-            </div>
-            
-            <div class="privacy-note">
-                <strong>🔒 Privacy Note:</strong> Your data is confidential and secured by SOC 2, HIPAA and GDPR standards.
-            </div>
-        </div>
-    </section>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div>
+                        <span class="hero-badge">Structured interpretation for modern lab workflows</span>
+                        <h1>Understand lab results with faster, clearer clinical context.</h1>
+                        <p>DocusAI turns uploaded lab reports into readable summaries, biomarker insights, and practical next steps so patients can move from raw numbers to informed decisions.</p>
+                        <div class="hero-actions">
+                            <a href="{% url 'website:signup' %}" class="cta-button">Upload Lab Report</a>
+                            <a href="#features" class="cta-button cta-outline">Explore Analysis</a>
+                        </div>
+                        <div class="hero-metrics">
+                            <div class="metric">
+                                <strong>Multi-format</strong>
+                                <span>Upload PDFs, screenshots, photos, or structured lab exports</span>
+                            </div>
+                            <div class="metric">
+                                <strong>Actionable</strong>
+                                <span>Translate abnormal values into readable clinical meaning</span>
+                            </div>
+                            <div class="metric">
+                                <strong>Private</strong>
+                                <span>Protected workflows designed around healthcare trust</span>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- 3 STEPS -->
-    <section class="section" id="steps">
-        <div class="container">
-            <h2 class="section-title">Simple Steps to Better Health</h2>
-            <p style="text-align: center; font-size: 1.25rem; color: #64748b; margin-bottom: 4rem;">
-                Experience a streamlined process that turns your lab results into actionable health insights
-            </p>
-            
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-number">01</div>
-                    <h3>Upload Your Tests</h3>
-                    <p>Upload your lab test results as PDFs, images, screenshots, or simply snap a picture.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">02</div>
-                    <h3>Get AI-Powered Analysis</h3>
-                    <p>Our AI Doctor analyzes your results using the latest medical guidelines and identifies patterns.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">03</div>
-                    <h3>Receive Detailed Report</h3>
-                    <p>Get a comprehensive lab test report with clear insights and practical health suggestions.</p>
+                    <div class="upload-panel">
+                        <div class="panel-top">
+                            <div class="panel-title">Lab Upload Workspace</div>
+                            <div class="status-chip">Secure Review</div>
+                        </div>
+
+                        <div class="dropzone">
+                            <div class="dropzone-icon">UP</div>
+                            <h3>Upload your lab files</h3>
+                            <p>Drag in reports or choose files to start structured AI interpretation.</p>
+                            <a href="{% url 'website:signup' %}" class="cta-button">Choose Files</a>
+                        </div>
+
+                        <div class="format-list">
+                            <div class="format-row">
+                                <div>
+                                    <strong>Accepted formats</strong>
+                                    <span>PDF, JPG, PNG, screenshots, mobile camera captures</span>
+                                </div>
+                            </div>
+                            <div class="format-row">
+                                <div>
+                                    <strong>Output delivered</strong>
+                                    <span>Biomarker summary, flagged values, and guided follow-up context</span>
+                                </div>
+                            </div>
+                            <div class="format-row">
+                                <div>
+                                    <strong>Best used with</strong>
+                                    <span>AI Doctor for discussion and second opinion for deeper review</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- STATS -->
-    <section class="section">
-        <div class="container">
-            <div class="stats">
-                <div class="stat">
-                    <span class="stat-number">100K+</span>
-                    Blood Tests
+        <section class="section" id="workflow">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>How lab interpretation works</h2>
+                    <p>A simple, guided workflow that turns complex medical reports into readable, structured insight.</p>
                 </div>
-                <div class="stat">
-                    <span class="stat-number">30K+</span>
-                    Urine Tests
-                </div>
-                <div class="stat">
-                    <span class="stat-number">50K+</span>
-                    Other Tests
+
+                <div class="workflow-grid">
+                    <article class="info-card">
+                        <div class="step-box">01</div>
+                        <h3>Upload your report</h3>
+                        <p>Add a blood panel, urine report, scan summary, or other supported test document from any device.</p>
+                    </article>
+                    <article class="info-card">
+                        <div class="step-box">02</div>
+                        <h3>Review flagged biomarkers</h3>
+                        <p>DocusAI organizes results, highlights notable values, and explains the role of each marker in plain language.</p>
+                    </article>
+                    <article class="info-card">
+                        <div class="step-box">03</div>
+                        <h3>Choose the next step</h3>
+                        <p>Continue into AI Doctor for questions or escalate to deeper medical review when your case needs more context.</p>
+                    </article>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- FEATURES -->
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title">Unlock the Power of DocusAI Lab Analysis</h2>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>In-depth Biomarker Analysis</h3>
-                    <p>Detailed biomarker information, explanations for out-of-range values, and trend tracking with dynamic graphs.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📋</div>
-                    <h3>Detailed Lab Test Reports</h3>
-                    <p>Comprehensive reports including test interpretation, clinical significance, and actionable recommendations.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💬</div>
-                    <h3>Talk to AI Doctor</h3>
-                    <p>Get detailed explanations, tailored advice, and specialist referrals for any questions about your results.</p>
+        <section class="section section-alt">
+            <div class="container">
+                <div class="stats-strip">
+                    <div class="stat-card">
+                        <strong>100K+</strong>
+                        <span>Blood test reports processed</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong>30K+</strong>
+                        <span>Urine and routine screening reviews</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong>50K+</strong>
+                        <span>Other diagnostic files analyzed</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- SUPPORTED LAB TYPES -->
-    <section class="section" id="labs">
-        <div class="container">
-            <h2 class="section-title">Supported Lab Test Types</h2>
-            <div class="lab-types">
-                <div class="lab-type-card">
-                    <div class="lab-type-icon">🩸</div>
-                    <h3>Blood Test</h3>
-                    <p>Overall health, immune system, organ function</p>
+        <section class="section" id="features">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Professional lab analysis features</h2>
+                    <p>Built to make report interpretation clearer, more useful, and easier to act on.</p>
                 </div>
-                <div class="lab-type-card">
-                    <div class="lab-type-icon">🧪</div>
-                    <h3>Urine Test</h3>
-                    <p>Kidney function, urinary tract infections</p>
-                </div>
-                <div class="lab-type-card">
-                    <div class="lab-type-icon">🦠</div>
-                    <h3>Swab Test</h3>
-                    <p>Bacterial infections, viruses, fungal infections</p>
-                </div>
-                <div class="lab-type-card">
-                    <div class="lab-type-icon">💩</div>
-                    <h3>Stool Test</h3>
-                    <p>Digestive conditions, infections, parasites</p>
-                </div>
-                <div class="lab-type-card">
-                    <div class="lab-type-icon">🔬</div>
-                    <h3>Pap Smear</h3>
-                    <p>Precancerous conditions, cervical cancer, HPV</p>
-                </div>
-                <div class="lab-type-card">
-                    <div class="lab-type-icon">🧬</div>
-                    <h3>Semen Analysis</h3>
-                    <p>Sperm count, motility, fertility issues</p>
+
+                <div class="feature-grid">
+                    <article class="feature-card">
+                        <div class="icon-box">BM</div>
+                        <h3>Biomarker-level interpretation</h3>
+                        <p>See what each marker means, why it matters, and when an abnormal range may deserve closer review.</p>
+                    </article>
+                    <article class="feature-card">
+                        <div class="icon-box">RP</div>
+                        <h3>Structured report summaries</h3>
+                        <p>Turn dense lab documents into organized findings, key concerns, and readable explanation blocks.</p>
+                    </article>
+                    <article class="feature-card">
+                        <div class="icon-box">AI</div>
+                        <h3>Connected clinical discussion</h3>
+                        <p>Bring report findings directly into AI Doctor so you can ask follow-up questions with relevant context.</p>
+                    </article>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- FOOTER -->
+        <section class="section section-alt" id="labs">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Supported test categories</h2>
+                    <p>DocusAI can support a wide range of diagnostic report types commonly shared by patients and labs.</p>
+                </div>
+
+                <div class="lab-grid">
+                    <article class="lab-card">
+                        <div class="icon-box">BL</div>
+                        <h3>Blood Tests</h3>
+                        <p>Common panels, organ function markers, immune indicators, and routine preventive screening results.</p>
+                    </article>
+                    <article class="lab-card">
+                        <div class="icon-box">UR</div>
+                        <h3>Urine Tests</h3>
+                        <p>Interpret urinary findings related to kidney function, infections, hydration, and metabolic screening.</p>
+                    </article>
+                    <article class="lab-card">
+                        <div class="icon-box">SW</div>
+                        <h3>Swab Tests</h3>
+                        <p>Use summarized interpretation to better understand infection-related reports and follow-up recommendations.</p>
+                    </article>
+                    <article class="lab-card">
+                        <div class="icon-box">ST</div>
+                        <h3>Stool Tests</h3>
+                        <p>Review digestive, infectious, and gut-related findings with clearer explanations and support context.</p>
+                    </article>
+                    <article class="lab-card">
+                        <div class="icon-box">PS</div>
+                        <h3>Pap Smear</h3>
+                        <p>Understand screening outcomes and terminology before follow-up with a clinician or specialist.</p>
+                    </article>
+                    <article class="lab-card">
+                        <div class="icon-box">SA</div>
+                        <h3>Semen Analysis</h3>
+                        <p>Organize fertility-related report details into a clearer, easier-to-discuss interpretation summary.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <div class="cta-panel">
+                    <div>
+                        <h2>Start with your lab file, then continue with guided care tools</h2>
+                        <p>Upload a report for interpretation, discuss the results through AI Doctor, and move into second opinion workflows when more specialized review is needed.</p>
+                    </div>
+                    <div class="cta-panel-actions">
+                        <a href="{% url 'website:signup' %}" class="cta-button">Upload Lab Tests</a>
+                        <a href="{% url 'website:ai_doctor' %}" class="cta-button cta-outline">Discuss Results</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <footer>
         <div class="container">
-            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Upload your first lab test today</h2>
-            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-                <a href="{% url 'website:lab_test' %}" class="cta-button" style="font-size: 1.2rem; padding: 1.25rem 3rem;">Upload Lab Tests</a>
-                <a href="{% url 'website:blog' %}" class="cta-button" style="background: transparent; border: 2px solid white; color: white;">Learn More</a>
+            <div class="footer-cta">
+                <h2>Ready to interpret your next lab report?</h2>
+                <div class="footer-cta-buttons">
+                    <a href="{% url 'website:signup' %}" class="cta-button">Start Free Trial</a>
+                    <a href="{% url 'website:knowledge_base' %}" class="cta-button cta-footer-outline">Read Help Guides</a>
+                </div>
             </div>
-            <p style="margin-top: 3rem; opacity: 0.8;">© 2025 DocusAI. All rights reserved.</p>
+
+            <div class="footer-bottom">
+                <div>&copy; 2025 DocusAI Inc. All rights reserved.</div>
+                <div class="footer-links">
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Security</a>
+                    <a href="#">API Docs</a>
+                </div>
+            </div>
         </div>
     </footer>
+
+    <script>
+        const themeToggleBtn = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+        const htmlElement = document.documentElement;
+
+        const moonPath = "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z";
+        const sunPath = "M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";
+
+        function updateIcon(isDark) {
+            themeIcon.innerHTML = `<path d="${isDark ? sunPath : moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${isDark ? "none" : "currentColor"}"/>`;
+        }
+
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+            htmlElement.setAttribute("data-theme", "dark");
+            updateIcon(true);
+        } else {
+            updateIcon(false);
+        }
+
+        themeToggleBtn.addEventListener("click", () => {
+            if (htmlElement.getAttribute("data-theme") === "dark") {
+                htmlElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                updateIcon(false);
+            } else {
+                htmlElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                updateIcon(true);
+            }
+        });
+    </script>
 </body>
 </html>

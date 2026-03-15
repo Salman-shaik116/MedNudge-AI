@@ -4,142 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Appointment - DocusAI</title>
+    <title>Doctors - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 1200px; margin: 0 auto; }
-        h1 { color: #333; margin-bottom: 30px; text-align: center; }
-        .doctors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .doctor-card { border: 1px solid #ddd; border-radius: 10px; padding: 20px; background: #f9f9f9; }
-        .doctor-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; display: block; margin: 0 auto 15px; }
-        .doctor-info { margin-bottom: 15px; }
-        .doctor-info p { margin: 5px 0; color: #555; }
-        .doctor-info strong { color: #333; }
-        .appointment-section { margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; }
-        .appointment-section h3 { color: #667eea; margin-bottom: 10px; font-size: 16px; }
-        .time-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .time-slot { padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
-        .time-slot:hover { background: #5568d3; }
-        .time-slot.selected { background: #4a5ab8; }
-        input[type="date"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px; }
-        .book-btn { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
-        .book-btn:hover { background: #218838; }
-        .no-data { text-align: center; padding: 40px; color: #666; }
-        .top-links { text-align: center; margin-bottom: 20px; }
-        .top-links a { display: inline-block; margin: 0 10px; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
-        .top-links a:hover { background: #5568d3; }
-        .message { padding: 10px; margin-top: 10px; border-radius: 5px; text-align: center; display: none; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
+        :root{--bg-main:#fff;--text-main:#0F172A;--text-muted:#64748B;--primary-blue:#2563EB;--primary-blue-hover:#1D4ED8;--primary-blue-light:#EFF6FF;--card-bg:#fff;--section-alt-bg:#F8FAFC;--border-color:#E2E8F0;--header-bg:rgba(255,255,255,.85);--footer-bg:#0F172A;--footer-text:#F8FAFC;--footer-muted:#94A3B8;--box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--radius-btn:6px}
+        [data-theme="dark"]{--bg-main:#0B1120;--text-main:#F8FAFC;--text-muted:#94A3B8;--primary-blue:#3B82F6;--primary-blue-hover:#60A5FA;--primary-blue-light:rgba(59,130,246,.15);--card-bg:#1E293B;--section-alt-bg:#0F172A;--border-color:#334155;--header-bg:rgba(11,17,32,.85);--footer-bg:#0B1120;--footer-text:#F8FAFC;--footer-muted:#64748B;--box-shadow:0 1px 3px 0 rgba(0,0,0,.4),0 1px 2px -1px rgba(0,0,0,.3)}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:"Inter",sans-serif;background:var(--bg-main);color:var(--text-main);line-height:1.6;transition:background-color .4s ease,color .4s ease}a{text-decoration:none;color:inherit}.container{max-width:1280px;margin:0 auto;padding:0 24px}header{background:var(--header-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:1rem 0;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border-color)}nav,.nav-links,.header-actions,.footer-links,.time-slots{display:flex;align-items:center}nav{justify-content:space-between;gap:1.5rem}.logo a{font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.5rem}.logo a::before{content:"";width:22px;height:22px;background:var(--primary-blue);border-radius:4px;display:inline-block}.nav-links,.header-actions,.footer-links{gap:1rem}.nav-link{color:var(--text-muted);font-size:.95rem;font-weight:500}.theme-toggle,.cta-button,.secondary-button,.slot-btn,.book-btn{border-radius:var(--radius-btn);transition:all .2s ease}.theme-toggle{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}.theme-toggle svg{width:18px;height:18px}.cta-button,.secondary-button,.slot-btn,.book-btn{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 1.15rem;font-size:.92rem;font-weight:600;border:1px solid transparent;cursor:pointer}.cta-button,.book-btn{background:var(--primary-blue);color:#fff}.cta-button:hover,.book-btn:hover{background:var(--primary-blue-hover)}.secondary-button{background:transparent;color:var(--text-main);border:1px solid var(--border-color)}.slot-btn{background:var(--section-alt-bg);color:var(--text-main);border:1px solid var(--border-color);padding:.65rem .8rem}.slot-btn.selected{background:var(--primary-blue);color:#fff;border-color:var(--primary-blue)}.page-shell{padding:2rem 0 4rem;background:radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 28%),linear-gradient(180deg,var(--section-alt-bg) 0%,var(--bg-main) 24%)}.hero-card,.appointment-card,.doctor-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;box-shadow:var(--box-shadow)}.hero-card,.appointment-card{padding:1.75rem;margin-bottom:1.5rem}.eyebrow{display:inline-block;padding:.35rem .8rem;background:var(--primary-blue-light);color:var(--primary-blue);border-radius:999px;font-size:.84rem;font-weight:700;margin-bottom:1rem}.hero-card h1{font-size:clamp(2.4rem,5vw,4rem);line-height:1.05;font-weight:800;margin-bottom:1rem}.hero-card p,.appointment-meta,.doctor-meta,.message,.subtext{color:var(--text-muted)}.appointments-grid,.doctor-grid{display:grid;gap:1rem}.doctor-grid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}.appointment-item,.doctor-card{padding:1.5rem}.appointment-item{background:var(--section-alt-bg);border:1px solid var(--border-color);border-radius:18px}.doctor-card img{width:96px;height:96px;border-radius:18px;object-fit:cover;border:1px solid var(--border-color);margin-bottom:1rem}.doctor-name{font-size:1.3rem;font-weight:800;margin-bottom:.35rem}.doctor-specialty{color:var(--primary-blue);font-weight:700;margin-bottom:.75rem}.doctor-meta{display:grid;gap:.25rem;margin-bottom:1rem}.booking-panel{padding-top:1rem;border-top:1px solid var(--border-color)}.booking-panel input[type="date"]{width:100%;padding:.85rem 1rem;border-radius:12px;border:1px solid var(--border-color);background:var(--section-alt-bg);color:var(--text-main);font:inherit;margin:1rem 0}.time-slots{gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}.message{margin-top:.75rem;font-size:.9rem}.message.error{color:#DC2626}footer{background:var(--footer-bg);color:var(--footer-text);padding:3rem 0;border-top:1px solid #1E293B}.footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--footer-muted);font-size:.95rem}.footer-links a{color:var(--footer-muted)}@media (max-width:768px){nav,.footer-bottom{flex-direction:column;align-items:flex-start}.nav-links,.header-actions,.footer-links{width:100%;flex-wrap:wrap}.footer-bottom{align-items:center;text-align:center}.footer-links{justify-content:center}}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Book Appointment with Doctor</h1>
-        <div class="top-links">
-            <a href="{% url 'website:index' %}">← Back to Home</a>
-            <a href="{% url 'website:doctor_register' %}">Register as Doctor</a>
-        </div>
-        
-        {% if my_appointments %}
-        <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-            <h2 style="color: #2e7d32; margin-bottom: 20px; text-align: center;">📅 My Appointments</h2>
-            <div style="display: grid; gap: 15px;">
-                {% for appointment in my_appointments %}
-                <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #4caf50; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                        <div>
-                            <p style="color: #666; font-size: 12px; margin-bottom: 5px;">Doctor</p>
-                            <p style="color: #333; font-weight: bold; font-size: 16px;">Dr. {{ appointment.doctor.name }}</p>
-                            <p style="color: #667eea; font-size: 14px;">{{ appointment.doctor.specialization }}</p>
-                        </div>
-                        <div>
-                            <p style="color: #666; font-size: 12px; margin-bottom: 5px;">Date & Time</p>
-                            <p style="color: #333; font-weight: bold; font-size: 16px;">{{ appointment.appointment_date }}</p>
-                            <p style="color: #667eea; font-size: 14px;">{{ appointment.time_slot }}</p>
-                        </div>
-                        <div>
-                            <p style="color: #666; font-size: 12px; margin-bottom: 5px;">Patient Details</p>
-                            <p style="color: #333; font-weight: bold; font-size: 16px;">{{ appointment.patient_name }}</p>
-                            <p style="color: #667eea; font-size: 14px;">{{ appointment.patient_phone }}</p>
-                        </div>
-                    </div>
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-                        <p style="color: #666; font-size: 12px;">Booked on: {{ appointment.created_at|date:"M d, Y - h:i A" }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-        
-        <h2 style="color: #333; margin-bottom: 20px; text-align: center;">Available Doctors</h2>
-        {% if doctors %}
-        <div class="doctors-grid">
-            {% for doctor in doctors %}
-            <div class="doctor-card">
-                <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}">
-                <div class="doctor-info">
-                    <p><strong>Name:</strong> Dr. {{ doctor.name }}</p>
-                    <p><strong>Email:</strong> {{ doctor.email }}</p>
-                    <p><strong>Phone:</strong> {{ doctor.phone }}</p>
-                    <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
-                    <p><strong>Experience:</strong> {{ doctor.experience }} years</p>
-                    <p><strong>Qualification:</strong> {{ doctor.qualification }}</p>
-                </div>
-                <div class="appointment-section">
-                    <h3>Book Appointment</h3>
-                    <input type="date" class="appointment-date" data-doctor="{{ doctor.id }}">
-                    <div class="time-slots">
-                        <button class="time-slot" data-time="09:00-11:00">9:00 AM - 11:00 AM</button>
-                        <button class="time-slot" data-time="11:00-13:00">11:00 AM - 1:00 PM</button>
-                        <button class="time-slot" data-time="13:00-15:00">1:00 PM - 3:00 PM</button>
-                        <button class="time-slot" data-time="15:00-17:00">3:00 PM - 5:00 PM</button>
-                    </div>
-                    <button class="book-btn" data-doctor="{{ doctor.id }}" data-name="{{ doctor.name }}">Book Appointment</button>
-                    <div class="message" id="msg-{{ doctor.id }}"></div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="no-data">No doctors registered yet.</div>
-        {% endif %}
-    </div>
-
+    <header><div class="container"><nav><div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div><div class="nav-links"><a href="{% url 'website:index' %}" class="nav-link">Home</a><a href="{% url 'website:reports' %}" class="nav-link">Reports</a><a href="{% url 'website:doctor_register' %}" class="nav-link">Doctor Register</a></div><div class="header-actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode"><svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></button><a href="{% url 'website:doctor_register' %}" class="secondary-button">Register as Doctor</a></div></nav></div></header>
+    <main class="page-shell"><div class="container"><section class="hero-card"><span class="eyebrow">Doctor discovery</span><h1>Book appointments inside the updated DocusAI flow.</h1><p>Browse doctors, pick a date and time, then continue into the appointment confirmation page.</p></section>{% if my_appointments %}<section class="appointment-card"><h2 style="margin-bottom:1rem;">My Appointments</h2><div class="appointments-grid">{% for appointment in my_appointments %}<article class="appointment-item"><strong>Dr. {{ appointment.doctor.name }}</strong><div class="appointment-meta">{{ appointment.doctor.specialization }}</div><div class="appointment-meta">{{ appointment.appointment_date }} · {{ appointment.time_slot }}</div><div class="appointment-meta">{{ appointment.patient_name }} · {{ appointment.patient_phone }}</div></article>{% endfor %}</div></section>{% endif %}<section><h2 style="font-size:2rem;margin-bottom:1rem;">Available Doctors</h2>{% if doctors %}<div class="doctor-grid">{% for doctor in doctors %}<article class="doctor-card"><img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}"><div class="doctor-name">Dr. {{ doctor.name }}</div><div class="doctor-specialty">{{ doctor.specialization }}</div><div class="doctor-meta"><span>{{ doctor.email }}</span><span>{{ doctor.phone }}</span><span>{{ doctor.experience }} years experience</span><span>{{ doctor.qualification }}</span></div><div class="booking-panel"><h3 style="margin-bottom:.5rem;">Book appointment</h3><input type="date" class="appointment-date" data-doctor="{{ doctor.id }}"><div class="time-slots"><button class="slot-btn" data-time="09:00-11:00">9:00 AM - 11:00 AM</button><button class="slot-btn" data-time="11:00-13:00">11:00 AM - 1:00 PM</button><button class="slot-btn" data-time="13:00-15:00">1:00 PM - 3:00 PM</button><button class="slot-btn" data-time="15:00-17:00">3:00 PM - 5:00 PM</button></div><button class="book-btn" data-doctor="{{ doctor.id }}">Book Appointment</button><div class="message" id="msg-{{ doctor.id }}"></div></div></article>{% endfor %}</div>{% else %}<div class="appointment-card"><p class="subtext">No doctors registered yet.</p></div>{% endif %}</section></div></main>
+    <footer><div class="container"><div class="footer-bottom"><div>&copy; 2026 DocusAI Doctors</div><div class="footer-links"><a href="{% url 'website:pricing' %}">Pricing</a><a href="{% url 'website:knowledge_base' %}">Support</a><a href="{% url 'website:blog' %}">Resources</a></div></div></div></footer>
     <script>
-        document.querySelectorAll('.time-slot').forEach(slot => {
-            slot.addEventListener('click', function() {
-                this.parentElement.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-                this.classList.add('selected');
-            });
-        });
-
-        document.querySelectorAll('.book-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const doctorId = this.dataset.doctor;
-                const dateInput = document.querySelector(`.appointment-date[data-doctor="${doctorId}"]`);
-                const selectedSlot = this.parentElement.querySelector('.time-slot.selected');
-                const msgDiv = document.getElementById(`msg-${doctorId}`);
-                
-                if (!dateInput.value) {
-                    msgDiv.className = 'message error';
-                    msgDiv.textContent = 'Please select a date';
-                    msgDiv.style.display = 'block';
-                    return;
-                }
-                
-                if (!selectedSlot) {
-                    msgDiv.className = 'message error';
-                    msgDiv.textContent = 'Please select a time slot';
-                    msgDiv.style.display = 'block';
-                    return;
-                }
-                
-                window.location.href = `/book-appointment/${doctorId}/?date=${dateInput.value}&time_slot=${selectedSlot.dataset.time}`;
-            });
-        });
+        const themeToggleBtn=document.getElementById("theme-toggle"),themeIcon=document.getElementById("theme-icon"),htmlElement=document.documentElement,moonPath="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",sunPath="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";function updateIcon(e){themeIcon.innerHTML=`<path d="${e?sunPath:moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${e?"none":"currentColor"}"/>`}const savedTheme=localStorage.getItem("theme"),prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;"dark"===savedTheme||!savedTheme&&prefersDark?(htmlElement.setAttribute("data-theme","dark"),updateIcon(!0)):updateIcon(!1),themeToggleBtn.addEventListener("click",(()=>{"dark"===htmlElement.getAttribute("data-theme")?(htmlElement.removeAttribute("data-theme"),localStorage.setItem("theme","light"),updateIcon(!1)):(htmlElement.setAttribute("data-theme","dark"),localStorage.setItem("theme","dark"),updateIcon(!0))}));document.querySelectorAll('.slot-btn').forEach(e=>{e.addEventListener('click',function(){this.parentElement.querySelectorAll('.slot-btn').forEach(e=>e.classList.remove('selected'));this.classList.add('selected')})}),document.querySelectorAll('.book-btn').forEach(e=>{e.addEventListener('click',function(){const e=this.dataset.doctor,t=document.querySelector(`.appointment-date[data-doctor="${e}"]`),o=this.parentElement.querySelector('.slot-btn.selected'),n=document.getElementById(`msg-${e}`);if(!t.value)return n.className='message error',void(n.textContent='Please select a date');if(!o)return n.className='message error',void(n.textContent='Please select a time slot');window.location.href=`/book-appointment/${e}/?date=${t.value}&time_slot=${o.dataset.time}`})});
     </script>
 </body>
 </html>

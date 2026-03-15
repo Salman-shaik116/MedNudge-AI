@@ -4,37 +4,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to Google Meet</title>
+    <title>Appointment Confirmed - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 500px; text-align: center; }
-        h1 { color: #333; margin-bottom: 20px; }
-        .doctor-info { background: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0; }
-        .doctor-info img { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px; }
-        .meet-btn { display: inline-block; padding: 15px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
-        .meet-btn:hover { background: #5568d3; }
-        p { color: #666; margin: 10px 0; }
+        :root{--bg-main:#fff;--text-main:#0F172A;--text-muted:#64748B;--primary-blue:#2563EB;--primary-blue-hover:#1D4ED8;--primary-blue-light:#EFF6FF;--success:#10B981;--success-light:#ECFDF5;--card-bg:#fff;--section-alt-bg:#F8FAFC;--footer-bg:#0F172A;--footer-text:#F8FAFC;--footer-muted:#94A3B8;--border-color:#E2E8F0;--border-color-hover:#CBD5E1;--header-bg:rgba(255,255,255,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--box-shadow-hover:0 20px 25px -5px rgba(15,23,42,.12),0 10px 10px -5px rgba(15,23,42,.05);--radius-btn:6px}
+        [data-theme="dark"]{--bg-main:#0B1120;--text-main:#F8FAFC;--text-muted:#94A3B8;--primary-blue:#3B82F6;--primary-blue-hover:#60A5FA;--primary-blue-light:rgba(59,130,246,.15);--success:#34D399;--success-light:rgba(16,185,129,.12);--card-bg:#1E293B;--section-alt-bg:#0F172A;--footer-bg:#0B1120;--footer-text:#F8FAFC;--footer-muted:#64748B;--border-color:#334155;--border-color-hover:#475569;--header-bg:rgba(11,17,32,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.4),0 1px 2px -1px rgba(0,0,0,.3);--box-shadow-hover:0 20px 25px -5px rgba(0,0,0,.4),0 10px 10px -5px rgba(0,0,0,.25)}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:"Inter",sans-serif;background:var(--bg-main);color:var(--text-main);line-height:1.6;transition:background-color .4s ease,color .4s ease}a{text-decoration:none;color:inherit}.container{max-width:1280px;margin:0 auto;padding:0 24px}header{background:var(--header-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:1rem 0;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border-color)}nav,.nav-links,.header-actions,.hero-actions,.footer-links{display:flex;align-items:center}nav{justify-content:space-between;gap:1.5rem}.logo a{font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.5rem}.logo a::before{content:"";width:22px;height:22px;background:var(--primary-blue);border-radius:4px;display:inline-block}.nav-links,.header-actions,.hero-actions,.footer-links{gap:1rem}.nav-link{color:var(--text-muted);font-size:.95rem;font-weight:500}.nav-link:hover{color:var(--text-main)}.theme-toggle,.cta-button,.secondary-button{border-radius:var(--radius-btn);transition:all .2s ease}.theme-toggle{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}.theme-toggle:hover{border-color:var(--border-color-hover);color:var(--text-main)}.theme-toggle svg{width:18px;height:18px}.cta-button,.secondary-button{display:inline-flex;align-items:center;justify-content:center;padding:.7rem 1.25rem;font-size:.95rem;font-weight:600;border:1px solid transparent;cursor:pointer}.cta-button{background:var(--primary-blue);color:#fff}.cta-button:hover{background:var(--primary-blue-hover)}.secondary-button{background:transparent;color:var(--text-main);border-color:var(--border-color)}.secondary-button:hover{border-color:var(--border-color-hover)}.page-shell{min-height:calc(100vh - 88px);padding:2rem 0 4rem;background:radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 28%),linear-gradient(180deg,var(--section-alt-bg) 0%,var(--bg-main) 24%)}.hero-card,.doctor-card,.support-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;box-shadow:var(--box-shadow)}.hero-card{padding:2rem;margin-bottom:1.5rem;text-align:center}.eyebrow{display:inline-block;padding:.35rem .8rem;background:var(--success-light);color:var(--success);border-radius:999px;font-size:.84rem;font-weight:700;margin-bottom:1rem}.hero-card h1{font-size:clamp(2.4rem,5vw,4rem);line-height:1.05;font-weight:800;margin-bottom:1rem}.hero-card p,.doctor-meta,.support-card p{color:var(--text-muted)}.doctor-card{padding:1.75rem;max-width:760px;margin:0 auto 1.5rem;display:grid;grid-template-columns:140px 1fr;gap:1.5rem;align-items:center}.doctor-photo{width:140px;height:140px;border-radius:20px;object-fit:cover;border:1px solid var(--border-color)}.doctor-name{font-size:1.5rem;font-weight:800;margin-bottom:.4rem}.doctor-specialty{color:var(--primary-blue);font-weight:700;margin-bottom:.75rem}.meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1rem}.meta-box{padding:1rem;border:1px solid var(--border-color);border-radius:16px;background:var(--section-alt-bg)}.meta-box strong{display:block;margin-bottom:.2rem}.support-card{padding:1.5rem;max-width:760px;margin:0 auto;text-align:center}footer{background:var(--footer-bg);color:var(--footer-text);padding:3rem 0;border-top:1px solid #1E293B}.footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--footer-muted);font-size:.95rem}.footer-links a{color:var(--footer-muted)}.footer-links a:hover{color:#fff}@media (max-width:768px){nav,.footer-bottom,.doctor-card{flex-direction:column;display:flex;align-items:flex-start}.nav-links,.header-actions,.footer-links,.hero-actions{width:100%;flex-wrap:wrap}.doctor-card{align-items:center;text-align:center}.meta-grid{grid-template-columns:1fr}.footer-bottom{align-items:center;text-align:center}.footer-links{justify-content:center}}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎉 Appointment Confirmed!</h1>
-        <div class="doctor-info">
-            <img src="{{ appointment.doctor.photo.url }}" alt="Dr. {{ appointment.doctor.name }}">
-            <h2>Dr. {{ appointment.doctor.name }}</h2>
-            <p><strong>{{ appointment.doctor.specialization }}</strong></p>
-            <p>📅 {{ appointment.appointment_date }}</p>
-            <p>🕐 {{ appointment.time_slot }}</p>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div>
+                <div class="nav-links">
+                    <a href="{% url 'website:index' %}" class="nav-link">Home</a>
+                    <a href="{% url 'website:doctors_list' %}" class="nav-link">Doctors</a>
+                    <a href="{% url 'website:reports' %}" class="nav-link">Reports</a>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+                    </button>
+                    <a href="{% url 'website:doctors_list' %}" class="secondary-button">Back to Doctors</a>
+                </div>
+            </nav>
         </div>
-        <p>Emails sent to both you and the doctor with meeting details.</p>
-        <a href="{{ meet_link }}" class="meet-btn" target="_blank">📅 Add to Calendar & Get Meet Link</a>
-        <p style="margin-top: 20px;"><a href="{% url 'website:doctors_list' %}" style="color: #667eea;">← Back to Doctors</a></p>
-    </div>
+    </header>
+
+    <main class="page-shell">
+        <div class="container">
+            <section class="hero-card">
+                <span class="eyebrow">Appointment confirmed</span>
+                <h1>Your doctor meeting is ready.</h1>
+                <p>Meeting details have been shared with both the patient and the doctor. You can open the Google Meet link below any time.</p>
+            </section>
+
+            <section class="doctor-card">
+                <img class="doctor-photo" src="{{ appointment.doctor.photo.url }}" alt="Dr. {{ appointment.doctor.name }}">
+                <div>
+                    <div class="doctor-name">Dr. {{ appointment.doctor.name }}</div>
+                    <div class="doctor-specialty">{{ appointment.doctor.specialization }}</div>
+                    <div class="doctor-meta">Your consultation is booked and the meeting link is ready.</div>
+                    <div class="meta-grid">
+                        <div class="meta-box">
+                            <strong>Appointment date</strong>
+                            <span>{{ appointment.appointment_date }}</span>
+                        </div>
+                        <div class="meta-box">
+                            <strong>Time slot</strong>
+                            <span>{{ appointment.time_slot }}</span>
+                        </div>
+                    </div>
+                    <div class="hero-actions" style="margin-top:1.25rem;">
+                        <a href="{{ meet_link }}" class="cta-button" target="_blank" rel="noopener noreferrer">Open Google Meet</a>
+                        <a href="{% url 'website:doctors_list' %}" class="secondary-button">Browse doctors</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="support-card">
+                <p>A new tab will open automatically in a moment. If it does not, use the Meet button above.</p>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <div>&copy; 2026 DocusAI Appointments</div>
+                <div class="footer-links">
+                    <a href="{% url 'website:pricing' %}">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}">Support</a>
+                    <a href="{% url 'website:blog' %}">Resources</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        setTimeout(() => {
-            window.open('{{ meet_link }}', '_blank');
-        }, 2000);
+        const themeToggleBtn=document.getElementById("theme-toggle"),themeIcon=document.getElementById("theme-icon"),htmlElement=document.documentElement,moonPath="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",sunPath="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";function updateIcon(e){themeIcon.innerHTML=`<path d="${e?sunPath:moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${e?"none":"currentColor"}"/>`}const savedTheme=localStorage.getItem("theme"),prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;"dark"===savedTheme||!savedTheme&&prefersDark?(htmlElement.setAttribute("data-theme","dark"),updateIcon(!0)):updateIcon(!1),themeToggleBtn.addEventListener("click",(()=>{"dark"===htmlElement.getAttribute("data-theme")?(htmlElement.removeAttribute("data-theme"),localStorage.setItem("theme","light"),updateIcon(!1)):(htmlElement.setAttribute("data-theme","dark"),localStorage.setItem("theme","dark"),updateIcon(!0))})),setTimeout((()=>{window.open('{{ meet_link }}','_blank')}),2e3);
     </script>
 </body>
 </html>

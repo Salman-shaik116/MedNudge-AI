@@ -5,121 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Registration - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 500px; width: 100%; }
-        h1 { color: #333; margin-bottom: 30px; text-align: center; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
-        textarea { resize: vertical; min-height: 80px; }
-        input[type="file"] { padding: 5px; }
-        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background 0.3s; }
-        button:hover { background: #5568d3; }
-        .message { padding: 10px; margin-bottom: 20px; border-radius: 5px; text-align: center; display: none; }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .links { text-align: center; margin-top: 20px; }
-        .links a { color: #667eea; text-decoration: none; font-weight: bold; margin: 0 10px; }
+        :root{--bg-main:#fff;--text-main:#0F172A;--text-muted:#64748B;--primary-blue:#2563EB;--primary-blue-hover:#1D4ED8;--primary-blue-light:#EFF6FF;--success:#10B981;--success-light:#ECFDF5;--danger:#DC2626;--danger-light:#FEF2F2;--card-bg:#fff;--section-alt-bg:#F8FAFC;--border-color:#E2E8F0;--border-color-hover:#CBD5E1;--header-bg:rgba(255,255,255,.85);--footer-bg:#0F172A;--footer-text:#F8FAFC;--footer-muted:#94A3B8;--box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--radius-btn:6px;--input-bg:#fff;--input-border:#CBD5E1}
+        [data-theme="dark"]{--bg-main:#0B1120;--text-main:#F8FAFC;--text-muted:#94A3B8;--primary-blue:#3B82F6;--primary-blue-hover:#60A5FA;--primary-blue-light:rgba(59,130,246,.15);--success:#34D399;--success-light:rgba(16,185,129,.12);--danger:#F87171;--danger-light:rgba(239,68,68,.14);--card-bg:#1E293B;--section-alt-bg:#0F172A;--border-color:#334155;--border-color-hover:#475569;--header-bg:rgba(11,17,32,.85);--footer-bg:#0B1120;--footer-text:#F8FAFC;--footer-muted:#64748B;--box-shadow:0 1px 3px 0 rgba(0,0,0,.4),0 1px 2px -1px rgba(0,0,0,.3);--input-bg:#0F172A;--input-border:#475569}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:"Inter",sans-serif;background:var(--bg-main);color:var(--text-main);line-height:1.6;transition:background-color .4s ease,color .4s ease}a{text-decoration:none;color:inherit}.container{max-width:1180px;margin:0 auto;padding:0 24px}header{background:var(--header-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:1rem 0;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border-color)}nav,.nav-links,.header-actions,.footer-links,.hero-actions{display:flex;align-items:center}nav{justify-content:space-between;gap:1.5rem}.logo a{font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.5rem}.logo a::before{content:"";width:22px;height:22px;background:var(--primary-blue);border-radius:4px;display:inline-block}.nav-links,.header-actions,.footer-links,.hero-actions{gap:1rem}.nav-link{color:var(--text-muted);font-size:.95rem;font-weight:500}.theme-toggle,.cta-button,.secondary-button{border-radius:var(--radius-btn);transition:all .2s ease}.theme-toggle{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}.theme-toggle svg{width:18px;height:18px}.cta-button,.secondary-button{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 1.25rem;font-size:.95rem;font-weight:600;border:1px solid transparent;cursor:pointer}.cta-button{background:var(--primary-blue);color:#fff}.cta-button:hover{background:var(--primary-blue-hover)}.secondary-button{background:transparent;color:var(--text-main);border-color:var(--border-color)}.page-shell{padding:2rem 0 4rem;background:radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 28%),linear-gradient(180deg,var(--section-alt-bg) 0%,var(--bg-main) 24%)}.layout{display:grid;grid-template-columns:340px 1fr;gap:1.5rem}.side-card,.form-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;box-shadow:var(--box-shadow);padding:1.5rem}.eyebrow{display:inline-block;padding:.35rem .8rem;background:var(--primary-blue-light);color:var(--primary-blue);border-radius:999px;font-size:.84rem;font-weight:700;margin-bottom:1rem}.side-card h1{font-size:1.9rem;line-height:1.1;margin-bottom:.75rem}.side-card p,.helper,.field-error{color:var(--text-muted)}.helper-list{display:grid;gap:.8rem;margin-top:1rem}.helper-item{padding:1rem;border-radius:14px;background:var(--section-alt-bg);border:1px solid var(--border-color)}.message{padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:.92rem;font-weight:500}.message.success{background:var(--success-light);color:var(--success)}.message.error{background:var(--danger-light);color:var(--danger)}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.form-group{display:grid;gap:.45rem}.form-group.full{grid-column:1/-1}.form-group label{font-size:.92rem;font-weight:600}.form-group input,.form-group select,.form-group textarea{width:100%;padding:.9rem 1rem;border-radius:12px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font:inherit}.form-group textarea{min-height:120px;resize:vertical}.field-error{font-size:.82rem;color:var(--danger)}footer{background:var(--footer-bg);color:var(--footer-text);padding:3rem 0;border-top:1px solid #1E293B;margin-top:4rem}.footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--footer-muted);font-size:.95rem}.footer-links a{color:var(--footer-muted)}@media (max-width:900px){.layout,.form-grid{grid-template-columns:1fr}nav,.footer-bottom{flex-direction:column;align-items:flex-start}.nav-links,.header-actions,.footer-links,.hero-actions{width:100%;flex-wrap:wrap}.footer-bottom{align-items:center;text-align:center}.footer-links{justify-content:center}}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Doctor Registration</h1>
-        <div class="links">
-            <a href="{% url 'website:index' %}">← Back to Home</a>
-            <a href="{% url 'website:doctors_list' %}">View Doctors</a>
-        </div>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message {{ message.tags }}" style="display: block;">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-        <div id="message" class="message"></div>
-        <form id="doctorForm" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_name">Full Name *</label>
-                {{ form.name }}
-                {% if form.name.errors %}<span style="color: red; font-size: 12px;">{{ form.name.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="form-group">
-                <label for="id_email">Email *</label>
-                {{ form.email }}
-                {% if form.email.errors %}<span style="color: red; font-size: 12px;">{{ form.email.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="form-group">
-                <label for="id_phone">Phone Number *</label>
-                {{ form.phone }}
-                {% if form.phone.errors %}<span style="color: red; font-size: 12px;">{{ form.phone.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="form-group">
-                <label for="id_specialization">Specialization *</label>
-                <select id="id_specialization" name="specialization" required>
-                    <option value="">Select Specialization</option>
-                    <option value="Cardiology">Cardiology</option>
-                    <option value="Dermatology">Dermatology</option>
-                    <option value="Neurology">Neurology</option>
-                    <option value="Orthopedics">Orthopedics</option>
-                    <option value="Pediatrics">Pediatrics</option>
-                    <option value="General Medicine">General Medicine</option>
-                    <option value="Other">Other</option>
-                </select>
-                {% if form.specialization.errors %}<span style="color: red; font-size: 12px;">{{ form.specialization.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="form-group">
-                <label for="id_experience">Years of Experience *</label>
-                {{ form.experience }}
-                {% if form.experience.errors %}<span style="color: red; font-size: 12px;">{{ form.experience.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="form-group">
-                <label for="id_qualification">Qualification *</label>
-                {{ form.qualification }}
-                {% if form.qualification.errors %}<span style="color: red; font-size: 12px;">{{ form.qualification.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="form-group">
-                <label for="id_address">Address</label>
-                {{ form.address }}
-                {% if form.address.errors %}<span style="color: red; font-size: 12px;">{{ form.address.errors.0 }}</span>{% endif %}
-            </div>
-            <div class="form-group">
-                <label for="id_photo">Photo * (JPG, PNG, max 2MB)</label>
-                {{ form.photo }}
-                {% if form.photo.errors %}<span style="color: red; font-size: 12px;">{{ form.photo.errors.0 }}</span>{% endif %}
-            </div>
-            <button type="submit">Register as Doctor</button>
-        </form>
-    </div>
-
+    <header><div class="container"><nav><div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div><div class="nav-links"><a href="{% url 'website:index' %}" class="nav-link">Home</a><a href="{% url 'website:doctors_list' %}" class="nav-link">Doctors</a></div><div class="header-actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode"><svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></button><a href="{% url 'website:doctors_list' %}" class="secondary-button">View Doctors</a></div></nav></div></header>
+    <main class="page-shell"><div class="container"><div class="layout"><aside class="side-card"><span class="eyebrow">Clinical network</span><h1>Register as a doctor</h1><p>Join the DocusAI appointment flow with a cleaner profile and booking experience.</p><div class="helper-list"><div class="helper-item"><strong>Profile visibility</strong><div class="helper">Listed inside the doctor discovery page.</div></div><div class="helper-item"><strong>Appointment flow</strong><div class="helper">Patients can book and receive meeting details by email.</div></div><div class="helper-item"><strong>Photo support</strong><div class="helper">Add a clear profile image for trust and recognition.</div></div></div></aside><section class="form-card">{% if messages %}{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}<div id="message" class="message" style="display:none;"></div><form id="doctorForm" method="post" enctype="multipart/form-data"><div class="form-grid">{% csrf_token %}<div class="form-group"><label for="id_name">Full Name</label>{{ form.name }}{% if form.name.errors %}<span class="field-error">{{ form.name.errors.0 }}</span>{% endif %}</div><div class="form-group"><label for="id_email">Email</label>{{ form.email }}{% if form.email.errors %}<span class="field-error">{{ form.email.errors.0 }}</span>{% endif %}</div><div class="form-group"><label for="id_phone">Phone Number</label>{{ form.phone }}{% if form.phone.errors %}<span class="field-error">{{ form.phone.errors.0 }}</span>{% endif %}</div><div class="form-group"><label for="id_specialization">Specialization</label><select id="id_specialization" name="specialization" required><option value="">Select Specialization</option><option value="Cardiology">Cardiology</option><option value="Dermatology">Dermatology</option><option value="Neurology">Neurology</option><option value="Orthopedics">Orthopedics</option><option value="Pediatrics">Pediatrics</option><option value="General Medicine">General Medicine</option><option value="Other">Other</option></select>{% if form.specialization.errors %}<span class="field-error">{{ form.specialization.errors.0 }}</span>{% endif %}</div><div class="form-group"><label for="id_experience">Years of Experience</label>{{ form.experience }}{% if form.experience.errors %}<span class="field-error">{{ form.experience.errors.0 }}</span>{% endif %}</div><div class="form-group"><label for="id_qualification">Qualification</label>{{ form.qualification }}{% if form.qualification.errors %}<span class="field-error">{{ form.qualification.errors.0 }}</span>{% endif %}</div><div class="form-group full"><label for="id_address">Address</label>{{ form.address }}{% if form.address.errors %}<span class="field-error">{{ form.address.errors.0 }}</span>{% endif %}</div><div class="form-group full"><label for="id_photo">Photo</label>{{ form.photo }}{% if form.photo.errors %}<span class="field-error">{{ form.photo.errors.0 }}</span>{% endif %}</div><div class="form-group full"><div class="hero-actions"><button type="submit" class="cta-button">Register as Doctor</button><a href="{% url 'website:doctors_list' %}" class="secondary-button">Cancel</a></div></div></div></form></section></div></div></main>
+    <footer><div class="container"><div class="footer-bottom"><div>&copy; 2026 DocusAI Doctors</div><div class="footer-links"><a href="{% url 'website:pricing' %}">Pricing</a><a href="{% url 'website:knowledge_base' %}">Support</a><a href="{% url 'website:blog' %}">Resources</a></div></div></div></footer>
     <script>
-        document.getElementById('doctorForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const messageDiv = document.getElementById('message');
-            
-            try {
-                const response = await fetch('', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {'X-Requested-With': 'XMLHttpRequest'}
-                });
-                const result = await response.json();
-                
-                messageDiv.className = 'message ' + (result.success ? 'success' : 'error');
-                messageDiv.textContent = result.message;
-                messageDiv.style.display = 'block';
-                
-                if (result.success) {
-                    e.target.reset();
-                    setTimeout(() => { window.location.href = "{% url 'website:doctors_list' %}"; }, 2000);
-                }
-            } catch (error) {
-                messageDiv.className = 'message error';
-                messageDiv.textContent = 'An error occurred. Please try again.';
-                messageDiv.style.display = 'block';
-            }
-        });
+        const themeToggleBtn=document.getElementById("theme-toggle"),themeIcon=document.getElementById("theme-icon"),htmlElement=document.documentElement,moonPath="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",sunPath="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";function updateIcon(e){themeIcon.innerHTML=`<path d="${e?sunPath:moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${e?"none":"currentColor"}"/>`}const savedTheme=localStorage.getItem("theme"),prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;"dark"===savedTheme||!savedTheme&&prefersDark?(htmlElement.setAttribute("data-theme","dark"),updateIcon(!0)):updateIcon(!1),themeToggleBtn.addEventListener("click",(()=>{"dark"===htmlElement.getAttribute("data-theme")?(htmlElement.removeAttribute("data-theme"),localStorage.setItem("theme","light"),updateIcon(!1)):(htmlElement.setAttribute("data-theme","dark"),localStorage.setItem("theme","dark"),updateIcon(!0))}));document.getElementById('doctorForm').addEventListener('submit',async e=>{e.preventDefault();const t=new FormData(e.target),o=document.getElementById('message');try{const n=await fetch('',{method:'POST',body:t,headers:{'X-Requested-With':'XMLHttpRequest'}}),i=await n.json();o.className='message '+(i.success?'success':'error'),o.textContent=i.message,o.style.display='block',i.success&&(e.target.reset(),setTimeout((()=>{window.location.href="{% url 'website:doctors_list' %}"}),2e3))}catch(n){o.className='message error',o.textContent='An error occurred. Please try again.',o.style.display='block'}});
     </script>
 </body>
 </html>

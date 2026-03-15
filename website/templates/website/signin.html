@@ -1,125 +1,566 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign In</title>
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --primary-blue: #2563EB;
+            --primary-blue-hover: #1D4ED8;
+            --primary-blue-light: #EFF6FF;
+            --card-bg: #FFFFFF;
+            --card-hover: #FFFFFF;
+            --section-alt-bg: #F8FAFC;
+            --footer-bg: #0F172A;
+            --footer-text: #F8FAFC;
+            --footer-muted: #94A3B8;
+            --border-color: #E2E8F0;
+            --border-color-hover: #CBD5E1;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --white-bg: #FFFFFF;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --box-shadow-hover: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 10px 10px -5px rgba(15, 23, 42, 0.05);
+            --radius-main: 12px;
+            --radius-btn: 6px;
+            --input-bg: #FFFFFF;
+            --input-border: #CBD5E1;
+            --danger-bg: #FEF2F2;
+            --danger-text: #B91C1C;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0B1120;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --primary-blue: #3B82F6;
+            --primary-blue-hover: #60A5FA;
+            --primary-blue-light: rgba(59, 130, 246, 0.15);
+            --card-bg: #1E293B;
+            --card-hover: #1E293B;
+            --section-alt-bg: #0F172A;
+            --footer-bg: #0B1120;
+            --footer-text: #F8FAFC;
+            --footer-muted: #64748B;
+            --border-color: #334155;
+            --border-color-hover: #475569;
+            --header-bg: rgba(11, 17, 32, 0.85);
+            --white-bg: #1E293B;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+            --box-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+            --input-bg: #0F172A;
+            --input-border: #475569;
+            --danger-bg: rgba(239, 68, 68, 0.14);
+            --danger-text: #FCA5A5;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
         }
 
         body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: "Inter", sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo a::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background: var(--primary-blue);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .nav-links,
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--card-hover);
+            color: var(--text-main);
+            border-color: var(--border-color-hover);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.35rem;
+            border-radius: var(--radius-btn);
+            background: var(--primary-blue);
+            color: #FFFFFF;
+            border: 1px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-blue-hover);
+        }
+
+        .cta-outline {
+            background: transparent;
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+
+        .cta-outline:hover {
+            background: var(--card-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .auth-shell {
+            min-height: calc(100vh - 88px);
+            padding: 3rem 0 4rem;
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 30%),
+                linear-gradient(180deg, var(--section-alt-bg) 0%, var(--bg-main) 35%);
+        }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+            gap: 2rem;
             align-items: center;
         }
 
-        .signin-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            width: 380px;
-            border-radius: 14px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-            color: #fff;
+        .hero-copy {
+            padding-right: 1rem;
         }
 
-        .signin-card h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-
-        .signin-card input {
-            width: 100%;
-            padding: 12px 14px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: none;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .signin-card input::placeholder {
-            color: #888;
-        }
-
-        .signin-card button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: #fff;
-            color: #764ba2;
-            font-size: 15px;
+        .eyebrow {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-radius: 999px;
+            font-size: 0.84rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
+            margin-bottom: 1rem;
         }
 
-        .signin-card button:hover {
-            background: #f1f1f1;
+        .hero-copy h1 {
+            font-size: clamp(2.6rem, 5vw, 4rem);
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 1rem;
         }
 
-        .signin-card p {
-            text-align: center;
-            margin-top: 18px;
-            font-size: 14px;
+        .hero-copy p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 680px;
+            margin-bottom: 1.5rem;
         }
 
-        .signin-card a {
-            color: #fff;
-            font-weight: 600;
-            text-decoration: none;
+        .benefit-list {
+            display: grid;
+            gap: 0.85rem;
         }
 
-        .signin-card a:hover {
-            text-decoration: underline;
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .benefit-item::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--primary-blue);
+            flex-shrink: 0;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .auth-card h2 {
+            font-size: 1.9rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .auth-card p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .message-list {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .message {
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            border: 1px solid rgba(239, 68, 68, 0.18);
+            font-size: 0.92rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 0.45rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.95rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .inline-link {
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        .inline-link:hover {
+            color: var(--primary-blue-hover);
+        }
+
+        .submit-button {
+            width: 100%;
+            justify-content: center;
+            padding: 0.9rem 1.2rem;
+            margin-bottom: 1.25rem;
+            cursor: pointer;
+        }
+
+        .auth-footer {
             text-align: center;
-            color: #ffdddd;
-            background: rgba(255, 0, 0, 0.15);
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 13px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            color: var(--primary-blue-hover);
+        }
+
+        footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 3rem 0;
+            border-top: 1px solid #1E293B;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--footer-muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--footer-muted);
+        }
+
+        .footer-links a:hover {
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 980px) {
+            .auth-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-copy {
+                padding-right: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav,
+            .footer-bottom,
+            .form-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links,
+            .header-actions,
+            .footer-links {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .footer-bottom {
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
         }
     </style>
 </head>
-
 <body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="{% url 'website:index' %}">DocusAI</a>
+                </div>
 
-<div class="signin-card">
-    <h2>Welcome Back</h2>
+                <div class="nav-links">
+                    <a href="{% url 'website:index' %}" class="nav-link">Home</a>
+                    <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}" class="nav-link">Knowledge Base</a>
+                    <a href="{% url 'website:ai_doctor' %}" class="nav-link">AI Doctor</a>
+                </div>
 
-    {% for message in messages %}
-        <div class="message">{{ message }}</div>
-    {% endfor %}
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                        </svg>
+                    </button>
+                    <a href="{% url 'website:signup' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Create account</a>
+                    <a href="{% url 'website:signup' %}" class="cta-button">Get started</a>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Sign In</button>
-    </form>
+    <main class="auth-shell">
+        <div class="container">
+            <div class="auth-grid">
+                <section class="hero-copy">
+                    <span class="eyebrow">Secure access to your health workspace</span>
+                    <h1>Sign in to continue your DocusAI care workflow.</h1>
+                    <p>Return to your reports, AI Doctor conversations, lab interpretations, and second-opinion requests from one secure account.</p>
 
-    <p>
-        New user?
-        <a href="{% url 'website:signup' %}">Create an account</a>
-    </p>
-</div>
+                    <div class="benefit-list">
+                        <div class="benefit-item">Access saved medical reports and AI-generated summaries</div>
+                        <div class="benefit-item">Continue from upload to result review without losing progress</div>
+                        <div class="benefit-item">Manage account help, knowledge base access, and care tools in one place</div>
+                    </div>
+                </section>
 
+                <section class="auth-card">
+                    <h2>Welcome back</h2>
+                    <p>Enter your account details to access your dashboard and clinical tools.</p>
+
+                    {% if messages %}
+                        <div class="message-list">
+                            {% for message in messages %}
+                                <div class="message">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="username" class="form-label">Username</label>
+                            <input id="username" class="form-input" type="text" name="username" placeholder="Enter your username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input id="password" class="form-input" type="password" name="password" placeholder="Enter your password" required>
+                        </div>
+
+                        <div class="form-row">
+                            <span style="color: var(--text-muted); font-size: 0.92rem;">Secure sign in for your DocusAI account</span>
+                            <a href="{% url 'website:forgot_password' %}" class="inline-link">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="cta-button submit-button">Sign In</button>
+                    </form>
+
+                    <div class="auth-footer">
+                        New to DocusAI?
+                        <a href="{% url 'website:signup' %}">Create an account</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <div>&copy; 2026 DocusAI Sign In</div>
+                <div class="footer-links">
+                    <a href="{% url 'website:pricing' %}">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}">Support</a>
+                    <a href="{% url 'website:blog' %}">Resources</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggleBtn = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+        const htmlElement = document.documentElement;
+
+        const moonPath = "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z";
+        const sunPath = "M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";
+
+        function updateIcon(isDark) {
+            themeIcon.innerHTML = `<path d="${isDark ? sunPath : moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${isDark ? "none" : "currentColor"}"/>`;
+        }
+
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+            htmlElement.setAttribute("data-theme", "dark");
+            updateIcon(true);
+        } else {
+            updateIcon(false);
+        }
+
+        themeToggleBtn.addEventListener("click", () => {
+            if (htmlElement.getAttribute("data-theme") === "dark") {
+                htmlElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                updateIcon(false);
+            } else {
+                htmlElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                updateIcon(true);
+            }
+        });
+    </script>
 </body>
 </html>
 

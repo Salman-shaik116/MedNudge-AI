@@ -2,134 +2,626 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Analysis Result • Docus</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Result - DocusAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --primary-blue: #2563EB;
+            --primary-blue-hover: #1D4ED8;
+            --primary-blue-light: #EFF6FF;
+            --card-bg: #FFFFFF;
+            --card-hover: #FFFFFF;
+            --section-alt-bg: #F8FAFC;
+            --footer-bg: #0F172A;
+            --footer-text: #F8FAFC;
+            --footer-muted: #94A3B8;
+            --border-color: #E2E8F0;
+            --border-color-hover: #CBD5E1;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --white-bg: #FFFFFF;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --box-shadow-hover: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 10px 10px -5px rgba(15, 23, 42, 0.05);
+            --radius-main: 12px;
+            --radius-btn: 6px;
+            --success-bg: #ECFDF5;
+            --success-text: #047857;
+            --warning-bg: #FEF3C7;
+            --warning-text: #B45309;
+            --danger-bg: #FEF2F2;
+            --danger-text: #DC2626;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0B1120;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --primary-blue: #3B82F6;
+            --primary-blue-hover: #60A5FA;
+            --primary-blue-light: rgba(59, 130, 246, 0.15);
+            --card-bg: #1E293B;
+            --card-hover: #1E293B;
+            --section-alt-bg: #0F172A;
+            --footer-bg: #0B1120;
+            --footer-text: #F8FAFC;
+            --footer-muted: #64748B;
+            --border-color: #334155;
+            --border-color-hover: #475569;
+            --header-bg: rgba(11, 17, 32, 0.85);
+            --white-bg: #1E293B;
+            --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+            --box-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+            --success-bg: rgba(16, 185, 129, 0.12);
+            --success-text: #6EE7B7;
+            --warning-bg: rgba(245, 158, 11, 0.14);
+            --warning-text: #FCD34D;
+            --danger-bg: rgba(239, 68, 68, 0.14);
+            --danger-text: #FCA5A5;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Inter", sans-serif;
         }
 
         body {
-            background: #f6f9fc;
-            color: #1f2937;
+            font-family: "Inter", sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        .topbar {
-            background: #ffffff;
-            padding: 16px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e5e7eb;
+        a {
+            text-decoration: none;
+            color: inherit;
         }
 
         .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
         }
 
-        .card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        h2 {
-            color: #0f766e;
-            margin-bottom: 12px;
-        }
-
-        .analysis-box {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            white-space: pre-line;
-            line-height: 1.6;
-            font-size: 15px;
-        }
-
-        .buttons {
-            margin-top: 30px;
+        nav {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
         }
 
-        .btn {
-            padding: 12px 18px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
+        .logo a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo a::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            background: var(--primary-blue);
             display: inline-block;
         }
 
-        .btn-primary {
-            background: #0f766e;
-            color: white;
+        .nav-links,
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #111827;
+        .nav-link {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
         }
 
-        .warning {
-            color: #b91c1c;
-            background: #fee2e2;
-            padding: 12px;
-            border-radius: 10px;
-            margin-top: 15px;
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--card-hover);
+            color: var(--text-main);
+            border-color: var(--border-color-hover);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.35rem;
+            border-radius: var(--radius-btn);
+            background: var(--primary-blue);
+            color: #FFFFFF;
+            border: 1px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-blue-hover);
+        }
+
+        .cta-outline {
+            background: transparent;
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+
+        .cta-outline:hover {
+            background: var(--card-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        .page-shell {
+            min-height: calc(100vh - 88px);
+            padding: 2rem 0 4rem;
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 28%),
+                linear-gradient(180deg, var(--section-alt-bg) 0%, var(--bg-main) 24%);
+        }
+
+        .hero-card,
+        .detail-card,
+        .analysis-card,
+        .cta-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .hero-card {
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr);
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .hero-copy h1 {
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero-copy p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 740px;
+        }
+
+        .status-panel {
+            padding: 1.5rem;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            background: var(--section-alt-bg);
+        }
+
+        .status-panel .label {
+            display: inline-block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .status-panel strong {
+            display: block;
+            font-size: 1.6rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .status-panel p {
+            color: var(--text-muted);
+            font-size: 0.94rem;
+        }
+
+        .status-panel.low,
+        .status-panel.normal,
+        .status-panel.success {
+            background: var(--success-bg);
+            border-color: rgba(16, 185, 129, 0.28);
+            color: var(--success-text);
+        }
+
+        .status-panel.medium,
+        .status-panel.warning {
+            background: var(--warning-bg);
+            border-color: rgba(245, 158, 11, 0.28);
+            color: var(--warning-text);
+        }
+
+        .status-panel.high,
+        .status-panel.urgent,
+        .status-panel.danger {
+            background: var(--danger-bg);
+            border-color: rgba(239, 68, 68, 0.28);
+            color: var(--danger-text);
+        }
+
+        .status-panel.low p,
+        .status-panel.normal p,
+        .status-panel.success p,
+        .status-panel.medium p,
+        .status-panel.warning p,
+        .status-panel.high p,
+        .status-panel.urgent p,
+        .status-panel.danger p {
+            color: inherit;
+            opacity: 0.92;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-card,
+        .analysis-card,
+        .cta-card {
+            padding: 1.5rem;
+        }
+
+        .card-head {
+            margin-bottom: 1rem;
+        }
+
+        .card-head h2 {
+            font-size: 1.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .card-head p {
+            color: var(--text-muted);
+        }
+
+        .insight-list,
+        .recommendation-list {
+            list-style: none;
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .insight-list li,
+        .recommendation-list li {
+            padding: 0.95rem 1rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--section-alt-bg);
+            color: var(--text-main);
+        }
+
+        .analysis-block,
+        .empty-state {
+            padding: 1rem 1.1rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--section-alt-bg);
+            color: var(--text-main);
+            white-space: pre-wrap;
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+        }
+
+        .cta-card {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cta-card h2 {
+            font-size: 1.6rem;
+            margin-top: 0.3rem;
+        }
+
+        .cta-card p {
+            color: var(--text-muted);
+            max-width: 720px;
+        }
+
+        .cta-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 3rem 0;
+            border-top: 1px solid #1E293B;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--footer-muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--footer-muted);
+        }
+
+        .footer-links a:hover {
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 980px) {
+            .hero-grid,
+            .detail-grid,
+            .cta-card {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .cta-card {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav,
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links,
+            .header-actions,
+            .footer-links {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .footer-bottom {
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
         }
     </style>
 </head>
-
 <body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="{% url 'website:index' %}">DocusAI</a>
+                </div>
 
-<!-- TOP BAR -->
-<div class="topbar">
-    <div><strong>📊 Analysis Result</strong></div>
-    <div>{{ request.user.username }}</div>
-</div>
+                <div class="nav-links">
+                    <a href="{% url 'website:index' %}" class="nav-link">Home</a>
+                    <a href="{% url 'website:upload' %}" class="nav-link">Upload</a>
+                    <a href="{% url 'website:reports' %}" class="nav-link">Reports</a>
+                    <a href="{% url 'website:ai_doctor' %}" class="nav-link">AI Doctor</a>
+                    <a href="{% url 'website:knowledge_base' %}" class="nav-link">Knowledge Base</a>
+                </div>
 
-<div class="container">
-    <div class="card">
-        <h2>Medical Report Analysis</h2>
-        <p>Below is the AI-generated summary of your uploaded medical report.</p>
-
-        {% if analysis %}
-            <div class="analysis-box">
-                {{ analysis }}
-            </div>
-        {% else %}
-            <div class="warning">
-                No analysis data available. Please upload a valid report.
-            </div>
-        {% endif %}
-
-        <div class="buttons">
-            <a href="{% url 'website:reminder' %}" class="btn btn-primary">
-                💊 Smart Reminder
-            </a>
-            
-            <a href="{% url 'website:upload' %}" class="btn btn-secondary">
-                ⬅ Upload Another Report
-            </a>
-
-            <a href="{% url 'website:dashboard' %}" class="btn btn-primary">
-                🏠 Back to Dashboard
-            </a>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                        </svg>
+                    </button>
+                    <a href="{% url 'website:dashboard' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Dashboard</a>
+                    <a href="{% url 'website:upload' %}" class="cta-button">Upload Another</a>
+                </div>
+            </nav>
         </div>
-    </div>
-</div>
+    </header>
 
+    <main class="page-shell">
+        <div class="container">
+            <section class="hero-card">
+                <div class="hero-grid">
+                    <div class="hero-copy">
+                        <span class="eyebrow">Analysis outcome</span>
+                        <h1>Your medical report has been translated into a clearer summary.</h1>
+                        <p>{{ summary|default:"AI-powered analysis complete. Review the key findings and recommendations below." }}</p>
+                    </div>
+
+                    <div class="status-panel {{ urgency_tone|default:'normal' }}">
+                        <span class="label">Follow-up status</span>
+                        <strong>{{ urgency|default:"Normal" }}</strong>
+                        <p>Use this interpretation as a support tool for discussion, not as a final diagnosis.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="detail-grid">
+                <article class="detail-card">
+                    <div class="card-head">
+                        <span class="eyebrow">Key findings</span>
+                        <h2>What the analysis highlighted</h2>
+                        <p>Important points pulled out from the uploaded report.</p>
+                    </div>
+
+                    {% if key_findings %}
+                        <ul class="insight-list">
+                            {% for item in key_findings %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="empty-state">Upload a report to populate this section with extracted findings.</div>
+                    {% endif %}
+                </article>
+
+                <article class="detail-card">
+                    <div class="card-head">
+                        <span class="eyebrow">Recommendations</span>
+                        <h2>Suggested next steps</h2>
+                        <p>Actions worth considering after reviewing the interpretation.</p>
+                    </div>
+
+                    {% if recommendations %}
+                        <ul class="recommendation-list">
+                            {% for item in recommendations %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="empty-state">Recommendations will appear here once the analysis is available.</div>
+                    {% endif %}
+                </article>
+            </section>
+
+            <section class="analysis-card">
+                <div class="card-head">
+                    <span class="eyebrow">Full output</span>
+                    <h2>AI-generated report interpretation</h2>
+                    <p>Detailed analysis captured from the uploaded medical report.</p>
+                </div>
+
+                {% if analysis %}
+                    <div class="analysis-block">{{ analysis }}</div>
+                {% else %}
+                    <div class="empty-state">No report has been analyzed yet. Start from the upload page to see results here.</div>
+                {% endif %}
+            </section>
+
+            <section class="cta-card">
+                <div>
+                    <span class="eyebrow">Continue</span>
+                    <h2>Move from interpretation into action.</h2>
+                    <p>Upload another report, open your report archive, or discuss these results inside AI Doctor for more guided follow-up.</p>
+                </div>
+                <div class="cta-actions">
+                    <a href="{% url 'website:upload' %}" class="cta-button">Upload Another</a>
+                    <a href="{% url 'website:reports' %}" class="cta-button cta-outline">View Reports</a>
+                    <a href="{% url 'website:ai_doctor' %}" class="cta-button cta-outline">Ask AI Doctor</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <div>&copy; 2026 DocusAI Results</div>
+                <div class="footer-links">
+                    <a href="{% url 'website:pricing' %}">Pricing</a>
+                    <a href="{% url 'website:knowledge_base' %}">Support</a>
+                    <a href="{% url 'website:blog' %}">Resources</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggleBtn = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+        const htmlElement = document.documentElement;
+
+        const moonPath = "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z";
+        const sunPath = "M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";
+
+        function updateIcon(isDark) {
+            themeIcon.innerHTML = `<path d="${isDark ? sunPath : moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${isDark ? "none" : "currentColor"}"/>`;
+        }
+
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+            htmlElement.setAttribute("data-theme", "dark");
+            updateIcon(true);
+        } else {
+            updateIcon(false);
+        }
+
+        themeToggleBtn.addEventListener("click", () => {
+            if (htmlElement.getAttribute("data-theme") === "dark") {
+                htmlElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                updateIcon(false);
+            } else {
+                htmlElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                updateIcon(true);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -410,6 +410,29 @@ def get_progress_api(request, tracker_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
+@login_required(login_url='website:signin')
+def get_user_trackers_api(request):
+    """API to get all trackers for the logged-in user"""
+    try:
+        progress_file = os.path.join(os.path.dirname(__file__), 'progress_data.json')
+        trackers = []
+        if os.path.exists(progress_file):
+            with open(progress_file, 'r') as f:
+                progress_data = json.load(f)
+            for tid, data in progress_data.items():
+                if data.get('user_email') == request.user.email:
+                    trackers.append({
+                        'tracker_id': tid,
+                        'user_name': data.get('user_name', ''),
+                        'completion_rate': data.get('completion_rate', 0),
+                        'last_updated': data.get('last_updated', ''),
+                        'tasks': data.get('tasks', {})
+                    })
+        trackers.sort(key=lambda x: x['last_updated'], reverse=True)
+        return JsonResponse({'success': True, 'trackers': trackers})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
 def load_user_progress(user_email):
     """Load progress data for specific user"""
     try:

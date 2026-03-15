@@ -88,5 +88,45 @@
     "created_at": "2026-02-20 11:22:53",
     "last_updated": "2026-02-20 11:23:59",
     "completion_rate": 14
+  },
+  "a4ae474c": {
+    "user_name": "chandu",
+    "user_email": "potscorpbloggers@gmail.com",
+    "tasks": {
+      "monday_ex1": true,
+      "monday_ex2": true,
+      "monday_food1": true,
+      "monday_food2": true,
+      "monday_food3": true,
+      "monday_food4": true,
+      "monday_med3": true,
+      "monday_med2": true,
+      "monday_med1": true,
+      "tuesday_ex1": true,
+      "tuesday_ex2": true,
+      "tuesday_food1": true,
+      "tuesday_food2": true,
+      "tuesday_food3": true,
+      "tuesday_food4": true,
+      "tuesday_med1": true
+    },
+    "created_at": "2026-02-22 22:29:12",
+    "last_updated": "2026-02-22 22:29:56",
+    "completion_rate": 25
+  },
+  "61505fed": {
+    "user_name": "testing",
+    "user_email": "luckylakshmanna64@gmail.com",
+    "tasks": {
+      "monday_ex1": true,
+      "monday_ex2": true,
+      "monday_food1": true,
+      "monday_food3": true,
+      "monday_food2": true,
+      "monday_food4": true
+    },
+    "created_at": "2026-03-14 21:59:15",
+    "last_updated": "2026-03-14 21:59:24",
+    "completion_rate": 9
   }
 }

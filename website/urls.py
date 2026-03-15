@@ -32,6 +32,7 @@ urlpatterns = [
     path('progress/<str:tracker_id>/', views.progress_tracker, name='progress_tracker'),
     path('api/progress/<str:tracker_id>/update/', views.update_progress_api, name='update_progress_api'),
     path('api/progress/<str:tracker_id>/get/', views.get_progress_api, name='get_progress_api'),
+    path('api/my-trackers/', views.get_user_trackers_api, name='get_user_trackers_api'),
     # Doctor URLs
     path('doctor-register/', views.doctor_register, name='doctor_register'),
     path('doctors-list/', views.doctors_list, name='doctors_list'),
