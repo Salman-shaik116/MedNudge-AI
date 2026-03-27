@@ -1,0 +1,9 @@
+{% if user.is_authenticated %}
+  {% if not hide_dashboard_link %}
+    <a href="{% url 'website:dashboard' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Dashboard</a>
+  {% endif %}
+  <a href="{% url 'website:signout' %}" class="cta-button">Logout</a>
+{% else %}
+  <a href="{% url 'website:signin' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Sign in</a>
+  <a href="{% url 'website:signup' %}" class="cta-button">Get started</a>
+{% endif %}

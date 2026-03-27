@@ -71,21 +71,27 @@ Notes:
 - Avoid spaces around `=` in `.env` (use `KEY=value`).
 
 ## 6) Database setup (local)
-### Option A (recommended): MySQL
+### Option A (fastest): SQLite (default)
+If you do **not** set any `DB_*` or `DATABASE_URL` variables, the project automatically uses SQLite.
+
+You don’t need to install MySQL for this option.
+
+### Option B: MySQL (recommended if you want to match the original setup)
 1) Install MySQL Server and ensure it’s running.
 2) Create the database:
 ```sql
 CREATE DATABASE signup_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 3) Put your MySQL credentials in `.env`:
+- `DB_ENGINE=django.db.backends.mysql`
 - `DB_NAME=signup_db`
 - `DB_USER=...`
 - `DB_PASSWORD=...`
 - `DB_HOST=127.0.0.1`
 - `DB_PORT=3306`
 
-### Option B: Use `DATABASE_URL`
-If you prefer one connection string, set `DATABASE_URL` in `.env` and leave `DB_*` unused.
+### Option C: Use `DATABASE_URL`
+If you prefer one connection string (Render/Postgres/etc), set `DATABASE_URL` in `.env` and leave `DB_*` unused.
 
 ## 7) Run migrations
 From the folder that contains `manage.py`:

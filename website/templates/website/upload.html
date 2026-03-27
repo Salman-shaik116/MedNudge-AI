@@ -552,6 +552,7 @@
                     </button>
                     <a href="{% url 'website:ai_doctor' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">AI Doctor</a>
                     <a href="{% url 'website:reports' %}" class="cta-button">View Reports</a>
+                    {% include 'website/partials/auth_actions.html' %}
                 </div>
             </nav>
         </div>

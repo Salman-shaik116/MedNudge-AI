@@ -566,6 +566,7 @@
                     </button>
                     <a href="{% url 'website:ai_doctor' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">AI Doctor</a>
                     <a href="{% url 'website:upload' %}" class="cta-button">Upload Report</a>
+                    {% include 'website/partials/auth_actions.html' with hide_dashboard_link='1' %}
                 </div>
             </nav>
         </div>

@@ -767,8 +767,7 @@
                             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                         </svg>
                     </button>
-                    <a href="{% url 'website:signin' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Sign in</a>
-                    <a href="{% url 'website:signup' %}" class="cta-button">Get started</a>
+                    {% include 'website/partials/auth_actions.html' %}
                 </div>
             </nav>
         </div>
@@ -783,7 +782,11 @@
                     <h1>Next-Generation<br>Health Intelligence</h1>
                     <p>For patients, doctors, labs, and modern healthcare enterprises: DocusAI delivers trusted clinical AI tools integrated exactly where you need them most.</p>
                     <div class="hero-buttons">
-                        <a href="{% url 'website:signup' %}" class="cta-button">Start Free Trial</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'website:dashboard' %}" class="cta-button">Go to Dashboard</a>
+                        {% else %}
+                            <a href="{% url 'website:signup' %}" class="cta-button">Start Free Trial</a>
+                        {% endif %}
                         <a href="{% url 'website:blog' %}" class="cta-button cta-outline">Contact Sales</a>
                     </div>
                 </div>

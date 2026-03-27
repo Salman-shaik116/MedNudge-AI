@@ -27,6 +27,11 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 /staticfiles
+
+# User uploads / generated files
+/media/
+/medical_reports/
+
 .env
 .venv
 *.swp
@@ -37,4 +42,3 @@ db.sqlite3-journal
 .idea/
 *.iml
 .env
-.env.example

@@ -736,8 +736,7 @@
                             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                         </svg>
                     </button>
-                    <a href="{% url 'website:signin' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Sign in</a>
-                    <a href="{% url 'website:signup' %}" class="cta-button">Get started</a>
+                    {% include 'website/partials/auth_actions.html' %}
                 </div>
             </nav>
         </div>
@@ -752,7 +751,11 @@
                         <h1>Understand lab results with faster, clearer clinical context.</h1>
                         <p>DocusAI turns uploaded lab reports into readable summaries, biomarker insights, and practical next steps so patients can move from raw numbers to informed decisions.</p>
                         <div class="hero-actions">
-                            <a href="{% url 'website:signup' %}" class="cta-button">Upload Lab Report</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'website:upload' %}" class="cta-button">Upload Lab Report</a>
+                            {% else %}
+                                <a href="{% url 'website:signup' %}" class="cta-button">Upload Lab Report</a>
+                            {% endif %}
                             <a href="#features" class="cta-button cta-outline">Explore Analysis</a>
                         </div>
                         <div class="hero-metrics">
@@ -781,7 +784,11 @@
                             <div class="dropzone-icon">UP</div>
                             <h3>Upload your lab files</h3>
                             <p>Drag in reports or choose files to start structured AI interpretation.</p>
-                            <a href="{% url 'website:signup' %}" class="cta-button">Choose Files</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'website:upload' %}" class="cta-button">Choose Files</a>
+                            {% else %}
+                                <a href="{% url 'website:signup' %}" class="cta-button">Choose Files</a>
+                            {% endif %}
                         </div>
 
                         <div class="format-list">

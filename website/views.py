@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.urls import reverse
+from urllib.parse import urlencode
 from mediscanner.analyzer import analyze_medical_report
 from mediscanner.symptom_agent import SymptomAgent
 import smtplib
@@ -18,7 +21,7 @@ import threading
 import json
 
 
-@login_required(login_url='website:result')
+@login_required(login_url='website:signin')
 def reports_list(request):
     reports = MedicalReport.objects.filter(user=request.user)
     return render(request, "website/reports.html", {"reports": reports})
@@ -38,7 +41,22 @@ def analyze_report(request):
                 "error": "Please upload a file"
             })
 
-        result = analyze_medical_report(file)
+        try:
+            result = analyze_medical_report(file)
+        except ValueError as exc:
+            return render(request, "website/upload.html", {
+                "error": str(exc)
+            })
+        except Exception:
+            return render(request, "website/upload.html", {
+                "error": "We couldn't process that file right now. Please try another file format or upload a clearer image."
+            })
+
+        try:
+            file.seek(0)
+        except Exception:
+            pass
+
         MedicalReport.objects.create(
             user=request.user if request.user.is_authenticated else None,
             report_file=file,
@@ -55,6 +73,9 @@ def analyze_report(request):
 
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect('website:dashboard')
+
     if request.method == "POST":
         username = request.POST['username']
         email = request.POST['email']
@@ -77,6 +98,18 @@ def signup(request):
 
 
 def signin(request):
+    next_url = request.POST.get('next') or request.GET.get('next')
+    safe_next_url = None
+    if next_url and url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        safe_next_url = next_url
+
+    if request.user.is_authenticated:
+        return redirect(safe_next_url or 'website:dashboard')
+
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
@@ -85,10 +118,13 @@ def signin(request):
 
         if user is not None:
             login(request, user)
-            return redirect('website:dashboard')
+            return redirect(safe_next_url or 'website:dashboard')
         else:
             messages.error(request, "Invalid credentials")
-            return redirect('website:signin')
+            signin_url = reverse('website:signin')
+            if safe_next_url:
+                signin_url = f"{signin_url}?{urlencode({'next': safe_next_url})}"
+            return redirect(signin_url)
 
     return render(request, 'website/signin.html')
 

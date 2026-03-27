@@ -13,7 +13,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+
 import dj_database_url
+
+try:
+    from dotenv import load_dotenv
+
+    # Load env vars from .env for local development.
+    # (On Render/production, env vars are provided by the platform.)
+    load_dotenv()
+except Exception:
+    pass
 
  # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,19 +89,52 @@ WSGI_APPLICATION = 'docusai_project.wsgi.application'
 
 
 # Database configuration
-import pymysql
-pymysql.install_as_MySQLdb()
+# Prefer DATABASE_URL (Render/production), otherwise use local DB_* env vars.
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'signup_db',
-        'USER': 'root',
-        'PASSWORD': 'Salman&&123',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=False,
+        )
     }
-}
+else:
+    # If no DB_* env vars are provided, default to SQLite for a smooth local dev experience.
+    # Set DB_* or DATABASE_URL to use MySQL/Postgres/etc.
+    _db_env_keys = ('DB_ENGINE', 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT')
+    _has_db_env = any(os.environ.get(k) for k in _db_env_keys)
+
+    if not _has_db_env:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+    else:
+        db_engine = os.environ.get('DB_ENGINE', 'django.db.backends.mysql')
+
+        if 'mysql' in db_engine:
+            try:
+                import pymysql
+
+                pymysql.install_as_MySQLdb()
+            except Exception:
+                pass
+
+        DATABASES = {
+            'default': {
+                'ENGINE': db_engine,
+                'NAME': os.environ.get('DB_NAME', 'signup_db'),
+                'USER': os.environ.get('DB_USER', 'root'),
+                'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+                'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+                'PORT': os.environ.get('DB_PORT', '3306'),
+            }
+        }
 
 
 
