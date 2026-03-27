@@ -36,3 +36,5 @@ db.sqlite3-journal
 .vscode/
 .idea/
 *.iml
+.env
+.env.example
