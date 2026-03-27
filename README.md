@@ -42,8 +42,3 @@ The primary goal of **MediNudge AI** is to provide an accessible, AI-driven plat
 This system is intended for informational purposes only and does not replace professional medical advice, diagnosis, or treatment.
 
 ---
-
-If you want, I can also:
-✅ Make a **full README.md (with badges, screenshots, setup steps)**
-✅ Add **architecture diagram + workflow explanation**
-✅ Customize it based on your exact tech stack (just tell me)
