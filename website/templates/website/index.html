@@ -735,7 +735,29 @@
                     </div>
 
                     <a href="{% url 'website:pricing' %}" class="nav-link">Pricing</a>
-                    <a href="#forlabs" class="nav-link">For Labs</a>
+                    <div class="dropdown-container">
+                        <div class="dropdown-trigger">
+                            For Labs
+                            <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                                <path d="M1 1.5L6 5.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'website:lab_test' %}" class="dropdown-item">Lab Test Interpretation</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-container">
+                        <div class="dropdown-trigger">
+                            For Doctors
+                            <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                                <path d="M1 1.5L6 5.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'website:doctor_register' %}" class="dropdown-item">Doctor Registration</a>
+                            <a href="{% url 'website:doctors_list' %}" class="dropdown-item">Book Appointment</a>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="header-actions">

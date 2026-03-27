@@ -4,13 +4,18 @@ from .models import MedicalReport
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_POST
 from mediscanner.analyzer import analyze_medical_report
+from mediscanner.symptom_agent import SymptomAgent
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import hashlib
 import time
 import threading
+import json
 
 
 @login_required(login_url='website:result')
@@ -479,6 +484,7 @@ def calculate_user_completion_rate(user_email):
 def index(request):
     return render(request, 'website/index.html')
 
+@ensure_csrf_cookie
 def ai_doctor(request):
     return render(request, 'website/ai-doctor.html')
 
@@ -490,6 +496,63 @@ def second_opinion(request):
 
 def blog(request):
     return render(request, 'website/blog.html')
+
+
+@require_POST
+def ai_doctor_chat_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "auth_required"}, status=401)
+
+    try:
+        payload = json.loads((request.body or b"{}").decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "invalid_json"}, status=400)
+
+    message = (payload.get("message") or "").strip()
+    history = payload.get("history")
+
+    if not message:
+        return JsonResponse({"error": "message_required"}, status=400)
+
+    if len(message) > 4000:
+        return JsonResponse({"error": "message_too_long"}, status=400)
+
+    if history is not None and not isinstance(history, list):
+        return JsonResponse({"error": "history_must_be_list"}, status=400)
+
+    try:
+        agent = SymptomAgent()
+        reply = agent.reply(message=message, history=history)
+    except Exception as exc:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.exception("AI doctor chat failed")
+
+        # In production, keep the response generic. In DEBUG, include a short hint.
+        from django.conf import settings
+
+        debug_detail = None
+        if getattr(settings, "DEBUG", False):
+            debug_detail = f"{type(exc).__name__}: {str(exc)[:300]}"
+
+        reply_text = "The AI Doctor service is temporarily unavailable. Please try again in a moment."
+        if debug_detail:
+            reply_text = f"AI Doctor misconfigured (DEBUG): {debug_detail}"
+
+        return JsonResponse(
+            {
+                "error": "ai_unavailable",
+                "reply": reply_text,
+                **({"detail": debug_detail} if debug_detail else {}),
+            },
+            status=500,
+        )
+
+    if not reply:
+        reply = "I couldn't generate a response. Please rephrase your symptoms and include when they started."
+
+    return JsonResponse({"reply": reply})
 
 def article(request, article_id):
     articles = {

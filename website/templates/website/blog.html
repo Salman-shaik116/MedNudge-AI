@@ -524,6 +524,7 @@
             color: var(--primary-blue);
             text-decoration: none;
             transition: all 0.2s;
+            cursor: pointer;
         }
 
         .tag:hover {
@@ -616,10 +617,11 @@
                 <div class="category-btn">Prevention</div>
             </div>
 
-            <!-- BLOG LAYOUT MATCHING IMAGE -->
-            <div class="blog-grid" style="max-width: 1100px; margin: 0 auto;">
-                
-                <article class="blog-card">
+            <!-- BLOG LAYOUT -->
+            <div id="no-results" style="display:none; text-align:center; color:var(--text-muted); padding:2rem 0;">No articles found. Try a different search or category.</div>
+            <div class="blog-grid" id="blogGrid" style="max-width: 1100px; margin: 0 auto;">
+
+                <article class="blog-card" data-category="ai doctor" data-title="how ai doctors are revolutionizing preventive healthcare" data-id="1" onclick="window.location.href='{% url 'website:article' '1' %}'">
                     <div class="blog-image">
                         <div class="blog-category">AI DOCTOR</div>
                         <div class="blog-image-icon">🤖</div>
@@ -628,14 +630,11 @@
                         <div class="blog-date">Dec 28, 2025 • 8 min read</div>
                         <h2 class="blog-title">How AI Doctors Are Revolutionizing Preventive Healthcare</h2>
                         <p class="blog-excerpt">Discover how AI-powered symptom checkers and virtual doctors are catching health issues before they become problems...</p>
-                        <div class="blog-meta">
-                            <span>🕐 8 min</span>
-                            <span>2.4K views</span>
-                        </div>
+                        <div class="blog-meta"><span>🕐 8 min</span><span>2.4K views</span></div>
                     </div>
                 </article>
 
-                <article class="blog-card">
+                <article class="blog-card" data-category="lab tests" data-title="understanding your blood test results a complete guide" data-id="2" onclick="window.location.href='{% url 'website:article' '2' %}'">
                     <div class="blog-image">
                         <div class="blog-category">LAB TESTS</div>
                         <div class="blog-image-icon">🧪</div>
@@ -644,14 +643,11 @@
                         <div class="blog-date">Dec 25, 2025 • 6 min read</div>
                         <h2 class="blog-title">Understanding Your Blood Test Results: A Complete Guide</h2>
                         <p class="blog-excerpt">Learn to decode 20+ common blood biomarkers and what your numbers really mean for your health...</p>
-                        <div class="blog-meta">
-                            <span>🕐 6 min</span>
-                            <span>5.2K views</span>
-                        </div>
+                        <div class="blog-meta"><span>🕐 6 min</span><span>5.2K views</span></div>
                     </div>
                 </article>
 
-                <article class="blog-card">
+                <article class="blog-card" data-category="prevention" data-title="top 5 ai tools that could add 10 years to your life" data-id="3" onclick="window.location.href='{% url 'website:article' '3' %}'">
                     <div class="blog-image">
                         <div class="blog-category">PREVENTION</div>
                         <div class="blog-image-icon">🛡️</div>
@@ -660,14 +656,11 @@
                         <div class="blog-date">Dec 22, 2025 • 10 min read</div>
                         <h2 class="blog-title">Top 5 AI Tools That Could Add 10 Years to Your Life</h2>
                         <p class="blog-excerpt">Evidence-based AI technologies that are transforming longevity medicine and preventive care...</p>
-                        <div class="blog-meta">
-                            <span>🕐 10 min</span>
-                            <span>12K views</span>
-                        </div>
+                        <div class="blog-meta"><span>🕐 10 min</span><span>12K views</span></div>
                     </div>
                 </article>
 
-                <article class="blog-card">
+                <article class="blog-card" data-category="research" data-title="why lab test interpretation accuracy matters more than ever" data-id="4" onclick="window.location.href='{% url 'website:article' '4' %}'">
                     <div class="blog-image">
                         <div class="blog-category">RESEARCH</div>
                         <div class="blog-image-icon">🔬</div>
@@ -676,47 +669,50 @@
                         <div class="blog-date">Dec 20, 2025 • 7 min read</div>
                         <h2 class="blog-title">Why Lab Test Interpretation Accuracy Matters More Than Ever</h2>
                         <p class="blog-excerpt">New study reveals 68% of patients misunderstand their lab results. Here's what doctors aren't telling you...</p>
-                        <div class="blog-meta">
-                            <span>🕐 7 min</span>
-                            <span>3.8K views</span>
-                        </div>
+                        <div class="blog-meta"><span>🕐 7 min</span><span>3.8K views</span></div>
                     </div>
                 </article>
 
                 <div class="widget-card">
                     <h3 class="widget-title">Recent Posts</h3>
-                    <div class="recent-post">
-                        <div class="recent-thumb"></div>
-                        <div class="recent-info">
-                            <h4>AI vs Human Doctors: The 2025 Showdown</h4>
-                            <span>Dec 29 • 5 min</span>
+                    <a href="{% url 'website:article' '1' %}" style="text-decoration:none;">
+                        <div class="recent-post">
+                            <div class="recent-thumb"></div>
+                            <div class="recent-info">
+                                <h4>How AI Doctors Are Revolutionizing Preventive Healthcare</h4>
+                                <span>Dec 28 • 8 min</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="recent-post">
-                        <div class="recent-thumb purple"></div>
-                        <div class="recent-info">
-                            <h4>Cholesterol Myths You Need to Stop Believing</h4>
-                            <span>Dec 27 • 4 min</span>
+                    </a>
+                    <a href="{% url 'website:article' '2' %}" style="text-decoration:none;">
+                        <div class="recent-post">
+                            <div class="recent-thumb purple"></div>
+                            <div class="recent-info">
+                                <h4>Understanding Your Blood Test Results</h4>
+                                <span>Dec 25 • 6 min</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="recent-post">
-                        <div class="recent-thumb"></div>
-                        <div class="recent-info">
-                            <h4>5 Blood Tests Everyone Should Get Yearly</h4>
-                            <span>Dec 25 • 6 min</span>
+                    </a>
+                    <a href="{% url 'website:article' '4' %}" style="text-decoration:none;">
+                        <div class="recent-post">
+                            <div class="recent-thumb"></div>
+                            <div class="recent-info">
+                                <h4>Why Lab Test Interpretation Accuracy Matters</h4>
+                                <span>Dec 20 • 7 min</span>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="widget-card">
                     <h3 class="widget-title">Popular Tags</h3>
                     <div class="tags">
-                        <a href="#" class="tag">#AIDoctor</a>
-                        <a href="#" class="tag">#LabTests</a>
-                        <a href="#" class="tag">#HealthTips</a>
-                        <a href="#" class="tag">#Prevention</a>
-                        <a href="#" class="tag">#Longevity</a>
-                        <a href="#" class="tag">#Biomarkers</a>
+                        <span class="tag" onclick="filterByTag('ai doctor')">#AIDoctor</span>
+                        <span class="tag" onclick="filterByTag('lab tests')">#LabTests</span>
+                        <span class="tag" onclick="filterByTag('health tips')">#HealthTips</span>
+                        <span class="tag" onclick="filterByTag('prevention')">#Prevention</span>
+                        <span class="tag" onclick="filterByTag('longevity')">#Longevity</span>
+                        <span class="tag" onclick="filterByTag('research')">#Research</span>
                     </div>
                 </div>
 
@@ -740,38 +736,68 @@
     </footer>
 
     <script>
+        const cards = document.querySelectorAll('.blog-card');
+        const noResults = document.getElementById('no-results');
+        let activeCategory = 'all';
+        let searchQuery = '';
+
+        function applyFilters() {
+            let visible = 0;
+            cards.forEach(card => {
+                const cat = card.dataset.category || '';
+                const title = card.dataset.title || '';
+                const matchCat = activeCategory === 'all' || cat.includes(activeCategory);
+                const matchSearch = !searchQuery || title.includes(searchQuery);
+                if (matchCat && matchSearch) {
+                    card.style.display = '';
+                    visible++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            noResults.style.display = visible === 0 ? 'block' : 'none';
+        }
+
         // Category filter
         document.querySelectorAll('.category-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                activeCategory = btn.textContent.trim().toLowerCase();
+                applyFilters();
             });
         });
 
-        // Search functionality
-        document.querySelector('.search-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                alert('🔍 Searching for "' + e.target.value + '"...');
-            }
+        // Search — filters on every keystroke
+        document.querySelector('.hero .search-input').addEventListener('input', e => {
+            searchQuery = e.target.value.trim().toLowerCase();
+            applyFilters();
         });
 
-        // Theme Toggle Logic
+        // Tag filter
+        function filterByTag(tag) {
+            searchQuery = '';
+            document.querySelector('.hero .search-input').value = '';
+            activeCategory = tag.toLowerCase();
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent.trim().toLowerCase() === activeCategory);
+            });
+            applyFilters();
+            document.getElementById('blogGrid').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Blog card cursor
+        cards.forEach(c => c.style.cursor = 'pointer');
+
+        // Theme Toggle
         const toggleBtn = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
-
         toggleBtn.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            let newTheme = 'light';
-            if (!currentTheme || currentTheme === 'light') {
-                newTheme = 'dark';
-            }
-            document.documentElement.setAttribute('data-theme', newTheme);
-            
-            if (newTheme === 'dark') {
-                themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
-            } else {
-                themeIcon.innerHTML = '<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
-            }
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeIcon.innerHTML = isDark
+                ? '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
+                : '<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
         });
     </script>
 </body>

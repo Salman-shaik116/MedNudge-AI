@@ -54,7 +54,11 @@ In the web service "Environment" tab, add:
 | `DEBUG` | `False` |
 | `ALLOWED_HOSTS` | `your-app-name.onrender.com` |
 | `PYTHON_VERSION` | `3.11.9` |
-| `GROQ_API_KEY` | Your Groq API key (if using AI features) |
+| `AI_PROVIDER` | `groq` or `xai` (or `grok`) |
+| `GROQ_API_KEY` | Your Groq API key (if using Groq) |
+| `XAI_API_KEY` | Your xAI (Grok) API key (if using xAI) |
+| `XAI_MODEL` | Optional, e.g. `grok-beta` (set if your account uses a different model name) |
+| `XAI_BASE_URL` | Optional, default `https://api.x.ai/v1` |
 
 ## Step 5: Deploy
 

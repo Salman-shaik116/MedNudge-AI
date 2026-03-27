@@ -303,7 +303,29 @@
             color: var(--text-muted);
             font-size: 0.9rem;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+        .suggestion-chip:hover {
+            background: var(--primary-blue-light);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+        .result-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--box-shadow);
+        }
+        .result-card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+        .result-card p { color: var(--text-muted); font-size: 0.94rem; margin-bottom: 0.75rem; }
+        .result-card ul { color: var(--text-muted); font-size: 0.93rem; padding-left: 1.2rem; margin-bottom: 0.75rem; }
+        .result-card ul li { margin-bottom: 0.3rem; }
+        .result-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-top: 0.75rem; }
+        .result-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+        .no-result { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; padding: 1.5rem; color: var(--text-muted); font-size: 0.95rem; }
 
         .checker-note {
             color: var(--text-muted);
@@ -568,19 +590,22 @@
 
                     <div class="checker-card">
                         <div class="checker-grid">
-                            <input type="text" class="symptom-input" placeholder="Describe symptoms like headache, fatigue, chest discomfort, or nausea">
-                            <a href="{% url 'website:ai_doctor' %}" class="cta-button cta-orange">Check with AI Doctor</a>
+                            <input type="text" id="symptomInput" class="symptom-input" placeholder="Describe symptoms like headache, fatigue, chest discomfort, or nausea">
+                            <button onclick="checkSymptoms()" class="cta-button cta-orange">Check Symptoms</button>
                         </div>
 
                         <div class="suggestion-grid">
-                            <a href="{% url 'website:ai_doctor' %}" class="suggestion-chip">Headache and fatigue</a>
-                            <a href="{% url 'website:ai_doctor' %}" class="suggestion-chip">Chest pain and shortness of breath</a>
-                            <a href="{% url 'website:ai_doctor' %}" class="suggestion-chip">Stomach pain and nausea</a>
-                            <a href="{% url 'website:ai_doctor' %}" class="suggestion-chip">Cough with fever</a>
+                            <span class="suggestion-chip" onclick="fillAndCheck('Headache and fatigue')">Headache and fatigue</span>
+                            <span class="suggestion-chip" onclick="fillAndCheck('Chest pain and shortness of breath')">Chest pain and shortness of breath</span>
+                            <span class="suggestion-chip" onclick="fillAndCheck('Stomach pain and nausea')">Stomach pain and nausea</span>
+                            <span class="suggestion-chip" onclick="fillAndCheck('Cough with fever')">Cough with fever</span>
                         </div>
 
                         <div class="checker-note">This guide is educational and not a diagnosis. Severe, sudden, or worsening symptoms should be evaluated by a licensed clinician or emergency service.</div>
                     </div>
+
+                    <!-- RESULTS PANEL -->
+                    <div id="resultsPanel" style="display:none; max-width:820px; margin-top:1.5rem;"></div>
                 </div>
             </div>
         </section>
@@ -744,6 +769,183 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        const SYMPTOM_DB = [
+            {
+                keywords: ['headache','head pain','migraine','head ache'],
+                title: 'Headache',
+                icon: '🤕',
+                description: 'Headaches can range from tension-type to migraines. Common triggers include dehydration, stress, poor sleep, eye strain, and sinus congestion.',
+                causes: ['Tension or stress', 'Dehydration', 'Sinus infection', 'Migraine disorder', 'Eye strain', 'High blood pressure'],
+                when_to_seek: 'Seek urgent care if headache is sudden and severe ("thunderclap"), accompanied by fever/stiff neck, vision changes, or confusion.',
+                severity: 'medium',
+                next_steps: ['Rest in a quiet, dark room', 'Stay hydrated', 'Over-the-counter pain relief if appropriate', 'Track frequency and triggers']
+            },
+            {
+                keywords: ['fatigue','tired','exhausted','weakness','low energy','lethargy'],
+                title: 'Fatigue',
+                icon: '😴',
+                description: 'Persistent fatigue can be caused by lifestyle factors or underlying medical conditions. It is one of the most common symptoms reported.',
+                causes: ['Poor sleep quality', 'Anemia or iron deficiency', 'Thyroid disorders', 'Diabetes', 'Depression or anxiety', 'Chronic infections'],
+                when_to_seek: 'See a doctor if fatigue lasts more than 2 weeks, is severe, or is accompanied by unexplained weight loss or fever.',
+                severity: 'low',
+                next_steps: ['Improve sleep hygiene', 'Check iron and thyroid levels via lab test', 'Review diet and hydration', 'Reduce stress']
+            },
+            {
+                keywords: ['chest pain','chest discomfort','chest tightness','chest pressure','heart pain'],
+                title: 'Chest Pain',
+                icon: '❤️',
+                description: 'Chest pain has many causes ranging from muscle strain and acid reflux to serious cardiac conditions. The pattern, location, and associated symptoms are critical.',
+                causes: ['Acid reflux (GERD)', 'Muscle strain', 'Anxiety or panic attack', 'Angina or heart disease', 'Pulmonary embolism', 'Pleuritis'],
+                when_to_seek: '⚠️ Call emergency services immediately if chest pain is crushing, radiates to arm/jaw, comes with sweating, shortness of breath, or nausea.',
+                severity: 'high',
+                next_steps: ['Do not ignore chest pain', 'Seek emergency care if severe', 'Describe exact location and triggers to your doctor', 'Avoid strenuous activity until evaluated']
+            },
+            {
+                keywords: ['nausea','vomiting','sick stomach','queasy','throwing up'],
+                title: 'Nausea & Vomiting',
+                icon: '🤢',
+                description: 'Nausea is a common symptom with many possible causes. It may be short-lived (food poisoning, motion sickness) or a sign of an ongoing condition.',
+                causes: ['Food poisoning or gastroenteritis', 'Medication side effects', 'Migraine', 'Pregnancy', 'Acid reflux', 'Appendicitis (with pain)'],
+                when_to_seek: 'Seek care if vomiting lasts more than 24 hours, there is blood in vomit, severe abdominal pain, or signs of dehydration.',
+                severity: 'low',
+                next_steps: ['Stay hydrated with small sips of water', 'Avoid solid food until nausea subsides', 'Rest', 'Consult a doctor if it persists']
+            },
+            {
+                keywords: ['fever','high temperature','chills','sweating','hot'],
+                title: 'Fever',
+                icon: '🌡️',
+                description: 'Fever is the body\'s natural response to infection or inflammation. Most fevers are caused by viral or bacterial infections and resolve on their own.',
+                causes: ['Viral infection (flu, cold, COVID-19)', 'Bacterial infection', 'Urinary tract infection', 'Inflammatory conditions', 'Medication reaction'],
+                when_to_seek: 'Seek urgent care if fever exceeds 39.5°C (103°F), lasts more than 3 days, or is accompanied by stiff neck, rash, or difficulty breathing.',
+                severity: 'medium',
+                next_steps: ['Rest and stay hydrated', 'Monitor temperature regularly', 'Use fever-reducing medication if appropriate', 'See a doctor if fever persists']
+            },
+            {
+                keywords: ['cough','coughing','dry cough','wet cough','persistent cough'],
+                title: 'Cough',
+                icon: '😮‍💨',
+                description: 'Coughing is a reflex that clears the airways. It can be acute (short-term) due to infection or chronic due to asthma, allergies, or other conditions.',
+                causes: ['Common cold or flu', 'Asthma', 'Allergies', 'GERD (acid reflux)', 'Pneumonia', 'COVID-19'],
+                when_to_seek: 'See a doctor if cough lasts more than 3 weeks, produces blood, or is accompanied by high fever or difficulty breathing.',
+                severity: 'low',
+                next_steps: ['Stay hydrated', 'Use honey and warm fluids for soothing', 'Avoid irritants like smoke', 'Get tested if fever is present']
+            },
+            {
+                keywords: ['back pain','lower back','backache','spine pain','back ache'],
+                title: 'Back Pain',
+                icon: '🦴',
+                description: 'Back pain is extremely common and usually mechanical in origin. It can range from a dull ache to sharp, debilitating pain.',
+                causes: ['Muscle strain or sprain', 'Poor posture', 'Herniated disc', 'Sciatica', 'Kidney infection', 'Osteoarthritis'],
+                when_to_seek: 'Seek urgent care if back pain follows an injury, is accompanied by leg numbness/weakness, or loss of bladder/bowel control.',
+                severity: 'medium',
+                next_steps: ['Apply ice/heat to the affected area', 'Gentle stretching and movement', 'Avoid prolonged bed rest', 'See a physiotherapist if persistent']
+            },
+            {
+                keywords: ['shortness of breath','breathless','difficulty breathing','cant breathe','breathing difficulty'],
+                title: 'Shortness of Breath',
+                icon: '🫁',
+                description: 'Difficulty breathing can be caused by respiratory, cardiac, or anxiety-related conditions. The onset and severity determine urgency.',
+                causes: ['Asthma', 'Anxiety or panic attack', 'Pneumonia', 'Heart failure', 'Pulmonary embolism', 'Anemia'],
+                when_to_seek: '⚠️ Seek emergency care immediately if breathlessness is sudden, severe, or accompanied by chest pain, blue lips, or confusion.',
+                severity: 'high',
+                next_steps: ['Sit upright and stay calm', 'Use prescribed inhaler if available', 'Call emergency services if severe', 'Do not lie flat']
+            },
+            {
+                keywords: ['stomach pain','abdominal pain','belly pain','stomach ache','stomach cramps','abdomen'],
+                title: 'Stomach / Abdominal Pain',
+                icon: '🫃',
+                description: 'Abdominal pain is one of the most common complaints. Location and character of the pain help narrow down the cause significantly.',
+                causes: ['Indigestion or gas', 'Gastroenteritis', 'Irritable bowel syndrome (IBS)', 'Appendicitis', 'Kidney stones', 'Ulcers'],
+                when_to_seek: 'Seek urgent care if pain is severe, sudden, or in the lower right abdomen (possible appendicitis), or accompanied by fever and vomiting.',
+                severity: 'medium',
+                next_steps: ['Avoid heavy meals', 'Stay hydrated', 'Track location and timing of pain', 'See a doctor if pain is persistent or worsening']
+            },
+            {
+                keywords: ['dizziness','dizzy','lightheaded','vertigo','spinning','faint'],
+                title: 'Dizziness',
+                icon: '💫',
+                description: 'Dizziness can feel like lightheadedness, spinning (vertigo), or unsteadiness. It has many causes from benign to serious.',
+                causes: ['Dehydration', 'Low blood pressure', 'Inner ear disorder (BPPV)', 'Anemia', 'Medication side effects', 'Cardiac arrhythmia'],
+                when_to_seek: 'Seek urgent care if dizziness is accompanied by chest pain, sudden severe headache, vision changes, or difficulty speaking.',
+                severity: 'medium',
+                next_steps: ['Sit or lie down immediately', 'Stay hydrated', 'Avoid sudden position changes', 'See a doctor if episodes are frequent']
+            },
+            {
+                keywords: ['sore throat','throat pain','throat ache','difficulty swallowing','swallowing pain'],
+                title: 'Sore Throat',
+                icon: '🤒',
+                description: 'A sore throat is usually caused by viral infections and resolves within a week. Bacterial causes like strep throat require antibiotic treatment.',
+                causes: ['Viral infection (cold, flu)', 'Strep throat (bacterial)', 'Allergies', 'Acid reflux', 'Dry air', 'Tonsillitis'],
+                when_to_seek: 'See a doctor if sore throat is severe, lasts more than a week, is accompanied by high fever, or makes swallowing very difficult.',
+                severity: 'low',
+                next_steps: ['Gargle with warm salt water', 'Stay hydrated', 'Use throat lozenges', 'Get a strep test if fever is present']
+            },
+            {
+                keywords: ['rash','skin rash','itchy skin','hives','skin irritation','red skin'],
+                title: 'Skin Rash',
+                icon: '🔴',
+                description: 'Skin rashes vary widely in appearance and cause. Most are not dangerous but some can indicate serious allergic reactions or infections.',
+                causes: ['Allergic reaction', 'Eczema or psoriasis', 'Contact dermatitis', 'Viral infection (chickenpox, measles)', 'Drug reaction', 'Heat rash'],
+                when_to_seek: '⚠️ Seek emergency care if rash spreads rapidly, is accompanied by difficulty breathing, swelling of face/throat, or high fever.',
+                severity: 'medium',
+                next_steps: ['Avoid scratching', 'Identify and remove potential allergens', 'Apply soothing lotion', 'See a dermatologist if persistent']
+            }
+        ];
+
+        function getSeverityTag(severity) {
+            const map = { low: ['severity-low','Low Risk'], medium: ['severity-medium','Moderate'], high: ['severity-high','High — Seek Care'] };
+            const [cls, label] = map[severity] || map['low'];
+            return `<span class="severity-tag ${cls}">${label}</span>`;
+        }
+
+        function checkSymptoms() {
+            const input = document.getElementById('symptomInput').value.trim().toLowerCase();
+            const panel = document.getElementById('resultsPanel');
+            if (!input) { panel.style.display = 'none'; return; }
+
+            const matched = SYMPTOM_DB.filter(s => s.keywords.some(k => input.includes(k)));
+
+            if (matched.length === 0) {
+                panel.innerHTML = `<div class="no-result"><strong>No specific match found.</strong> Try describing your symptoms differently, or <a href="{% url 'website:ai_doctor' %}" style="color:var(--primary-orange);">ask the AI Doctor</a> for a deeper analysis.</div>`;
+            } else {
+                panel.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;">Found <strong>${matched.length}</strong> relevant result(s) for "${input}"</p>` +
+                matched.map(s => `
+                    <div class="result-card">
+                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+                            <span style="font-size:1.8rem;">${s.icon}</span>
+                            <h3>${s.title}</h3>
+                        </div>
+                        <p>${s.description}</p>
+                        <strong style="font-size:0.9rem;">Common Causes:</strong>
+                        <ul>${s.causes.map(c => `<li>${c}</li>`).join('')}</ul>
+                        <strong style="font-size:0.9rem;">Recommended Steps:</strong>
+                        <ul>${s.next_steps.map(n => `<li>${n}</li>`).join('')}</ul>
+                        <div style="background:var(--warning-light);border-radius:10px;padding:0.75rem 1rem;margin-top:0.75rem;font-size:0.88rem;color:var(--primary-orange);">
+                            <strong>When to seek care:</strong> ${s.when_to_seek}
+                        </div>
+                        <div class="result-meta">${getSeverityTag(s.severity)}</div>
+                        <div class="result-actions">
+                            <a href="{% url 'website:ai_doctor' %}" class="cta-button cta-orange" style="font-size:0.88rem;padding:0.55rem 1rem;">Ask AI Doctor</a>
+                            <a href="{% url 'website:lab_test' %}" class="cta-button cta-outline" style="font-size:0.88rem;padding:0.55rem 1rem;">Lab Test Analysis</a>
+                            <a href="{% url 'website:doctors_list' %}" class="cta-button cta-outline" style="font-size:0.88rem;padding:0.55rem 1rem;">Book a Doctor</a>
+                        </div>
+                    </div>`).join('');
+            }
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function fillAndCheck(text) {
+            document.getElementById('symptomInput').value = text;
+            checkSymptoms();
+        }
+
+        document.getElementById('symptomInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') checkSymptoms();
+        });
+    </script>
 
     <script>
         const themeToggleBtn = document.getElementById("theme-toggle");

@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/progress/<str:tracker_id>/update/', views.update_progress_api, name='update_progress_api'),
     path('api/progress/<str:tracker_id>/get/', views.get_progress_api, name='get_progress_api'),
     path('api/my-trackers/', views.get_user_trackers_api, name='get_user_trackers_api'),
+    path('api/ai-doctor/chat/', views.ai_doctor_chat_api, name='ai_doctor_chat_api'),
     # Doctor URLs
     path('doctor-register/', views.doctor_register, name='doctor_register'),
     path('doctors-list/', views.doctors_list, name='doctors_list'),

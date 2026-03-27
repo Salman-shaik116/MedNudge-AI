@@ -1,18 +1,15 @@
-from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 
 import os
 from dotenv import load_dotenv
 
+from .llm import create_chat_model
+
 load_dotenv()
 
 class MedicalAgent:
     def __init__(self):
-        self.model = ChatGroq(
-            api_key=os.getenv("GROQ_API_KEY"),
-            model="llama-3.1-8b-instant",
-            temperature=0.3
-        )
+        self.model = create_chat_model(temperature=0.3)
 
 
     def analyze(self, text):
