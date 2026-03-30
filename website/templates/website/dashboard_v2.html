@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - MediNudge AI</title>
+
+  <script>
+    // Prevent showing a logged-in dashboard from the browser back-forward cache after logout.
+    window.addEventListener('pageshow', function (event) {
+      try {
+        const navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        const isBackForward = navEntry && navEntry.type === 'back_forward';
+        if (event.persisted || isBackForward) {
+          window.location.reload();
+        }
+      } catch (e) {
+        // ignore
+      }
+    });
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{--bg-main:#fff;--text-main:#0F172A;--text-muted:#64748B;--primary-blue:#2563EB;--primary-blue-hover:#1D4ED8;--primary-blue-light:#EFF6FF;--success:#10B981;--success-light:#ECFDF5;--danger:#DC2626;--danger-light:#FEF2F2;--warning:#F59E0B;--warning-light:#FFFBEB;--card-bg:#fff;--card-hover:#fff;--section-alt-bg:#F8FAFC;--footer-bg:#0F172A;--footer-text:#F8FAFC;--footer-muted:#94A3B8;--border-color:#E2E8F0;--border-color-hover:#CBD5E1;--header-bg:rgba(255,255,255,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--box-shadow-hover:0 20px 25px -5px rgba(15,23,42,.12),0 10px 10px -5px rgba(15,23,42,.05);--radius-btn:6px;--input-bg:#fff;--input-border:#CBD5E1}
+    [data-theme="dark"]{--bg-main:#0B1120;--text-main:#F8FAFC;--text-muted:#94A3B8;--primary-blue:#3B82F6;--primary-blue-hover:#60A5FA;--primary-blue-light:rgba(59,130,246,.15);--success:#34D399;--success-light:rgba(16,185,129,.12);--danger:#F87171;--danger-light:rgba(239,68,68,.14);--warning:#FBBF24;--warning-light:rgba(245,158,11,.14);--card-bg:#1E293B;--card-hover:#1E293B;--section-alt-bg:#0F172A;--footer-bg:#0B1120;--footer-text:#F8FAFC;--footer-muted:#64748B;--border-color:#334155;--border-color-hover:#475569;--header-bg:rgba(11,17,32,.85);--box-shadow:0 1px 3px 0 rgba(0,0,0,.4),0 1px 2px -1px rgba(0,0,0,.3);--box-shadow-hover:0 20px 25px -5px rgba(0,0,0,.4),0 10px 10px -5px rgba(0,0,0,.25);--input-bg:#0F172A;--input-border:#475569}
+
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:"Inter",sans-serif;background:var(--bg-main);color:var(--text-main);line-height:1.6;letter-spacing:-.01em;transition:background-color .4s ease,color .4s ease}
+    a{text-decoration:none;color:inherit}
+
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+    header{background:var(--header-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:1rem 0;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border-color)}
+    nav,.nav-links,.header-actions{display:flex;align-items:center}
+    nav{justify-content:space-between;gap:1.5rem}
+    .logo a{font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:.5rem}
+    .logo a::before{content:"";width:22px;height:22px;background:var(--primary-blue);border-radius:4px;display:inline-block}
+    .nav-links{gap:1.25rem;flex-wrap:wrap}
+    .nav-link{color:var(--text-muted);font-size:.95rem;font-weight:600}
+    .nav-link:hover{color:var(--text-main)}
+    .header-actions{gap:.75rem;flex-wrap:wrap}
+
+    .theme-toggle,.cta-button,.secondary-button,.danger-button{border-radius:var(--radius-btn);transition:all .2s ease}
+    .theme-toggle{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .theme-toggle:hover{background:var(--card-hover);color:var(--text-main);border-color:var(--border-color-hover)}
+    .theme-toggle svg{width:18px;height:18px}
+
+    .cta-button,.secondary-button,.danger-button{display:inline-flex;align-items:center;justify-content:center;padding:.7rem 1.05rem;font-size:.92rem;font-weight:700;border:1px solid transparent;cursor:pointer;white-space:nowrap}
+    .cta-button{background:var(--primary-blue);color:#fff}
+    .cta-button:hover{background:var(--primary-blue-hover)}
+    .secondary-button{background:transparent;color:var(--text-main);border-color:var(--border-color)}
+    .secondary-button:hover{background:var(--card-hover);border-color:var(--border-color-hover)}
+    .danger-button{background:var(--danger-light);color:var(--danger);border-color:rgba(220,38,38,.18)}
+
+    .page-shell{min-height:calc(100vh - 88px);padding:2rem 0 3.5rem;background:radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 28%),linear-gradient(180deg,var(--section-alt-bg) 0%,var(--bg-main) 26%)}
+
+    .card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;box-shadow:var(--box-shadow)}
+
+    .hero{padding:1.5rem 1.6rem;margin-bottom:1.25rem}
+    .eyebrow{display:inline-block;padding:.35rem .8rem;background:var(--primary-blue-light);color:var(--primary-blue);border-radius:999px;font-size:.84rem;font-weight:800;margin-bottom:.85rem}
+    .hero h1{font-size:clamp(2rem,3.5vw,3rem);line-height:1.08;font-weight:900;margin-bottom:.6rem}
+    .hero p{color:var(--text-muted);max-width:68ch}
+    .hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
+
+    .dash-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem;align-items:start}
+    .stack{display:grid;gap:1.25rem}
+
+    .panel{padding:1.35rem 1.35rem}
+    .panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-bottom:.9rem}
+    .panel h2{font-size:1.15rem;font-weight:900;line-height:1.2}
+    .panel-sub{color:var(--text-muted);font-size:.92rem;margin-top:.15rem}
+
+    .message{padding:.85rem 1rem;border-radius:12px;margin-bottom:1rem;font-size:.92rem;font-weight:600}
+    .message.success{background:var(--success-light);color:var(--success);border:1px solid rgba(16,185,129,.18)}
+    .message.error{background:var(--danger-light);color:var(--danger);border:1px solid rgba(220,38,38,.18)}
+    .message.info{background:var(--primary-blue-light);color:var(--primary-blue);border:1px solid rgba(37,99,235,.18)}
+
+    .form-stack{display:grid;gap:.85rem}
+    .form-group{display:grid;gap:.4rem}
+    .form-group label{font-size:.92rem;font-weight:800}
+    .form-input{width:100%;padding:.85rem 1rem;border-radius:12px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font:inherit}
+    .form-input:focus{outline:none;border-color:var(--primary-blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+
+    .list{display:grid;gap:.75rem;margin-top:.3rem}
+    .item{padding:1rem 1rem;border-radius:16px;border:1px solid var(--border-color);background:var(--section-alt-bg)}
+    .item-title{font-weight:900}
+    .item-meta{color:var(--text-muted);font-size:.9rem;margin-top:.25rem}
+    .item-actions{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:.85rem}
+
+    .empty{padding:1rem 1rem;border-radius:16px;border:1px dashed var(--border-color);color:var(--text-muted);background:transparent}
+
+    footer{background:var(--footer-bg);color:var(--footer-text);padding:2.75rem 0;border-top:1px solid #1E293B}
+    .footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--footer-muted);font-size:.95rem;flex-wrap:wrap}
+    .footer-links{display:flex;gap:1.25rem;flex-wrap:wrap}
+    .footer-links a{color:var(--footer-muted)}
+    .footer-links a:hover{color:#fff}
+
+    @media (max-width:980px){.dash-grid{grid-template-columns:1fr}.container{max-width:980px}}
+    @media (max-width:768px){nav{flex-direction:column;align-items:flex-start}.header-actions,.nav-links{width:100%}.footer-bottom{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo"><a href="{% url 'website:index' %}">MediNudge AI</a></div>
+        <div class="nav-links">
+          <a href="{% url 'website:index' %}" class="nav-link">Home</a>
+          <a href="{% url 'website:reports' %}" class="nav-link">Reports</a>
+          <a href="{% url 'website:upload' %}" class="nav-link">Upload</a>
+          <a href="{% url 'website:doctors_list' %}" class="nav-link">Doctors</a>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+            <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+            </svg>
+          </button>
+          <a href="{% url 'website:signout' %}" class="danger-button">Sign out</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <div class="container">
+      <section class="card hero">
+        <span class="eyebrow">Your workspace</span>
+        <h1>Welcome back, {{ request.user.username|title }}.</h1>
+        <p>Everything important in one place — upload a report, send a tracker reminder, review recent reports, and check upcoming appointments.</p>
+        <div class="hero-actions">
+          <a href="{% url 'website:upload' %}" class="cta-button">Upload new report</a>
+          <a href="{% url 'website:reports' %}" class="secondary-button">Open reports</a>
+          <a href="{% url 'website:doctors_list' %}" class="secondary-button">Find doctors</a>
+        </div>
+      </section>
+
+      <section class="dash-grid">
+        <div class="stack">
+          <section class="card panel">
+            <div class="panel-head">
+              <div>
+                <h2>Quick upload</h2>
+                <div class="panel-sub">Upload a medical report to generate analysis and reminders.</div>
+              </div>
+              <a href="{% url 'website:upload' %}" class="cta-button">Upload</a>
+            </div>
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head">
+              <div>
+                <h2>Send reminder link</h2>
+                <div class="panel-sub">Send a weekly health tracker link to someone.</div>
+              </div>
+            </div>
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'website:send_reminder' %}" class="form-stack">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="recipient_email">Recipient email</label>
+                <input class="form-input" type="email" id="recipient_email" name="recipient_email" placeholder="Enter email address" required>
+              </div>
+              <div class="form-group">
+                <label for="recipient_name">Recipient name</label>
+                <input class="form-input" type="text" id="recipient_name" name="recipient_name" placeholder="Enter recipient name" required>
+              </div>
+              <div class="form-group">
+                <label for="recipient_username">Username</label>
+                <input class="form-input" type="text" id="recipient_username" name="recipient_username" placeholder="Enter username" required>
+              </div>
+              <button type="submit" class="cta-button">Send reminder</button>
+            </form>
+          </section>
+        </div>
+
+        <div class="stack">
+          <section class="card panel">
+            <div class="panel-head">
+              <div>
+                <h2>Recent reports</h2>
+                <div class="panel-sub">Open a report, go to its reminders, or delete it.</div>
+              </div>
+              <a href="{% url 'website:reports' %}" class="secondary-button">View all</a>
+            </div>
+
+            {% if recent_reports %}
+              <div class="list">
+                {% for report in recent_reports %}
+                  <article class="item">
+                    <div class="item-title">Medical report #{{ report.id }}</div>
+                    <div class="item-meta">Uploaded {{ report.uploaded_at|timesince }} ago</div>
+                    <div class="item-actions">
+                      <a href="{% url 'website:view_report' report.id %}" class="secondary-button">View</a>
+                      <a href="{% url 'website:reminder' %}?report_id={{ report.id }}" class="cta-button">Reminder</a>
+                      <form method="POST" action="{% url 'website:delete_report' report.id %}" onsubmit="return confirm('Are you sure you want to delete this report?')">
+                        {% csrf_token %}
+                        <button type="submit" class="danger-button">Delete</button>
+                      </form>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="empty">No reports yet. Upload your first report to get started.</div>
+            {% endif %}
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head">
+              <div>
+                <h2>Upcoming appointments</h2>
+                <div class="panel-sub">Based on your appointment bookings.</div>
+              </div>
+              <a href="{% url 'website:doctors_list' %}" class="secondary-button">Manage</a>
+            </div>
+
+            {% if upcoming_appointments %}
+              <div class="list">
+                {% for appt in upcoming_appointments %}
+                  <article class="item">
+                    <div class="item-title">Dr. {{ appt.doctor.name }} · {{ appt.doctor.specialization }}</div>
+                    <div class="item-meta">{{ appt.appointment_date }} · {{ appt.time_slot }}</div>
+                    <div class="item-actions">
+                      <a class="cta-button" href="{% url 'website:appointment_meeting' appt.id %}">Open meeting</a>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="empty">No upcoming appointments. Browse doctors to book one.</div>
+            {% endif %}
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 MediNudge AI Dashboard</div>
+        <div class="footer-links">
+          <a href="{% url 'website:pricing' %}">Pricing</a>
+          <a href="{% url 'website:knowledge_base' %}">Support</a>
+          <a href="{% url 'website:blog' %}">Resources</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const themeIcon = document.getElementById("theme-icon");
+    const htmlElement = document.documentElement;
+
+    const moonPath = "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z";
+    const sunPath = "M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";
+
+    function updateIcon(isDark) {
+      themeIcon.innerHTML = `<path d="${isDark ? sunPath : moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${isDark ? "none" : "currentColor"}"/>`;
+    }
+
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      htmlElement.setAttribute("data-theme", "dark");
+      updateIcon(true);
+    } else {
+      updateIcon(false);
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+      if (htmlElement.getAttribute("data-theme") === "dark") {
+        htmlElement.removeAttribute("data-theme");
+        localStorage.setItem("theme", "light");
+        updateIcon(false);
+      } else {
+        htmlElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
+        updateIcon(true);
+      }
+    });
+  </script>
+</body>
+</html>

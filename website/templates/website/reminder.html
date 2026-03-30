@@ -3,7 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Health Planner Dashboard - DocusAI</title>
+  <title>Health Planner Dashboard - MediNudge AI</title>
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("theme");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        } else {
+          document.documentElement.removeAttribute("data-theme");
+        }
+      } catch (e) {
+        // Ignore theme init failures (e.g. blocked storage)
+      }
+    })();
+  </script>
+  <script>
+    // Prevent showing a logged-in page from the browser back-forward cache after logout.
+    window.addEventListener('pageshow', function (event) {
+      try {
+        var navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        var isBackForward = navEntry && navEntry.type === 'back_forward';
+        if (event.persisted || isBackForward) {
+          window.location.reload();
+        }
+      } catch (e) {
+        // ignore
+      }
+    });
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,12 +44,76 @@
   </style>
 </head>
 <body>
-  <header><div class="container"><nav><div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div><div class="header-actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode"><svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></button><span id="todayText"></span>{% include 'website/partials/auth_actions.html' %}</div></nav></div></header>
-  <main class="page-shell"><div class="container"><section class="hero-card"><span class="eyebrow">Planner preview</span><h1>Health planner dashboard</h1><p>This standalone planner preview now matches the updated DocusAI page design as well.</p></section><section class="board-card"><section class="week-bar"><div class="week-title">This week</div><div class="week-days" id="weekDays"></div></section><section class="cards"><article class="card"><div class="card-header"><h2>Exercises</h2><small id="exerciseCount"></small></div><p class="card-subtitle">Planned physical activity for the selected day.</p><ul class="item-list" id="exerciseList"></ul></article><article class="card"><div class="card-header"><h2>Food Plan</h2><small id="foodCount"></small></div><p class="card-subtitle">Meals and snacks based on your plan.</p><ul class="item-list" id="foodList"></ul></article><article class="card"><div class="card-header"><h2>Tablets / Medicines</h2><small id="tabletCount"></small></div><p class="card-subtitle">Medication schedule preview.</p><ul class="item-list" id="tabletList"></ul></article></section></section></div></main>
-  <footer><div class="container"><div class="footer-bottom"><div>&copy; 2026 DocusAI Planner</div><div class="footer-links"><a href="{% url 'website:result' %}">Back to Results</a><a href="{% url 'website:dashboard' %}">Dashboard</a><a href="{% url 'website:knowledge_base' %}">Support</a></div></div></div></footer>
+  <header><div class="container"><nav><div class="logo"><a href="{% url 'website:index' %}">MediNudge AI</a></div><div class="header-actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode"><svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg></button><span id="todayText"></span>{% include 'website/partials/auth_actions.html' %}</div></nav></div></header>
+  <main class="page-shell"><div class="container"><section class="hero-card"><span class="eyebrow">Planner preview</span><h1>Health planner dashboard</h1><p>This standalone planner preview now matches the updated MediNudge AI page design as well.</p></section><section class="board-card"><section class="week-bar"><div class="week-title">This week</div><div class="week-days" id="weekDays"></div></section><section class="cards"><article class="card"><div class="card-header"><h2>Exercises</h2><small id="exerciseCount"></small></div><p class="card-subtitle">Planned physical activity for the selected day.</p><ul class="item-list" id="exerciseList"></ul></article><article class="card"><div class="card-header"><h2>Food Plan</h2><small id="foodCount"></small></div><p class="card-subtitle">Meals and snacks based on your plan.</p><ul class="item-list" id="foodList"></ul></article><article class="card"><div class="card-header"><h2>Tablets / Medicines</h2><small id="tabletCount"></small></div><p class="card-subtitle">Medication schedule preview.</p><ul class="item-list" id="tabletList"></ul></article></section>
+
+  <section id="dueReminderPanel" style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border-color);">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <div style="font-weight:800;">Due reminders</div>
+        <div style="color:var(--text-muted);font-size:0.92rem;">These appear when a reminder time has arrived.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+        <span id="desktopNotifStatus" style="color:var(--text-muted);font-size:0.9rem;">Desktop notifications: checking…</span>
+        <button type="button" id="enableDesktopNotifBtn" style="padding:0.5rem 0.75rem;border-radius:12px;border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-main);font-weight:800;cursor:pointer;display:none;">Enable</button>
+      </div>
+    </div>
+    <div id="dueReminderEmpty" style="margin-top:0.75rem;color:var(--text-muted);font-size:0.95rem;">No due reminders right now.</div>
+    <div id="dueReminderList" style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.75rem;"></div>
+  </section>
+
+  <section style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border-color);">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <div style="font-weight:800;">Add / edit reminder</div>
+        <div style="color:var(--text-muted);font-size:0.92rem;">Add your own medicines, exercise, and diet items with a reminder time. Click an existing item to edit it.</div>
+      </div>
+      <div style="color:var(--text-muted);font-size:0.9rem;">Report: {{ report_id|default:"-" }}</div>
+    </div>
+
+    <form id="reminderEditForm" style="margin-top:0.9rem;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0.75rem;align-items:end;">
+      <input type="hidden" id="editItemId" value="" />
+      <label style="display:flex;flex-direction:column;gap:0.25rem;grid-column:span 1;">
+        <span style="font-size:0.85rem;color:var(--text-muted);">Type</span>
+        <select id="editType" style="padding:0.55rem 0.65rem;border:1px solid var(--border-color);border-radius:12px;background:var(--card-bg);color:var(--text-main);">
+          <option value="exercises">Exercise</option>
+          <option value="foods">Diet</option>
+          <option value="tablets">Medicine</option>
+        </select>
+      </label>
+
+      <label style="display:flex;flex-direction:column;gap:0.25rem;grid-column:span 1;">
+        <span style="font-size:0.85rem;color:var(--text-muted);">Day</span>
+        <select id="editDay" style="padding:0.55rem 0.65rem;border:1px solid var(--border-color);border-radius:12px;background:var(--card-bg);color:var(--text-main);"></select>
+      </label>
+
+      <label style="display:flex;flex-direction:column;gap:0.25rem;grid-column:span 2;">
+        <span style="font-size:0.85rem;color:var(--text-muted);">Name</span>
+        <input id="editName" type="text" placeholder="e.g. Metformin / Walking / Breakfast" style="padding:0.55rem 0.65rem;border:1px solid var(--border-color);border-radius:12px;background:var(--card-bg);color:var(--text-main);" />
+      </label>
+
+      <label style="display:flex;flex-direction:column;gap:0.25rem;grid-column:span 1;">
+        <span style="font-size:0.85rem;color:var(--text-muted);">Time</span>
+        <input id="editTime" type="text" placeholder="9:00 AM" style="padding:0.55rem 0.65rem;border:1px solid var(--border-color);border-radius:12px;background:var(--card-bg);color:var(--text-main);" />
+      </label>
+
+      <button type="submit" style="grid-column:span 1;padding:0.65rem 0.9rem;border-radius:12px;border:1px solid var(--border-color);background:var(--primary-blue);color:white;font-weight:800;cursor:pointer;">Save</button>
+
+      <label style="display:flex;flex-direction:column;gap:0.25rem;grid-column:span 6;">
+        <span style="font-size:0.85rem;color:var(--text-muted);">Details (optional)</span>
+        <input id="editDetail" type="text" placeholder="e.g. After food / 30 minutes / Low sugar" style="padding:0.55rem 0.65rem;border:1px solid var(--border-color);border-radius:12px;background:var(--card-bg);color:var(--text-main);" />
+      </label>
+
+      <button type="button" id="cancelEditBtn" style="grid-column:span 1;padding:0.6rem 0.9rem;border-radius:12px;border:1px solid var(--border-color);background:transparent;color:var(--text-main);font-weight:800;cursor:pointer;">Cancel</button>
+      <button type="button" id="deleteItemBtn" style="grid-column:span 1;padding:0.6rem 0.9rem;border-radius:12px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:800;cursor:not-allowed;opacity:0.65;">Delete</button>
+    </form>
+  </section>
+
+  </section></div></main>
+  <footer><div class="container"><div class="footer-bottom"><div>&copy; 2026 MediNudge AI Planner</div><div class="footer-links"><a href="{% url 'website:result' %}">Back to Results</a><a href="{% url 'website:dashboard' %}">Dashboard</a><a href="{% url 'website:knowledge_base' %}">Support</a></div></div></div></footer>
   <script>
     const themeToggleBtn=document.getElementById("theme-toggle"),themeIcon=document.getElementById("theme-icon"),htmlElement=document.documentElement,moonPath="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",sunPath="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";function updateIcon(e){themeIcon.innerHTML=`<path d="${e?sunPath:moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${e?"none":"currentColor"}"/>`}const savedTheme=localStorage.getItem("theme"),prefersDark=window.matchMedia("(prefers-color-scheme: dark)").matches;"dark"===savedTheme||!savedTheme&&prefersDark?(htmlElement.setAttribute("data-theme","dark"),updateIcon(!0)):updateIcon(!1),themeToggleBtn.addEventListener("click",(()=>{"dark"===htmlElement.getAttribute("data-theme")?(htmlElement.removeAttribute("data-theme"),localStorage.setItem("theme","light"),updateIcon(!1)):(htmlElement.setAttribute("data-theme","dark"),localStorage.setItem("theme","dark"),updateIcon(!0))}));
-    const analysisData = {{ analysis_json|safe }};
+    const analysisData = {{ analysis_json|default:"{}"|safe }};
     const doneState=new Set();
     const today=new Date();
     document.getElementById("todayText").textContent=today.toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
@@ -28,9 +122,550 @@
     const jsDay=today.getDay();
     let currentDayIndex=jsDay===0?6:jsDay-1;
     weekLabels.forEach((label,idx)=>{const btn=document.createElement("button");btn.className="day-pill"+(idx===currentDayIndex?" active":"");btn.textContent=label;btn.addEventListener("click",()=>{currentDayIndex=idx;document.querySelectorAll(".day-pill").forEach(el=>el.classList.remove("active"));btn.classList.add("active");renderDay(currentDayIndex);});weekDaysContainer.appendChild(btn);});
-    function renderDay(dayIndex){const dayPlan=analysisData[dayIndex]||{exercises:[],foods:[],tablets:[]};renderSection("exerciseList","exerciseCount",dayPlan.exercises);renderSection("foodList","foodCount",dayPlan.foods);renderSection("tabletList","tabletCount",dayPlan.tablets);}
-    function renderSection(listId,countId,items){const listEl=document.getElementById(listId);const countEl=document.getElementById(countId);listEl.innerHTML="";countEl.textContent=items.length?`${items.length} items`:"No items";items.forEach(item=>{const li=document.createElement("li");li.className="item";if(doneState.has(item.id))li.classList.add("done");const left=document.createElement("div");left.className="item-left";const checkbox=document.createElement("input");checkbox.type="checkbox";checkbox.checked=doneState.has(item.id);checkbox.addEventListener("change",()=>{if(checkbox.checked){doneState.add(item.id);li.classList.add("done");}else{doneState.delete(item.id);li.classList.remove("done");}});const main=document.createElement("div");main.className="item-main";const nameEl=document.createElement("div");nameEl.className="item-name";nameEl.textContent=item.name;if(item.tag){const tagEl=document.createElement("span");tagEl.className="tag";tagEl.textContent=item.tag;nameEl.appendChild(tagEl);}const detailEl=document.createElement("div");detailEl.className = "item-detail";detailEl.textContent=item.detail||"";main.appendChild(nameEl);if(item.detail)main.appendChild(detailEl);left.appendChild(checkbox);left.appendChild(main);const right=document.createElement("div");right.className="item-right";right.textContent=item.time||"";li.appendChild(left);li.appendChild(right);listEl.appendChild(li);});}
+    function renderDay(dayIndex){const dayPlan=analysisData[dayIndex]||{exercises:[],foods:[],tablets:[]};renderSection("exerciseList","exerciseCount",dayPlan.exercises,"exercises",dayIndex);renderSection("foodList","foodCount",dayPlan.foods,"foods",dayIndex);renderSection("tabletList","tabletCount",dayPlan.tablets,"tablets",dayIndex);}
+    function renderSection(listId,countId,items,bucket,dayIndex){const listEl=document.getElementById(listId);const countEl=document.getElementById(countId);listEl.innerHTML="";countEl.textContent=items.length?`${items.length} items`:"No items";items.forEach(item=>{const li=document.createElement("li");li.className="item";li.style.cursor='pointer';if(doneState.has(item.id))li.classList.add("done");li.addEventListener('click',()=>{prefillEditForm({dayIndex,bucket,item});});const left=document.createElement("div");left.className="item-left";const checkbox=document.createElement("input");checkbox.type="checkbox";checkbox.checked=doneState.has(item.id);checkbox.addEventListener("click",(e)=>{e.stopPropagation();});checkbox.addEventListener("change",()=>{if(checkbox.checked){doneState.add(item.id);li.classList.add("done");}else{doneState.delete(item.id);li.classList.remove("done");}});const main=document.createElement("div");main.className="item-main";const nameEl=document.createElement("div");nameEl.className="item-name";nameEl.textContent=item.name||'';if(item.tag){const tagEl=document.createElement("span");tagEl.className="tag";tagEl.textContent=item.tag;nameEl.appendChild(tagEl);}const detailEl=document.createElement("div");detailEl.className = "item-detail";detailEl.textContent=item.detail||"";main.appendChild(nameEl);if(item.detail)main.appendChild(detailEl);left.appendChild(checkbox);left.appendChild(main);const right=document.createElement("div");right.className="item-right";right.textContent=item.time||"";li.appendChild(left);li.appendChild(right);listEl.appendChild(li);});}
     renderDay(currentDayIndex);
+
+    function getCookie(name){
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if(parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    const reportId = {{ report_id|default:'null' }};
+    const editForm = document.getElementById('reminderEditForm');
+    const editItemId = document.getElementById('editItemId');
+    const editType = document.getElementById('editType');
+    const editDay = document.getElementById('editDay');
+    const editName = document.getElementById('editName');
+    const editTime = document.getElementById('editTime');
+    const editDetail = document.getElementById('editDetail');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const deleteItemBtn = document.getElementById('deleteItemBtn');
+
+    const dayOptions = [
+      {v:0,t:'Mon'}, {v:1,t:'Tue'}, {v:2,t:'Wed'}, {v:3,t:'Thu'}, {v:4,t:'Fri'}, {v:5,t:'Sat'}, {v:6,t:'Sun'}
+    ];
+    dayOptions.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = String(d.v);
+      opt.textContent = d.t;
+      editDay.appendChild(opt);
+    });
+    editDay.value = String(currentDayIndex);
+
+    function prefillEditForm(ctx){
+      try{
+        editItemId.value = (ctx && ctx.item && ctx.item.id) ? String(ctx.item.id) : '';
+        editType.value = ctx.bucket || 'exercises';
+        editDay.value = String(ctx.dayIndex);
+        editName.value = (ctx && ctx.item && ctx.item.name) ? String(ctx.item.name) : '';
+        editDetail.value = (ctx && ctx.item && ctx.item.detail) ? String(ctx.item.detail) : '';
+        editTime.value = (ctx && ctx.item && ctx.item.time) ? String(ctx.item.time) : '';
+        const hasId = !!editItemId.value;
+        deleteItemBtn.disabled = !hasId;
+        deleteItemBtn.style.cursor = hasId ? 'pointer' : 'not-allowed';
+        deleteItemBtn.style.opacity = hasId ? '1' : '0.65';
+        deleteItemBtn.style.color = hasId ? 'var(--text-main)' : 'var(--text-muted)';
+        editName.focus();
+      }catch(e){}
+    }
+
+    function clearEditForm(){
+      editItemId.value = '';
+      editName.value = '';
+      editDetail.value = '';
+      editTime.value = '';
+      deleteItemBtn.disabled = true;
+      deleteItemBtn.style.cursor = 'not-allowed';
+      deleteItemBtn.style.opacity = '0.65';
+      deleteItemBtn.style.color = 'var(--text-muted)';
+    }
+
+    cancelEditBtn.addEventListener('click', () => {
+      clearEditForm();
+    });
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if(!reportId){
+        alert('No report selected. Open the reminder using a report_id.');
+        return;
+      }
+
+      const bucket = editType.value;
+      const dayIndex = parseInt(editDay.value, 10);
+      const name = (editName.value || '').trim();
+      const detail = (editDetail.value || '').trim();
+      const timeStr = (editTime.value || '').trim();
+      const id = (editItemId.value || '').trim();
+
+      if(!name){ alert('Please enter a name.'); return; }
+      if(!timeStr){ alert('Please enter a time like 9:00 AM.'); return; }
+
+      try{
+        const csrfToken = getCookie('csrftoken');
+        const res = await fetch('{% url "website:upsert_reminder_item_api" %}', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(csrfToken ? {'X-CSRFToken': csrfToken} : {})
+          },
+          body: JSON.stringify({
+            report_id: reportId,
+            day_index: dayIndex,
+            bucket,
+            item: { id: id || undefined, name, detail, time: timeStr }
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if(!res.ok || !data || data.ok !== true){
+          alert((data && data.error) ? data.error : 'Failed to save.');
+          return;
+        }
+
+        const updated = data.item;
+        const d = data.day_index;
+        if(!analysisData[d]) analysisData[d] = {exercises:[],foods:[],tablets:[]};
+
+        const list = analysisData[d][bucket] || [];
+        const idx = list.findIndex(x => x && x.id === updated.id);
+        if(idx >= 0) list[idx] = updated; else list.push(updated);
+        analysisData[d][bucket] = list;
+
+        // Clear form after save
+        clearEditForm();
+
+        // If user updated a different day than the active day, switch to it
+        if(currentDayIndex !== d){
+          currentDayIndex = d;
+          document.querySelectorAll('.day-pill').forEach((el, idx2) => {
+            if(idx2 === currentDayIndex) el.classList.add('active'); else el.classList.remove('active');
+          });
+        }
+        renderDay(currentDayIndex);
+      }catch(err){
+        alert('Failed to save.');
+      }
+    });
+
+    deleteItemBtn.addEventListener('click', async () => {
+      const id = (editItemId.value || '').trim();
+      if(!id) return;
+      if(!reportId){
+        alert('No report selected.');
+        return;
+      }
+
+      const bucket = editType.value;
+      const dayIndex = parseInt(editDay.value, 10);
+      try{
+        const csrfToken = getCookie('csrftoken');
+        const res = await fetch('{% url "website:delete_reminder_item_api" %}', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(csrfToken ? {'X-CSRFToken': csrfToken} : {})
+          },
+          body: JSON.stringify({ report_id: reportId, day_index: dayIndex, bucket, item_id: id })
+        });
+        const data = await res.json().catch(() => ({}));
+        if(!res.ok || !data || data.ok !== true){
+          alert((data && data.error) ? data.error : 'Failed to delete.');
+          return;
+        }
+
+        const d = data.day_index;
+        if(analysisData[d] && analysisData[d][bucket]){
+          analysisData[d][bucket] = (analysisData[d][bucket] || []).filter(x => !(x && x.id === id));
+        }
+
+        clearEditForm();
+        renderDay(currentDayIndex);
+      }catch(e){
+        alert('Failed to delete.');
+      }
+    });
+
+    // Initialize delete button state
+    clearEditForm();
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+      return outputArray;
+    }
+
+    async function enableWebPush(){
+      try{
+        if(!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+        const reg = await navigator.serviceWorker.register('/sw.js');
+
+        if(!window.Notification) return;
+        const permission = await Notification.requestPermission();
+        if(permission !== 'granted') return;
+
+        const keyRes = await fetch('{% url "website:push_public_key" %}', {credentials: 'same-origin'});
+        if(!keyRes.ok) return;
+        const keyData = await keyRes.json();
+        const publicKey = (keyData && keyData.publicKey) ? keyData.publicKey : '';
+        if(!publicKey) return;
+
+        let sub = await reg.pushManager.getSubscription();
+        if(!sub){
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicKey),
+          });
+        }
+
+        const csrfToken = getCookie('csrftoken');
+        await fetch('{% url "website:push_subscribe" %}', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(csrfToken ? {'X-CSRFToken': csrfToken} : {})
+          },
+          body: JSON.stringify({ subscription: sub })
+        });
+      }catch(e){
+        // Ignore push setup errors
+      }
+    }
+
+    enableWebPush();
+
+    // In-app due reminders (polling)
+    const dueListEl = document.getElementById('dueReminderList');
+    const dueEmptyEl = document.getElementById('dueReminderEmpty');
+    const desktopNotifStatusEl = document.getElementById('desktopNotifStatus');
+    const enableDesktopNotifBtn = document.getElementById('enableDesktopNotifBtn');
+
+    const seenKey = 'seen_due_reminder_ids';
+    let seenOrder = [];
+    try{
+      const raw = localStorage.getItem(seenKey);
+      const parsed = raw ? JSON.parse(raw) : [];
+      if(Array.isArray(parsed)) seenOrder = parsed.map(x => String(x));
+    }catch(e){ seenOrder = []; }
+    let seenSet = new Set(seenOrder);
+
+    function rememberSeen(id){
+      const sid = String(id);
+      if(seenSet.has(sid)) return;
+      seenSet.add(sid);
+      seenOrder.push(sid);
+      if(seenOrder.length > 200){
+        seenOrder = seenOrder.slice(seenOrder.length - 200);
+        seenSet = new Set(seenOrder);
+      }
+      try{ localStorage.setItem(seenKey, JSON.stringify(seenOrder)); }catch(e){}
+    }
+
+    function formatTime(iso){
+      try{
+        const d = new Date(iso);
+        if(!isFinite(d.getTime())) return '';
+        return d.toLocaleString('en-IN', { weekday:'short', hour:'2-digit', minute:'2-digit' });
+      }catch(e){ return ''; }
+    }
+
+    function formatTime12h(dateObj){
+      try{
+        const d = (dateObj instanceof Date) ? dateObj : new Date(dateObj);
+        if(!isFinite(d.getTime())) return '';
+        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      }catch(e){ return ''; }
+    }
+
+    function normalizeTitleToItemName(title){
+      const t = String(title || '').trim();
+      return t
+        .replace(/^Exercise\s+reminder:\s*/i, '')
+        .replace(/^Diet\s+reminder:\s*/i, '')
+        .replace(/^Medicine\s+reminder:\s*/i, '')
+        .trim();
+    }
+
+    function getBucketFromType(notificationType){
+      const t = String(notificationType || '').toLowerCase();
+      if(t === 'exercise') return 'exercises';
+      if(t === 'diet') return 'foods';
+      if(t === 'medicine') return 'tablets';
+      return null;
+    }
+
+    function dayIndexFromScheduledFor(iso){
+      try{
+        const scheduled = new Date(iso);
+        if(!isFinite(scheduled.getTime())) return null;
+
+        // Mirror server logic: week starts Monday.
+        const todayLocal = new Date();
+        const startOfWeek = new Date(todayLocal);
+        const jsDay2 = startOfWeek.getDay(); // 0=Sun..6=Sat
+        const mondayOffset = (jsDay2 === 0) ? -6 : (1 - jsDay2);
+        startOfWeek.setDate(startOfWeek.getDate() + mondayOffset);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const scheduledDate = new Date(scheduled);
+        scheduledDate.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.round((scheduledDate.getTime() - startOfWeek.getTime()) / (24 * 60 * 60 * 1000));
+        const normalized = ((diffDays % 7) + 7) % 7;
+        return normalized;
+      }catch(e){
+        return null;
+      }
+    }
+
+    function markPlanItemDoneFromNotification(n){
+      try{
+        if(!n) return false;
+        const bucket = getBucketFromType(n.type);
+        if(!bucket) return false;
+
+        const dayIndex = dayIndexFromScheduledFor(n.scheduled_for);
+        if(dayIndex === null || dayIndex === undefined) return false;
+
+        const dayPlan = analysisData[dayIndex] || {};
+        const items = Array.isArray(dayPlan[bucket]) ? dayPlan[bucket] : [];
+        if(!items.length) return false;
+
+        const targetName = normalizeTitleToItemName(n.title).toLowerCase();
+        const notifTime = formatTime12h(new Date(n.scheduled_for)).replace(/^0/, '').trim();
+
+        // Prefer matching by both name+time, fallback to name only.
+        let found = items.find(it => {
+          if(!it || !it.id) return false;
+          const itName = String(it.name || '').trim().toLowerCase();
+          const itTime = String(it.time || '').replace(/^0/, '').trim();
+          return itName === targetName && (!!notifTime && itTime === notifTime);
+        });
+        if(!found){
+          found = items.find(it => {
+            if(!it || !it.id) return false;
+            const itName = String(it.name || '').trim().toLowerCase();
+            return itName === targetName;
+          });
+        }
+
+        if(found && found.id){
+          doneState.add(String(found.id));
+          renderDay(currentDayIndex);
+          return true;
+        }
+      }catch(e){}
+      return false;
+    }
+
+    function updateDesktopNotifStatus(){
+      try{
+        if(!window.Notification){
+          desktopNotifStatusEl.textContent = 'Desktop notifications: not supported in this browser.';
+          enableDesktopNotifBtn.style.display = 'none';
+          return;
+        }
+
+        // Notifications generally require HTTPS, but localhost is allowed.
+        const isLocalhost = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+        if(!window.isSecureContext && !isLocalhost){
+          desktopNotifStatusEl.textContent = 'Desktop notifications: require HTTPS.';
+          enableDesktopNotifBtn.style.display = 'none';
+          return;
+        }
+
+        const perm = Notification.permission;
+        if(perm === 'granted'){
+          desktopNotifStatusEl.textContent = 'Desktop notifications: on.';
+          enableDesktopNotifBtn.style.display = 'none';
+          return;
+        }
+        if(perm === 'denied'){
+          desktopNotifStatusEl.textContent = 'Desktop notifications: blocked in browser settings.';
+          enableDesktopNotifBtn.style.display = 'none';
+          return;
+        }
+        desktopNotifStatusEl.textContent = 'Desktop notifications: off.';
+        enableDesktopNotifBtn.style.display = '';
+      }catch(e){
+        desktopNotifStatusEl.textContent = 'Desktop notifications: unavailable.';
+        enableDesktopNotifBtn.style.display = 'none';
+      }
+    }
+
+    enableDesktopNotifBtn.addEventListener('click', async () => {
+      try{
+        const perm = await Notification.requestPermission();
+        updateDesktopNotifStatus();
+        if(perm === 'granted'){
+          // Re-fetch immediately so any due items can pop.
+          fetchDue();
+        }
+      }catch(e){
+        updateDesktopNotifStatus();
+      }
+    });
+
+    async function postJson(url, payload, {csrf} = {}){
+      const csrfToken = csrf ? getCookie('csrftoken') : null;
+      const res = await fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? {'X-CSRFToken': csrfToken} : {})
+        },
+        body: JSON.stringify(payload || {})
+      });
+      const data = await res.json().catch(() => ({}));
+      return {res, data};
+    }
+
+    function renderDue(notifications){
+      const list = Array.isArray(notifications) ? notifications : [];
+      dueListEl.innerHTML = '';
+      if(!list.length){
+        dueEmptyEl.style.display = '';
+        return;
+      }
+      dueEmptyEl.style.display = 'none';
+
+      list.forEach(n => {
+        const row = document.createElement('div');
+        row.style.border = '1px solid var(--border-color)';
+        row.style.borderRadius = '14px';
+        row.style.padding = '0.9rem';
+        row.style.background = 'var(--section-alt-bg)';
+
+        const top = document.createElement('div');
+        top.style.display = 'flex';
+        top.style.justifyContent = 'space-between';
+        top.style.alignItems = 'baseline';
+        top.style.gap = '1rem';
+
+        const title = document.createElement('div');
+        title.style.fontWeight = '800';
+        title.textContent = (n && n.title) ? String(n.title) : 'Reminder';
+
+        const when = document.createElement('div');
+        when.style.color = 'var(--text-muted)';
+        when.style.fontSize = '0.9rem';
+        when.textContent = n && n.scheduled_for ? formatTime(n.scheduled_for) : '';
+
+        top.appendChild(title);
+        top.appendChild(when);
+
+        const body = document.createElement('div');
+        body.style.marginTop = '0.35rem';
+        body.style.color = 'var(--text-muted)';
+        body.textContent = (n && n.body) ? String(n.body) : '';
+
+        const actions = document.createElement('div');
+        actions.style.marginTop = '0.7rem';
+        actions.style.display = 'flex';
+        actions.style.flexWrap = 'wrap';
+        actions.style.gap = '0.5rem';
+
+        function mkBtn(label){
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = label;
+          b.style.padding = '0.5rem 0.75rem';
+          b.style.borderRadius = '12px';
+          b.style.border = '1px solid var(--border-color)';
+          b.style.background = 'var(--card-bg)';
+          b.style.color = 'var(--text-main)';
+          b.style.cursor = 'pointer';
+          b.style.fontWeight = '800';
+          return b;
+        }
+
+        const btnTaken = mkBtn('Taken');
+        btnTaken.addEventListener('click', async () => {
+          try{
+            await postJson('{% url "website:notification_taken_api" %}', { notification_id: n.id });
+            markPlanItemDoneFromNotification(n);
+            await fetchDue();
+          }catch(e){}
+        });
+
+        const btnSnooze = mkBtn('Snooze 10m');
+        btnSnooze.addEventListener('click', async () => {
+          try{
+            await postJson('{% url "website:notification_snooze_api" %}', { notification_id: n.id, minutes: 10 });
+            await fetchDue();
+          }catch(e){}
+        });
+
+        const btnDismiss = mkBtn('Dismiss');
+        btnDismiss.addEventListener('click', async () => {
+          try{
+            await postJson('{% url "website:ack_notifications_api" %}', { ids: [n.id] }, {csrf: true});
+            await fetchDue();
+          }catch(e){}
+        });
+
+        actions.appendChild(btnTaken);
+        actions.appendChild(btnSnooze);
+        actions.appendChild(btnDismiss);
+
+        row.appendChild(top);
+        if(body.textContent) row.appendChild(body);
+        row.appendChild(actions);
+        dueListEl.appendChild(row);
+      });
+    }
+
+    async function fetchDue(){
+      try{
+        const res = await fetch('{% url "website:due_notifications_api" %}', { credentials: 'same-origin' });
+        if(!res.ok) return;
+        const data = await res.json().catch(() => ({}));
+        const list = (data && Array.isArray(data.notifications)) ? data.notifications : [];
+
+        // Show browser notifications once per reminder id
+        if(window.Notification && Notification.permission === 'granted'){
+          list.forEach(n => {
+            if(!n || !n.id) return;
+            const id = String(n.id);
+            if(seenSet.has(id)) return;
+            try{
+              const dueTime = n.scheduled_for ? formatTime(n.scheduled_for) : '';
+              const bodyParts = [];
+              if(n.body) bodyParts.push(String(n.body));
+              if(dueTime) bodyParts.push(`Due: ${dueTime}`);
+
+              new Notification(String(n.title || 'Reminder'), {
+                body: bodyParts.filter(Boolean).join('\n'),
+                tag: `reminder-${id}`,
+                renotify: false,
+                requireInteraction: true,
+              });
+            }catch(e){}
+            rememberSeen(id);
+          });
+        }
+
+        renderDue(list);
+      }catch(e){
+        // ignore
+      }
+    }
+
+    // Poll every 30s
+    updateDesktopNotifStatus();
+    fetchDue();
+    setInterval(fetchDue, 30000);
   </script>
 </body>
 </html>

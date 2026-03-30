@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - DocusAI</title>
+    <title>Sign In - MediNudge AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -434,7 +434,7 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="{% url 'website:index' %}">DocusAI</a>
+                    <a href="{% url 'website:index' %}">MediNudge AI</a>
                 </div>
 
                 <div class="nav-links">
@@ -450,7 +450,7 @@
                             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
                         </svg>
                     </button>
-                    <a href="{% url 'website:signup' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Create account</a>
+                    {% comment %} <a href="{% url 'website:signup' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Create account</a> {% endcomment %}
                     <a href="{% url 'website:signup' %}" class="cta-button">Get started</a>
                 </div>
             </nav>
@@ -462,7 +462,7 @@
             <div class="auth-grid">
                 <section class="hero-copy">
                     <span class="eyebrow">Secure access to your health workspace</span>
-                    <h1>Sign in to continue your DocusAI care workflow.</h1>
+                    <h1>Sign in to continue your MediNudge AI care workflow.</h1>
                     <p>Return to your reports, AI Doctor conversations, lab interpretations, and second-opinion requests from one secure account.</p>
 
                     <div class="benefit-list">
@@ -489,8 +489,8 @@
                         <input type="hidden" name="next" value="{{ request.GET.next }}">
 
                         <div class="form-group">
-                            <label for="username" class="form-label">Username</label>
-                            <input id="username" class="form-input" type="text" name="username" placeholder="Enter your username" required>
+                            <label for="email" class="form-label">Email</label>
+                            <input id="email" class="form-input" type="email" name="email" placeholder="Enter your email" autocomplete="email" required>
                         </div>
 
                         <div class="form-group">
@@ -499,7 +499,7 @@
                         </div>
 
                         <div class="form-row">
-                            <span style="color: var(--text-muted); font-size: 0.92rem;">Secure sign in for your DocusAI account</span>
+                            <span style="color: var(--text-muted); font-size: 0.92rem;">Secure sign in for your MediNudge AI account</span>
                             <a href="{% url 'website:forgot_password' %}" class="inline-link">Forgot password?</a>
                         </div>
 
@@ -507,7 +507,7 @@
                     </form>
 
                     <div class="auth-footer">
-                        New to DocusAI?
+                        New to MediNudge AI?
                         <a href="{% url 'website:signup' %}">Create an account</a>
                     </div>
                 </section>
@@ -518,7 +518,7 @@
     <footer>
         <div class="container">
             <div class="footer-bottom">
-                <div>&copy; 2026 DocusAI Sign In</div>
+                <div>&copy; 2026 MediNudge AI Sign In</div>
                 <div class="footer-links">
                     <a href="{% url 'website:pricing' %}">Pricing</a>
                     <a href="{% url 'website:knowledge_base' %}">Support</a>
@@ -559,6 +559,16 @@
                 htmlElement.setAttribute("data-theme", "dark");
                 localStorage.setItem("theme", "dark");
                 updateIcon(true);
+            }
+        });
+
+        // If user hits Back after logging in, browsers may restore this page from bfcache.
+        // Reloading forces a real request so Django can redirect authenticated users.
+        window.addEventListener('pageshow', function (event) {
+            const navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+            const isBackForward = navEntry && navEntry.type === 'back_forward';
+            if (event.persisted || isBackForward) {
+                window.location.reload();
             }
         });
     </script>

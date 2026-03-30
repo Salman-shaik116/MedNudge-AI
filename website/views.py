@@ -1,15 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from .models import MedicalReport
+from .models import MedicalReport, InAppNotification, PushSubscription, Appointment
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST, require_GET
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils import timezone
+from django.conf import settings
 from django.urls import reverse
 from urllib.parse import urlencode
+from datetime import datetime, timedelta
 from mediscanner.analyzer import analyze_medical_report
 from mediscanner.symptom_agent import SymptomAgent
 import smtplib
@@ -19,9 +24,179 @@ import hashlib
 import time
 import threading
 import json
+import os
+import uuid
+import secrets
+
+
+def _get_smtp_sender_credentials() -> tuple[str, str]:
+    sender_email = (getattr(settings, 'EMAIL_HOST_USER', '') or '').strip()
+    sender_password = getattr(settings, 'EMAIL_HOST_PASSWORD', '') or ''
+
+    if not sender_email or not sender_password:
+        raise RuntimeError(
+            'Email sending is not configured. Set EMAIL_HOST_USER and EMAIL_HOST_PASSWORD (env vars).'
+        )
+
+    return sender_email, sender_password
+
+
+def _open_smtp_connection() -> smtplib.SMTP:
+    host = getattr(settings, 'EMAIL_HOST', 'smtp.gmail.com')
+    port = int(getattr(settings, 'EMAIL_PORT', 587))
+    use_tls = bool(getattr(settings, 'EMAIL_USE_TLS', True))
+
+    server = smtplib.SMTP(host, port)
+    server.set_debuglevel(0)
+    if use_tls:
+        server.starttls()
+    return server
+
+
+def _get_vapid_public_key():
+    return os.environ.get('VAPID_PUBLIC_KEY', '').strip()
+
+
+def _get_vapid_private_key():
+    return os.environ.get('VAPID_PRIVATE_KEY', '').strip()
+
+
+@require_GET
+def push_public_key(request):
+    return JsonResponse({'publicKey': _get_vapid_public_key()})
 
 
 @login_required(login_url='website:signin')
+@require_POST
+def push_subscribe(request):
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    sub = payload.get('subscription') or {}
+    endpoint = sub.get('endpoint')
+    keys = sub.get('keys') or {}
+    p256dh = keys.get('p256dh')
+    auth = keys.get('auth')
+
+    if not endpoint or not p256dh or not auth:
+        return JsonResponse({'ok': False, 'error': 'Invalid subscription payload.'}, status=400)
+
+    endpoint_hash = hashlib.sha256(endpoint.encode('utf-8')).hexdigest()
+
+    obj, _created = PushSubscription.objects.update_or_create(
+        endpoint_hash=endpoint_hash,
+        defaults={'user': request.user, 'endpoint': endpoint, 'p256dh': p256dh, 'auth': auth},
+    )
+
+    if obj.user_id != request.user.id:
+        obj.user = request.user
+        obj.p256dh = p256dh
+        obj.auth = auth
+        obj.save(update_fields=['user', 'p256dh', 'auth', 'updated_at'])
+
+    return JsonResponse({'ok': True})
+
+
+@login_required(login_url='website:signin')
+@require_POST
+def push_unsubscribe(request):
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    endpoint = payload.get('endpoint')
+    if not endpoint:
+        return JsonResponse({'ok': False, 'error': 'Missing endpoint.'}, status=400)
+
+    endpoint_hash = hashlib.sha256(endpoint.encode('utf-8')).hexdigest()
+
+    deleted, _ = PushSubscription.objects.filter(user=request.user, endpoint_hash=endpoint_hash).delete()
+    return JsonResponse({'ok': True, 'deleted': deleted})
+
+
+@require_GET
+def service_worker(request):
+    js = """
+self.addEventListener('push', function (event) {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch (e) { data = {}; }
+
+  const title = data.title || 'MediNudge AI Reminder';
+    const hasId = !!data.notification_id;
+  const options = {
+    body: data.body || '',
+        data: { url: data.url || '/', notification_id: data.notification_id || null },
+        actions: hasId ? [
+            { action: 'taken', title: 'Taken' },
+            { action: 'snooze_10', title: 'Snooze 10m' },
+        ] : [],
+        requireInteraction: hasId,
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function (event) {
+    const data = (event.notification && event.notification.data) ? event.notification.data : {};
+    const url = data.url || '/';
+    const notificationId = data.notification_id;
+
+    async function postJson(path, payload){
+        try{
+            await fetch(path, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload || {}),
+            });
+        }catch(e){}
+    }
+
+    event.notification.close();
+
+    if(event.action === 'taken' && notificationId){
+        event.waitUntil(Promise.all([
+            postJson('/api/notifications/taken/', { notification_id: notificationId }),
+            clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+                for (const client of clientList) {
+                    if (client.url === url && 'focus' in client) return client.focus();
+                }
+                if (clients.openWindow) return clients.openWindow(url);
+            })
+        ]));
+        return;
+    }
+
+    if(event.action === 'snooze_10' && notificationId){
+        event.waitUntil(Promise.all([
+            postJson('/api/notifications/snooze/', { notification_id: notificationId, minutes: 10 }),
+            clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+                for (const client of clientList) {
+                    if (client.url === url && 'focus' in client) return client.focus();
+                }
+                if (clients.openWindow) return clients.openWindow(url);
+            })
+        ]));
+        return;
+    }
+
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+            for (const client of clientList) {
+                if (client.url === url && 'focus' in client) return client.focus();
+            }
+            if (clients.openWindow) return clients.openWindow(url);
+        })
+    );
+});
+"""
+    return HttpResponse(js, content_type='application/javascript')
+
+
+@login_required(login_url='website:signin')
+@never_cache
 def reports_list(request):
     reports = MedicalReport.objects.filter(user=request.user)
     return render(request, "website/reports.html", {"reports": reports})
@@ -57,7 +232,7 @@ def analyze_report(request):
         except Exception:
             pass
 
-        MedicalReport.objects.create(
+        report = MedicalReport.objects.create(
             user=request.user if request.user.is_authenticated else None,
             report_file=file,
             analysis=result
@@ -65,13 +240,16 @@ def analyze_report(request):
         
 
         return render(request, "website/result.html", {
-            "analysis": result
+            "analysis": result,
+            "report_id": report.id,
+            "report_has_reminder_plan": bool(report.reminder_plan),
         })
 
     return render(request, "website/upload.html")
 
 
 
+@never_cache
 def signup(request):
     if request.user.is_authenticated:
         return redirect('website:dashboard')
@@ -97,6 +275,7 @@ def signup(request):
     return render(request, 'website/signup.html')
 
 
+@never_cache
 def signin(request):
     next_url = request.POST.get('next') or request.GET.get('next')
     safe_next_url = None
@@ -111,23 +290,34 @@ def signin(request):
         return redirect(safe_next_url or 'website:dashboard')
 
     if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
+        email = (request.POST.get('email') or request.POST.get('username') or '').strip()
+        password = request.POST.get('password') or ''
 
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect(safe_next_url or 'website:dashboard')
-        else:
-            messages.error(request, "Invalid credentials")
+        if not email or not password:
+            messages.error(request, 'Please enter your email and password.')
             signin_url = reverse('website:signin')
             if safe_next_url:
                 signin_url = f"{signin_url}?{urlencode({'next': safe_next_url})}"
             return redirect(signin_url)
 
+        user_obj = User.objects.filter(email__iexact=email).first()
+        user = None
+        if user_obj:
+            user = authenticate(request, username=user_obj.username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect(safe_next_url or 'website:dashboard')
+
+        messages.error(request, 'Invalid email or password')
+        signin_url = reverse('website:signin')
+        if safe_next_url:
+            signin_url = f"{signin_url}?{urlencode({'next': safe_next_url})}"
+        return redirect(signin_url)
+
     return render(request, 'website/signin.html')
 
+@never_cache
 def signout(request):
     logout(request)
     messages.success(request, "Logged out successfully")
@@ -135,27 +325,27 @@ def signout(request):
 
 
 @login_required(login_url='website:signin')
+@never_cache
 def dashboard(request):
-    # Get user's reports
     user_reports = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at')
-    recent_reports = user_reports[:5]
-    
-    # Get all registered users for recipient selection
-    all_users = User.objects.all().exclude(id=request.user.id)
-    
-    # Week days for tracking
-    week_days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-    
+    recent_reports = list(user_reports[:5])
+
+    today = timezone.localdate()
+    upcoming_appointments = list(
+        Appointment.objects.filter(
+            patient_email=request.user.email,
+            appointment_date__gte=today,
+        )
+        .select_related('doctor')
+        .order_by('appointment_date', 'time_slot', '-created_at')[:5]
+    )
+
     context = {
-        'user_reports': user_reports,
         'recent_reports': recent_reports,
-        'all_users': all_users,
-        'week_days': week_days,
-        'task_progress': load_user_progress(request.user.email),
-        'completion_rate': calculate_user_completion_rate(request.user.email),
+        'upcoming_appointments': upcoming_appointments,
     }
     
-    return render(request, 'website/dashboard_complete.html', context)
+    return render(request, 'website/dashboard_v2.html', context)
 
 @login_required(login_url='website:signin')
 def send_reminder(request):
@@ -180,8 +370,7 @@ def send_reminder(request):
         # Send email in background thread to avoid timeout
         def send_email_async():
             try:
-                sender_email = "geethageetha7817@gmail.com"
-                sender_password = "egkw lkki fzxp giir"
+                sender_email, sender_password = _get_smtp_sender_credentials()
                 
                 msg = MIMEMultipart('alternative')
                 msg['From'] = sender_email
@@ -293,12 +482,12 @@ def send_reminder(request):
                 
                 msg.attach(MIMEText(html_body, 'html'))
                 
-                server = smtplib.SMTP('smtp.gmail.com', 587)
-                server.set_debuglevel(0)
-                server.starttls()
-                server.login(sender_email, sender_password)
-                server.send_message(msg)
-                server.quit()
+                server = _open_smtp_connection()
+                try:
+                    server.login(sender_email, sender_password)
+                    server.send_message(msg)
+                finally:
+                    server.quit()
             except Exception as e:
                 print(f"Email error: {e}")
         
@@ -314,9 +503,362 @@ def send_reminder(request):
     return redirect('website:dashboard')
 
 @login_required(login_url='website:signin')
+@never_cache
 def view_report(request, report_id):
     report = get_object_or_404(MedicalReport, id=report_id, user=request.user)
-    return render(request, 'website/result.html', {'analysis': report.analysis})
+    return render(request, 'website/result.html', {
+        'analysis': report.analysis,
+        'report_id': report.id,
+        'report_has_reminder_plan': bool(report.reminder_plan),
+        'bfcache_reload_guard': True,
+    })
+
+
+def _build_simple_week_plan(*, include_exercise: bool, include_diet: bool, include_medicine: bool):
+    week_plan = {}
+
+    for day_index in range(7):
+        day_bucket = {
+            "exercises": [],
+            "foods": [],
+            "tablets": [],
+        }
+
+        if include_exercise:
+            day_bucket["exercises"].extend([
+                {
+                    "id": f"ex-{day_index}-1",
+                    "name": "Brisk walking",
+                    "detail": "20–30 minutes at a comfortable pace",
+                    "tag": "Cardio",
+                    "time": "7:00 AM",
+                },
+                {
+                    "id": f"ex-{day_index}-2",
+                    "name": "Light stretching",
+                    "detail": "10 minutes (full body)",
+                    "tag": "Mobility",
+                    "time": "7:30 PM",
+                },
+            ])
+
+        if include_diet:
+            day_bucket["foods"].extend([
+                {
+                    "id": f"food-{day_index}-1",
+                    "name": "Breakfast",
+                    "detail": "High-fiber meal (oats/whole grains) + fruit",
+                    "tag": "Balanced",
+                    "time": "8:30 AM",
+                },
+                {
+                    "id": f"food-{day_index}-2",
+                    "name": "Lunch",
+                    "detail": "Protein + vegetables + complex carbs",
+                    "tag": "Balanced",
+                    "time": "1:00 PM",
+                },
+                {
+                    "id": f"food-{day_index}-3",
+                    "name": "Snack",
+                    "detail": "Fruit + handful of nuts (if suitable)",
+                    "tag": "Snack",
+                    "time": "5:00 PM",
+                },
+                {
+                    "id": f"food-{day_index}-4",
+                    "name": "Dinner",
+                    "detail": "Light dinner + vegetables",
+                    "tag": "Light",
+                    "time": "8:30 PM",
+                },
+            ])
+
+        if include_medicine:
+            day_bucket["tablets"].extend([
+                {
+                    "id": f"med-{day_index}-1",
+                    "name": "Morning medication",
+                    "detail": "As prescribed by your clinician",
+                    "tag": "Prescription",
+                    "time": "9:00 AM",
+                },
+                {
+                    "id": f"med-{day_index}-2",
+                    "name": "Evening medication",
+                    "detail": "As prescribed by your clinician",
+                    "tag": "Prescription",
+                    "time": "9:00 PM",
+                },
+            ])
+
+        week_plan[day_index] = day_bucket
+
+    return week_plan
+
+
+def _parse_time_string(time_str: str):
+    if not time_str:
+        return datetime.strptime("09:00 AM", "%I:%M %p").time()
+
+    cleaned = str(time_str).strip()
+    for fmt in ("%I:%M %p", "%I %p"):
+        try:
+            return datetime.strptime(cleaned, fmt).time()
+        except Exception:
+            continue
+
+    return datetime.strptime("09:00 AM", "%I:%M %p").time()
+
+
+def _schedule_notifications_for_report(*, user, report: MedicalReport, week_plan: dict):
+    now = timezone.now()
+    tz = timezone.get_current_timezone()
+    today = timezone.localdate()
+    start_of_week = today - timedelta(days=today.weekday())
+
+    # Avoid duplicates if user re-adds the plan.
+    InAppNotification.objects.filter(
+        user=user,
+        report=report,
+        delivered_at__isnull=True,
+        scheduled_for__gte=now,
+    ).delete()
+
+    notifications_to_create = []
+
+    def add_for_item(day_index: int, notification_type: str, item: dict):
+        scheduled_time = _parse_time_string(item.get("time"))
+        scheduled_date = start_of_week + timedelta(days=int(day_index))
+        scheduled_dt = timezone.make_aware(datetime.combine(scheduled_date, scheduled_time), tz)
+        if scheduled_dt <= now:
+            scheduled_dt = scheduled_dt + timedelta(days=7)
+
+        title = item.get("name") or "Reminder"
+        detail = item.get("detail") or ""
+        time_label = str(item.get("time") or "").strip()
+
+        if notification_type == "exercise":
+            title = f"Exercise • {title}"
+        elif notification_type == "diet":
+            title = f"Diet • {title}"
+        elif notification_type == "medicine":
+            title = f"Medicine • {title}"
+        else:
+            title = f"Reminder • {title}"
+
+        if time_label:
+            body = f"{detail}\nTime: {time_label}".strip()
+        else:
+            body = detail
+
+        notifications_to_create.append(
+            InAppNotification(
+                user=user,
+                report=report,
+                notification_type=notification_type,
+                title=title[:140],
+                body=body,
+                scheduled_for=scheduled_dt,
+            )
+        )
+
+    for day_index, day_bucket in (week_plan or {}).items():
+        try:
+            normalized_day_index = int(day_index)
+        except Exception:
+            continue
+
+        for item in (day_bucket or {}).get("exercises", []) or []:
+            add_for_item(normalized_day_index, "exercise", item)
+        for item in (day_bucket or {}).get("foods", []) or []:
+            add_for_item(normalized_day_index, "diet", item)
+        for item in (day_bucket or {}).get("tablets", []) or []:
+            add_for_item(normalized_day_index, "medicine", item)
+
+    if notifications_to_create:
+        InAppNotification.objects.bulk_create(notifications_to_create)
+
+
+def _normalize_day_key(day_index):
+    try:
+        return str(int(day_index))
+    except Exception:
+        return None
+
+
+@login_required(login_url='website:signin')
+@require_POST
+def upsert_reminder_item_api(request):
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    report_id = payload.get('report_id')
+    day_index = payload.get('day_index')
+    bucket = payload.get('bucket')
+    item = payload.get('item') or {}
+
+    if not report_id:
+        return JsonResponse({'ok': False, 'error': 'Missing report_id.'}, status=400)
+    day_key = _normalize_day_key(day_index)
+    if day_key is None:
+        return JsonResponse({'ok': False, 'error': 'Invalid day_index.'}, status=400)
+
+    allowed_buckets = {'exercises', 'foods', 'tablets'}
+    if bucket not in allowed_buckets:
+        return JsonResponse({'ok': False, 'error': 'Invalid bucket.'}, status=400)
+
+    name = str(item.get('name') or '').strip()
+    detail = str(item.get('detail') or '').strip()
+    tag = str(item.get('tag') or '').strip()
+    time_str = str(item.get('time') or '').strip()
+
+    if not name:
+        return JsonResponse({'ok': False, 'error': 'Name is required.'}, status=400)
+    if not time_str:
+        return JsonResponse({'ok': False, 'error': 'Time is required (e.g. 9:00 AM).'}, status=400)
+
+    # Validate time format (falls back to default if invalid)
+    try:
+        _parse_time_string(time_str)
+    except Exception:
+        return JsonResponse({'ok': False, 'error': 'Invalid time format. Use e.g. 9:00 AM.'}, status=400)
+
+    report = get_object_or_404(MedicalReport, id=report_id, user=request.user)
+
+    reminder_plan = report.reminder_plan if isinstance(report.reminder_plan, dict) else {}
+    week_plan = reminder_plan.get('week_plan') if isinstance(reminder_plan.get('week_plan'), dict) else {}
+
+    day_bucket = week_plan.get(day_key) or week_plan.get(int(day_key))
+    if not isinstance(day_bucket, dict):
+        day_bucket = {'exercises': [], 'foods': [], 'tablets': []}
+
+    for k in ('exercises', 'foods', 'tablets'):
+        if not isinstance(day_bucket.get(k), list):
+            day_bucket[k] = []
+
+    item_id = str(item.get('id') or '').strip()
+    if not item_id:
+        prefix = {'exercises': 'ex', 'foods': 'food', 'tablets': 'med'}[bucket]
+        item_id = f"{prefix}-{day_key}-{uuid.uuid4().hex[:8]}"
+
+    updated_item = {
+        'id': item_id,
+        'name': name,
+        'detail': detail,
+        'tag': tag,
+        'time': time_str,
+    }
+
+    replaced = False
+    for idx, existing in enumerate(day_bucket[bucket]):
+        if isinstance(existing, dict) and str(existing.get('id') or '') == item_id:
+            day_bucket[bucket][idx] = updated_item
+            replaced = True
+            break
+    if not replaced:
+        day_bucket[bucket].append(updated_item)
+
+    # Ensure day bucket is persisted under string key (JSON-safe)
+    week_plan[day_key] = day_bucket
+    reminder_plan['week_plan'] = week_plan
+    report.reminder_plan = reminder_plan
+    report.save(update_fields=['reminder_plan'])
+
+    _schedule_notifications_for_report(user=request.user, report=report, week_plan=week_plan)
+
+    return JsonResponse({'ok': True, 'item': updated_item, 'day_index': int(day_key), 'bucket': bucket})
+
+
+@login_required(login_url='website:signin')
+@require_POST
+def delete_reminder_item_api(request):
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    report_id = payload.get('report_id')
+    day_index = payload.get('day_index')
+    bucket = payload.get('bucket')
+    item_id = str(payload.get('item_id') or '').strip()
+
+    if not report_id:
+        return JsonResponse({'ok': False, 'error': 'Missing report_id.'}, status=400)
+    day_key = _normalize_day_key(day_index)
+    if day_key is None:
+        return JsonResponse({'ok': False, 'error': 'Invalid day_index.'}, status=400)
+
+    allowed_buckets = {'exercises', 'foods', 'tablets'}
+    if bucket not in allowed_buckets:
+        return JsonResponse({'ok': False, 'error': 'Invalid bucket.'}, status=400)
+    if not item_id:
+        return JsonResponse({'ok': False, 'error': 'Missing item_id.'}, status=400)
+
+    report = get_object_or_404(MedicalReport, id=report_id, user=request.user)
+    reminder_plan = report.reminder_plan if isinstance(report.reminder_plan, dict) else {}
+    week_plan = reminder_plan.get('week_plan') if isinstance(reminder_plan.get('week_plan'), dict) else {}
+
+    day_bucket = week_plan.get(day_key) or week_plan.get(int(day_key))
+    if not isinstance(day_bucket, dict):
+        return JsonResponse({'ok': True, 'deleted': 0})
+
+    items = day_bucket.get(bucket)
+    if not isinstance(items, list):
+        return JsonResponse({'ok': True, 'deleted': 0})
+
+    before = len(items)
+    day_bucket[bucket] = [x for x in items if not (isinstance(x, dict) and str(x.get('id') or '') == item_id)]
+    deleted = before - len(day_bucket[bucket])
+
+    week_plan[day_key] = day_bucket
+    reminder_plan['week_plan'] = week_plan
+    report.reminder_plan = reminder_plan
+    report.save(update_fields=['reminder_plan'])
+
+    _schedule_notifications_for_report(user=request.user, report=report, week_plan=week_plan)
+
+    return JsonResponse({'ok': True, 'deleted': deleted, 'day_index': int(day_key), 'bucket': bucket, 'item_id': item_id})
+
+
+@login_required(login_url='website:signin')
+@require_POST
+def create_reminder_plan(request):
+    report_id = request.POST.get('report_id')
+    include_exercise = bool(request.POST.get('include_exercise'))
+    include_diet = bool(request.POST.get('include_diet'))
+    include_medicine = bool(request.POST.get('include_medicine'))
+
+    if not report_id:
+        messages.error(request, 'Missing report id.')
+        return redirect('website:reports')
+
+    if not (include_exercise or include_diet or include_medicine):
+        messages.error(request, 'Select at least one plan to add to reminders.')
+        return redirect('website:view_report', report_id=report_id)
+
+    report = get_object_or_404(MedicalReport, id=report_id, user=request.user)
+
+    week_plan = _build_simple_week_plan(
+        include_exercise=include_exercise,
+        include_diet=include_diet,
+        include_medicine=include_medicine,
+    )
+    report.reminder_plan = {
+        "week_plan": week_plan,
+        "include_exercise": include_exercise,
+        "include_diet": include_diet,
+        "include_medicine": include_medicine,
+    }
+    report.save(update_fields=['reminder_plan'])
+
+    _schedule_notifications_for_report(user=request.user, report=report, week_plan=week_plan)
+
+    messages.success(request, 'Added your selected plan(s) to the Reminder dashboard for this report.')
+    reminder_url = reverse('website:reminder')
+    return redirect(f"{reminder_url}?{urlencode({'report_id': report.id})}")
 
 @login_required(login_url='website:signin')
 def delete_report(request, report_id):
@@ -746,36 +1288,303 @@ def glossary(request):
 def pricing(request):
     return render(request, 'website/pricing.html')
 
+@never_cache
 def forgot_password(request):
-    return render(request, 'website/forgot-password.html')
+    from .models import PasswordResetCode
 
+    def _hash_code(*, user_id: int, code: str) -> str:
+        raw = f"{settings.SECRET_KEY}|{user_id}|{code}".encode("utf-8")
+        return hashlib.sha256(raw).hexdigest()
+
+    def _send_reset_code_email(*, to_email: str, code: str) -> None:
+        sender_email, sender_password = _get_smtp_sender_credentials()
+
+        msg = MIMEMultipart('alternative')
+        msg['From'] = sender_email
+        msg['To'] = to_email
+        msg['Subject'] = 'Your MediNudge AI password reset code'
+
+        html_body = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #0f172a;">
+            <div style="max-width: 560px; margin: 0 auto; padding: 24px;">
+              <h2 style="margin: 0 0 12px;">Password reset code</h2>
+              <p style="margin: 0 0 16px; color: #334155;">Use this 6-digit code to reset your password:</p>
+              <div style="font-size: 28px; font-weight: 800; letter-spacing: 6px; padding: 16px; background: #eff6ff; border-radius: 12px; display: inline-block;">{code}</div>
+              <p style="margin: 16px 0 0; color: #64748b;">This code expires in 10 minutes. If you didn't request this, you can ignore this email.</p>
+            </div>
+          </body>
+        </html>
+        """
+        msg.attach(MIMEText(html_body, 'html'))
+
+        server = _open_smtp_connection()
+        try:
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+        finally:
+            server.quit()
+
+    context = {
+        'step': 'request',
+        'email': '',
+    }
+
+    if request.method == 'POST':
+        step = (request.POST.get('step') or 'request').strip()
+        email = (request.POST.get('email') or '').strip()
+        context['email'] = email
+
+        if step == 'request':
+            if not email:
+                messages.error(request, 'Please enter your email address.')
+                return render(request, 'website/forgot-password.html', context)
+
+            user = User.objects.filter(email__iexact=email).first()
+            if not user:
+                return redirect('website:signin')
+
+            code = f"{secrets.randbelow(1000000):06d}"
+            expires_at = timezone.now() + timedelta(minutes=10)
+
+            PasswordResetCode.objects.create(
+                user=user,
+                email=user.email,
+                code_hash=_hash_code(user_id=user.id, code=code),
+                expires_at=expires_at,
+            )
+
+            try:
+                _send_reset_code_email(to_email=user.email, code=code)
+            except Exception:
+                messages.error(request, "We couldn't send the reset code right now. Please try again.")
+                return render(request, 'website/forgot-password.html', context)
+
+            context['step'] = 'verify'
+            messages.success(request, 'A 6-digit reset code has been sent to your email.')
+            return render(request, 'website/forgot-password.html', context)
+
+        if step == 'verify':
+            code = (request.POST.get('code') or '').strip()
+            new_password = request.POST.get('new_password') or ''
+            confirm_password = request.POST.get('confirm_password') or ''
+
+            context['step'] = 'verify'
+
+            if not email:
+                messages.error(request, 'Missing email. Please start again.')
+                context['step'] = 'request'
+                return render(request, 'website/forgot-password.html', context)
+
+            user = User.objects.filter(email__iexact=email).first()
+            if not user:
+                return redirect('website:signin')
+
+            if not (code.isdigit() and len(code) == 6):
+                messages.error(request, 'Enter the 6-digit code from your email.')
+                return render(request, 'website/forgot-password.html', context)
+
+            if not new_password or len(new_password) < 6:
+                messages.error(request, 'New password must be at least 6 characters.')
+                return render(request, 'website/forgot-password.html', context)
+
+            if new_password != confirm_password:
+                messages.error(request, 'Passwords do not match.')
+                return render(request, 'website/forgot-password.html', context)
+
+            now = timezone.now()
+            reset_obj = (
+                PasswordResetCode.objects.filter(
+                    user=user,
+                    used_at__isnull=True,
+                    expires_at__gt=now,
+                )
+                .order_by('-created_at')
+                .first()
+            )
+
+            if not reset_obj:
+                messages.error(request, 'Reset code expired. Please request a new code.')
+                context['step'] = 'request'
+                return render(request, 'website/forgot-password.html', context)
+
+            if reset_obj.code_hash != _hash_code(user_id=user.id, code=code):
+                messages.error(request, 'Invalid code. Please try again.')
+                return render(request, 'website/forgot-password.html', context)
+
+            user.set_password(new_password)
+            user.save(update_fields=['password'])
+            reset_obj.used_at = now
+            reset_obj.save(update_fields=['used_at'])
+
+            messages.success(request, 'Password updated. Please sign in.')
+            return redirect('website:signin')
+
+    return render(request, 'website/forgot-password.html', context)
+
+@ensure_csrf_cookie
 @login_required(login_url='website:signin')
+@never_cache
 def reminder_page(request):
     report_id = request.GET.get('report_id')
+    report = None
     if report_id:
+        report = MedicalReport.objects.filter(id=report_id, user=request.user).first()
+
+    if not report:
+        report = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at').first()
+
+    analysis_json = "{}"
+    if report and report.reminder_plan and isinstance(report.reminder_plan, dict):
+        week_plan = report.reminder_plan.get('week_plan') or {}
         try:
-            report = MedicalReport.objects.get(id=report_id, user=request.user)
-            analysis = report.analysis
-        except MedicalReport.DoesNotExist:
-            analysis = ""
-    else:
-        latest_report = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at').first()
-        analysis = latest_report.analysis if latest_report else ""
-    
+            analysis_json = json.dumps(week_plan)
+        except Exception:
+            analysis_json = "{}"
+
     days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-    
+
     return render(request, 'website/reminder.html', {
         'days': days,
-        'diet_plan': analysis,
-        'exercise_plan': analysis,
-        'medicine_plan': analysis
+        'report_id': report.id if report else None,
+        'analysis_json': analysis_json,
     })
+
+
+@login_required(login_url='website:signin')
+def due_notifications_api(request):
+    now = timezone.now()
+    due = (
+        InAppNotification.objects.filter(
+            user=request.user,
+            delivered_at__isnull=True,
+            taken_at__isnull=True,
+            snoozed_until__isnull=True,
+            scheduled_for__lte=now,
+        )
+        .order_by('scheduled_for')
+        [:20]
+    )
+
+    return JsonResponse({
+        'notifications': [
+            {
+                'id': n.id,
+                'title': n.title,
+                'body': n.body,
+                'type': n.notification_type,
+                'scheduled_for': n.scheduled_for.isoformat(),
+                'report_id': n.report_id,
+            }
+            for n in due
+        ]
+    })
+
+
+@login_required(login_url='website:signin')
+@require_POST
+def ack_notifications_api(request):
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    ids = payload.get('ids') or []
+    if not isinstance(ids, list):
+        ids = []
+
+    now = timezone.now()
+    updated = InAppNotification.objects.filter(
+        user=request.user,
+        id__in=ids,
+        delivered_at__isnull=True,
+    ).update(delivered_at=now)
+
+    return JsonResponse({'updated': updated})
+
+
+@csrf_exempt
+@require_POST
+def notification_taken_api(request):
+    if not getattr(request, 'user', None) or not request.user.is_authenticated:
+        return JsonResponse({'ok': False, 'error': 'Unauthorized'}, status=401)
+
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    notification_id = payload.get('notification_id')
+    if not notification_id:
+        return JsonResponse({'ok': False, 'error': 'Missing notification_id.'}, status=400)
+
+    now = timezone.now()
+    updated = (
+        InAppNotification.objects.filter(user=request.user, id=notification_id)
+        .update(taken_at=now, read_at=now)
+    )
+
+    return JsonResponse({'ok': True, 'updated': updated})
+
+
+@csrf_exempt
+@require_POST
+def notification_snooze_api(request):
+    if not getattr(request, 'user', None) or not request.user.is_authenticated:
+        return JsonResponse({'ok': False, 'error': 'Unauthorized'}, status=401)
+
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    notification_id = payload.get('notification_id')
+    minutes = payload.get('minutes')
+    try:
+        minutes = int(minutes)
+    except Exception:
+        minutes = 10
+    minutes = max(1, min(minutes, 180))
+
+    if not notification_id:
+        return JsonResponse({'ok': False, 'error': 'Missing notification_id.'}, status=400)
+
+    notif = InAppNotification.objects.filter(user=request.user, id=notification_id).first()
+    if not notif:
+        return JsonResponse({'ok': False, 'error': 'Not found.'}, status=404)
+
+    now = timezone.now()
+    snooze_to = now + timedelta(minutes=minutes)
+
+    # Mark the current one as snoozed so it doesn't count as missed.
+    notif.snoozed_until = snooze_to
+    notif.read_at = now
+    notif.save(update_fields=['snoozed_until', 'read_at'])
+
+    new_notif = InAppNotification.objects.create(
+        user=request.user,
+        report=notif.report,
+        notification_type=notif.notification_type,
+        title=notif.title,
+        body=notif.body,
+        scheduled_for=snooze_to,
+    )
+
+    return JsonResponse({'ok': True, 'snoozed_to': snooze_to.isoformat(), 'new_id': new_notif.id})
 
 # Doctor Registration Views
 from .forms import DoctorForm, AppointmentForm
-from .models import Doctor, Appointment
+from .models import Doctor
 
+@login_required(login_url='website:signin')
+@never_cache
 def doctor_register(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Only admins can register doctors.'}, status=403)
+        messages.error(request, 'Only admins can register doctors.')
+        return redirect('website:doctors_list')
+
     if request.method == 'POST':
         form = DoctorForm(request.POST, request.FILES)
         if form.is_valid():
@@ -795,6 +1604,7 @@ def doctor_register(request):
     return render(request, 'website/doctor_register.html', {'form': form})
 
 @login_required(login_url='website:signin')
+@never_cache
 def doctors_list(request):
     doctors = Doctor.objects.all().order_by('-created_at')
     my_appointments = []
@@ -803,6 +1613,7 @@ def doctors_list(request):
     return render(request, 'website/doctors_list.html', {'doctors': doctors, 'my_appointments': my_appointments})
 
 @login_required(login_url='website:signin')
+@never_cache
 def book_appointment(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
     date = request.GET.get('date')
@@ -823,8 +1634,7 @@ def book_appointment(request, doctor_id):
             
             # Send email to patient and doctor
             try:
-                sender_email = "geethageetha7817@gmail.com"
-                sender_password = "egkw lkki fzxp giir"
+                sender_email, sender_password = _get_smtp_sender_credentials()
                 
                 # Email to patient
                 msg_patient = MIMEMultipart('alternative')
@@ -871,12 +1681,13 @@ def book_appointment(request, doctor_id):
                 """
                 msg_doctor.attach(MIMEText(html_doctor, 'html'))
                 
-                server = smtplib.SMTP('smtp.gmail.com', 587)
-                server.starttls()
-                server.login(sender_email, sender_password)
-                server.send_message(msg_patient)
-                server.send_message(msg_doctor)
-                server.quit()
+                server = _open_smtp_connection()
+                try:
+                    server.login(sender_email, sender_password)
+                    server.send_message(msg_patient)
+                    server.send_message(msg_doctor)
+                finally:
+                    server.quit()
             except Exception as e:
                 print(f"Email error: {e}")
             

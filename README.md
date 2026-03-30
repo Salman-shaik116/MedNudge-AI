@@ -2,9 +2,9 @@
 
 ---
 
-# DocusAI (Django)
+# MediNudge AI (Django)
 
-DocusAI is a Django web app for:
+MediNudge AI is a Django web app for:
 
 - Uploading medical reports (TXT/DOCX/PDF/Images) and generating an AI-assisted summary/insights.
 - An “AI Doctor” chat that provides general health guidance and triage suggestions (not a diagnosis).
@@ -94,6 +94,13 @@ SECRET_KEY=change-me
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1,localhost
 
+# Email (SMTP)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your_sender_email@example.com
+EMAIL_HOST_PASSWORD=your_smtp_password
+
 # AI provider (pick one)
 AI_PROVIDER=groq
 GROQ_API_KEY=your_groq_key
@@ -111,7 +118,7 @@ GROQ_API_KEY=your_groq_key
 
 Email notes:
 
-- Some flows send email via SMTP in [website/views.py](website/views.py). For production, prefer storing SMTP credentials in environment variables (and never commit them to git).
+- Some flows send email via SMTP in [website/views.py](website/views.py). Configure email via env vars: `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD` (plus optional `EMAIL_HOST`/`EMAIL_PORT`/`EMAIL_USE_TLS`).
 
 Database behavior:
 
@@ -145,6 +152,11 @@ Key settings used by the code:
 - `ALLOWED_HOSTS`: comma-separated hosts
 - `DATABASE_URL`: full database URL (Render Postgres)
 - `DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`: optional explicit DB config
+
+Email (SMTP):
+
+- `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`: required for email sending
+- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`: optional SMTP connection settings
 
 AI provider:
 

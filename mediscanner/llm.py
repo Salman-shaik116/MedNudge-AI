@@ -24,6 +24,7 @@ def _normalize_provider(value: Optional[str]) -> Optional[Provider]:
 
 
 def pick_provider() -> Provider:
+    
     """Pick which chat provider to use.
 
     Order:

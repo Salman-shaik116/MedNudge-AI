@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-cy+iya9=)$lo@)9ghfkyb#rs2!js#fvz*glvou(sg2ojd360s=')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
@@ -162,7 +162,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# Use a user-friendly local timezone by default.
+# Override via env var TIME_ZONE (recommended for deployment).
+TIME_ZONE = os.environ.get('TIME_ZONE', 'Asia/Kolkata')
 
 USE_I18N = True
 
@@ -180,6 +182,36 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Email (SMTP)
+#
+# Set these as environment variables in Render (or a local .env):
+# - EMAIL_HOST_USER
+# - EMAIL_HOST_PASSWORD
+# Optional:
+# - EMAIL_HOST (default: smtp.gmail.com)
+# - EMAIL_PORT (default: 587)
+# - EMAIL_USE_TLS (default: True)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+
+# Backwards-compatible aliases (older keys used in some scripts).
+EMAIL_HOST_USER = (
+    os.environ.get('EMAIL_HOST_USER')
+    or os.environ.get('SMTP_SENDER_EMAIL')
+    or os.environ.get('PASSWORD_RESET_SENDER_EMAIL')
+    or ''
+)
+EMAIL_HOST_PASSWORD = (
+    os.environ.get('EMAIL_HOST_PASSWORD')
+    or os.environ.get('SMTP_SENDER_PASSWORD')
+    or os.environ.get('PASSWORD_RESET_SENDER_PASSWORD')
+    or ''
+)
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL') or EMAIL_HOST_USER
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

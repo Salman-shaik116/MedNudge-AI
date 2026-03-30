@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - DocusAI</title>
+    <title>Blog - MediNudge AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -569,7 +569,7 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="{% url 'website:index' %}">DocusAI</a>
+                    <a href="{% url 'website:index' %}">MediNudge AI</a>
                 </div>
                 
                 <div class="nav-links">
@@ -730,7 +730,7 @@
                 </div>
                 <a href="{% url 'website:signup' %}" class="cta-button" style="width: 140px; padding: 0.8rem;">Subscribe Now</a>
             </div>
-            <p style="font-size: 0.85rem; padding-top: 1rem;">© 2025 DocusAI Blog. All rights reserved.</p>
+            <p style="font-size: 0.85rem; padding-top: 1rem;">© 2025 MediNudge AI Blog. All rights reserved.</p>
         </div>
     </footer>
 
@@ -788,15 +788,39 @@
         // Blog card cursor
         cards.forEach(c => c.style.cursor = 'pointer');
 
-        // Theme Toggle
-        const toggleBtn = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        toggleBtn.addEventListener('click', () => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            themeIcon.innerHTML = isDark
-                ? '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
-                : '<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+        // Theme Toggle (consistent with other pages)
+        const themeToggleBtn = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+        const htmlElement = document.documentElement;
+
+        const moonPath = "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z";
+        const sunPath = "M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 7.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M12 17a5 5 0 100-10 5 5 0 000 10z";
+
+        function updateIcon(isDark) {
+            themeIcon.innerHTML = `<path d="${isDark ? sunPath : moonPath}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="${isDark ? "none" : "currentColor"}"/>`;
+        }
+
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+            htmlElement.setAttribute("data-theme", "dark");
+            updateIcon(true);
+        } else {
+            htmlElement.removeAttribute("data-theme");
+            updateIcon(false);
+        }
+
+        themeToggleBtn.addEventListener("click", () => {
+            if (htmlElement.getAttribute("data-theme") === "dark") {
+                htmlElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                updateIcon(false);
+            } else {
+                htmlElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                updateIcon(true);
+            }
         });
     </script>
 </body>

@@ -1,4 +1,4 @@
-# DocusAI — Full Setup Guide (Windows/macOS/Linux)
+# MediNudge AI — Full Setup Guide (Windows/macOS/Linux)
 
 This guide is meant to be “copy/paste runnable” and detailed enough to run the project on a fresh computer.
 
@@ -13,7 +13,11 @@ This guide is meant to be “copy/paste runnable” and detailed enough to run t
 ### Required
 - Git
 - Python 3.11.x (recommended: 3.11.9)
-- A database server (default local config uses **MySQL**)
+
+Database:
+
+- Default local setup uses **SQLite** automatically (no DB install needed)
+- You can optionally use MySQL/Postgres by setting `DB_*` or `DATABASE_URL` in `.env`
 
 ### For image uploads (OCR)
 - **Tesseract OCR engine** installed on your OS
@@ -63,8 +67,13 @@ This repo includes a safe template: `.env.example`.
 
 2) Edit `.env` and set at least:
 - `SECRET_KEY`
-- DB settings (`DB_*` or `DATABASE_URL`)
+- (Optional) DB settings (`DB_*` or `DATABASE_URL`) — leave unset to use SQLite
 - AI provider credentials (Groq or xAI)
+
+If you want notifications and password reset to work locally, also set:
+
+- `TIME_ZONE` (recommended, example: `Asia/Kolkata`)
+- SMTP vars: `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` (and optional host/port/TLS)
 
 Notes:
 - `.env` is ignored by git (so secrets won’t be committed).
@@ -108,6 +117,11 @@ If you see MySQL driver errors:
 python manage.py createsuperuser
 ```
 
+Notes:
+
+- The sign-in page uses **email + password**.
+- If you create users via the admin site, ensure the user has an email set.
+
 ## 9) Start the server
 ```bash
 python manage.py runserver
@@ -117,6 +131,54 @@ Then open:
 
 Admin:
 - http://127.0.0.1:8000/admin/
+
+## 10) Forgot password (email 6-digit code)
+
+1) Configure SMTP in `.env`:
+
+```env
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your_sender_email@example.com
+EMAIL_HOST_PASSWORD=your_smtp_password
+```
+
+2) Run the server and open:
+
+- http://127.0.0.1:8000/forgot-password/
+
+3) Enter your email → receive a 6-digit code → set a new password.
+
+## 11) Notifications (local)
+
+There are 2 notification modes:
+
+### Mode A: In-page + desktop pop-ups (recommended for local)
+
+1) Create a reminder plan from a report (or add items on the Reminder page).
+2) Open the reminder dashboard and keep it open:
+
+- http://127.0.0.1:8000/reminder/
+
+3) In “Due reminders”, click **Enable** and allow notifications.
+4) Add an item for today with a time 1–2 minutes in the future to test quickly.
+
+### Mode B: Web Push while tab is closed (optional)
+
+Requires VAPID keys in `.env`:
+
+```env
+VAPID_PUBLIC_KEY=...
+VAPID_PRIVATE_KEY=...
+VAPID_CLAIMS_SUB=mailto:admin@example.com
+```
+
+Then run the sender command (repeat periodically):
+
+```bash
+python manage.py send_due_push_notifications
+```
 
 ## 10) OCR setup (for image uploads)
 Image uploads (`.png/.jpg/.jpeg`) use `pytesseract` + the system **Tesseract** engine.

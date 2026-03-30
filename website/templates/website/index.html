@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocusAI – Elite AI Health Platform</title>
+    <title>MediNudge AI – Elite AI Health Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -702,7 +702,7 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="#hero">DocusAI</a>
+                    <a href="#hero">MediNudge AI</a>
                 </div>
                 
                 <div class="nav-links">
@@ -754,7 +754,9 @@
                             </svg>
                         </div>
                         <div class="dropdown-menu">
-                            <a href="{% url 'website:doctor_register' %}" class="dropdown-item">Doctor Registration</a>
+                            {% if user.is_staff or user.is_superuser %}
+                                <a href="{% url 'website:doctor_register' %}" class="dropdown-item">Doctor Registration</a>
+                            {% endif %}
                             <a href="{% url 'website:doctors_list' %}" class="dropdown-item">Book Appointment</a>
                         </div>
                     </div>
@@ -780,7 +782,7 @@
                 <div class="hero-content">
                     <span class="hero-label">HIPAA Compliant & SOC 2 Security</span>
                     <h1>Next-Generation<br>Health Intelligence</h1>
-                    <p>For patients, doctors, labs, and modern healthcare enterprises: DocusAI delivers trusted clinical AI tools integrated exactly where you need them most.</p>
+                    <p>For patients, doctors, labs, and modern healthcare enterprises: MediNudge AI delivers trusted clinical AI tools integrated exactly where you need them most.</p>
                     <div class="hero-buttons">
                         {% if user.is_authenticated %}
                             <a href="{% url 'website:dashboard' %}" class="cta-button">Go to Dashboard</a>
@@ -931,7 +933,7 @@
         <div class="container">
             <div class="testimonial-flex">
                 <div class="testimonial-content">
-                    <p>"DocusAI has fundamentally streamlined our diagnostic pipeline. The speed and accuracy of the lab test interpretations have cut our manual review time by over 40%."</p>
+                    <p>"MediNudge AI has fundamentally streamlined our diagnostic pipeline. The speed and accuracy of the lab test interpretations have cut our manual review time by over 40%."</p>
                     <div class="author-info">
                         <strong>Dr. Sarah Jenkins</strong>
                         <span>Chief Medical Officer, Horizon Health</span>
@@ -950,12 +952,12 @@
             <h2 class="section-title">Common Questions</h2>
             <div class="faq-grid" style="margin-top: 3rem;">
                 <div class="faq-item">
-                    <h4>What is DocusAI?</h4>
-                    <p>DocusAI is an enterprise AI health platform serving patients, clinicians, and laboratories offering deeply integrated clinical modules and secure data interpretation.</p>
+                    <h4>What is MediNudge AI?</h4>
+                    <p>MediNudge AI is an enterprise AI health platform serving patients, clinicians, and laboratories offering deeply integrated clinical modules and secure data interpretation.</p>
                 </div>
                 <div class="faq-item">
-                    <h4>Can DocusAI replace a licensed provider?</h4>
-                    <p>No. DocusAI is an advanced clinical support tool. It provides analytical insights to augment proactive health management but does not replace professional diagnosis.</p>
+                    <h4>Can MediNudge AI replace a licensed provider?</h4>
+                    <p>No. MediNudge AI is an advanced clinical support tool. It provides analytical insights to augment proactive health management but does not replace professional diagnosis.</p>
                 </div>
                 <div class="faq-item">
                     <h4>How secure is the platform?</h4>
@@ -980,7 +982,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <div>© 2025 DocusAI Inc. All rights reserved.</div>
+                <div>© 2025 MediNudge AI. All rights reserved.</div>
                 <div class="footer-links">
                     <a href="#">Privacy</a>
                     <a href="#">Terms of Service</a>

@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analysis Result - DocusAI</title>
+    <title>Analysis Result - MediNudge AI</title>
+    {% if bfcache_reload_guard %}
+    <script>
+        // Prevent showing a logged-in report view from the browser back-forward cache after logout.
+        window.addEventListener('pageshow', function (event) {
+            try {
+                const navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+                const isBackForward = navEntry && navEntry.type === 'back_forward';
+                if (event.persisted || isBackForward) {
+                    window.location.reload();
+                }
+            } catch (e) {
+                // ignore
+            }
+        });
+    </script>
+    {% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -395,6 +411,37 @@
             gap: 0.75rem;
         }
 
+        .plan-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .plan-options {
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .plan-option {
+            display: flex;
+            gap: 0.6rem;
+            align-items: flex-start;
+            padding: 0.85rem 1rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--section-alt-bg);
+        }
+
+        .plan-option input {
+            margin-top: 0.15rem;
+        }
+
+        .plan-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
         footer {
             background: var(--footer-bg);
             color: var(--footer-text);
@@ -467,7 +514,7 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="{% url 'website:index' %}">DocusAI</a>
+                    <a href="{% url 'website:index' %}">MediNudge AI</a>
                 </div>
 
                 <div class="nav-links">
@@ -561,6 +608,44 @@
                 {% endif %}
             </section>
 
+            {% if analysis and report_id %}
+            <section class="analysis-card" style="margin-top: 1rem;">
+                <div class="card-head">
+                    <span class="eyebrow">Reminder</span>
+                    <h2>Add a plan to your Reminder dashboard</h2>
+                    <p>Select what you want MediNudge AI to add for this report.</p>
+                </div>
+
+                <form class="plan-form" method="post" action="{% url 'website:create_reminder_plan' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="report_id" value="{{ report_id }}" />
+
+                    <div class="plan-options">
+                        <label class="plan-option">
+                            <input type="checkbox" name="include_exercise" checked />
+                            <span><strong>Exercise plan</strong><br><span style="color: var(--text-muted);">Weekly movement reminders based on a simple schedule.</span></span>
+                        </label>
+                        <label class="plan-option">
+                            <input type="checkbox" name="include_diet" checked />
+                            <span><strong>Diet plan</strong><br><span style="color: var(--text-muted);">Meal reminders for a balanced weekly routine.</span></span>
+                        </label>
+                        <label class="plan-option">
+                            <input type="checkbox" name="include_medicine" />
+                            <span><strong>Medicine reminders</strong><br><span style="color: var(--text-muted);">General placeholders (always follow your prescription).</span></span>
+                        </label>
+                    </div>
+
+                    <div class="plan-actions">
+                        <button type="submit" class="cta-button">Add to Reminder</button>
+                        <a href="{% url 'website:reminder' %}?report_id={{ report_id }}" class="cta-button cta-outline">Open Reminder</a>
+                        {% if report_has_reminder_plan %}
+                            <span style="color: var(--text-muted); font-weight: 600;">Already added for this report.</span>
+                        {% endif %}
+                    </div>
+                </form>
+            </section>
+            {% endif %}
+
             <section class="cta-card">
                 <div>
                     <span class="eyebrow">Continue</span>
@@ -579,7 +664,7 @@
     <footer>
         <div class="container">
             <div class="footer-bottom">
-                <div>&copy; 2026 DocusAI Results</div>
+                <div>&copy; 2026 MediNudge AI Results</div>
                 <div class="footer-links">
                     <a href="{% url 'website:pricing' %}">Pricing</a>
                     <a href="{% url 'website:knowledge_base' %}">Support</a>

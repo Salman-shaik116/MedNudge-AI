@@ -1,4 +1,4 @@
-# Render Deployment Guide for DocuSAI Project
+# Render Deployment Guide for MediNudge AI
 
 ## Prerequisites
 - GitHub account
@@ -59,6 +59,16 @@ In the web service "Environment" tab, add:
 | `XAI_API_KEY` | Your xAI (Grok) API key (if using xAI) |
 | `XAI_MODEL` | Optional, e.g. `grok-beta` (set if your account uses a different model name) |
 | `XAI_BASE_URL` | Optional, default `https://api.x.ai/v1` |
+| `EMAIL_HOST` | SMTP host (default: `smtp.gmail.com`) |
+| `EMAIL_PORT` | SMTP port (default: `587`) |
+| `EMAIL_USE_TLS` | `True` (recommended) |
+| `EMAIL_HOST_USER` | Sender email address / SMTP username |
+| `EMAIL_HOST_PASSWORD` | SMTP password (for Gmail: an App Password) |
+
+Notes for Gmail:
+
+- Use an App Password (not your normal password).
+- The account used in `EMAIL_HOST_USER` will be the sender shown in emails.
 
 ## Step 5: Deploy
 

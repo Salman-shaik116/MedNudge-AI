@@ -1,14 +1,28 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import os
 import hashlib
 import time
 
 def test_email():
     try:
         # Test email configuration
-        sender_email = "geethageetha7817@gmail.com"
-        sender_password = "egkw lkki fzxp giir"
+        sender_email = (
+            os.environ.get('EMAIL_HOST_USER')
+            or os.environ.get('SMTP_SENDER_EMAIL')
+            or os.environ.get('PASSWORD_RESET_SENDER_EMAIL')
+            or ''
+        ).strip()
+        sender_password = (
+            os.environ.get('EMAIL_HOST_PASSWORD')
+            or os.environ.get('SMTP_SENDER_PASSWORD')
+            or os.environ.get('PASSWORD_RESET_SENDER_PASSWORD')
+            or ''
+        )
+
+        if not sender_email or not sender_password:
+            raise RuntimeError('Missing EMAIL_HOST_USER / EMAIL_HOST_PASSWORD in environment variables.')
         recipient_email = "potscorpbloggers@gmail.com"  # Replace with actual test email
         recipient_name = "Test User"
         recipient_username = "testuser"

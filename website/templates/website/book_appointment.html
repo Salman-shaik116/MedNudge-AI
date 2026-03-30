@@ -4,7 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Appointment - DocusAI</title>
+    <title>Book Appointment - MediNudge AI</title>
+    <script>
+        // Prevent showing a logged-in page from the browser back-forward cache after logout.
+        window.addEventListener('pageshow', function (event) {
+            try {
+                const navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+                const isBackForward = navEntry && navEntry.type === 'back_forward';
+                if (event.persisted || isBackForward) {
+                    window.location.reload();
+                }
+            } catch (e) {
+                // ignore
+            }
+        });
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,7 +32,7 @@
     <header>
         <div class="container">
             <nav>
-                <div class="logo"><a href="{% url 'website:index' %}">DocusAI</a></div>
+                <div class="logo"><a href="{% url 'website:index' %}">MediNudge AI</a></div>
                 <div class="nav-links">
                     <a href="{% url 'website:index' %}" class="nav-link">Home</a>
                     <a href="{% url 'website:doctors_list' %}" class="nav-link">Doctors</a>
@@ -87,7 +101,7 @@
     <footer>
         <div class="container">
             <div class="footer-bottom">
-                <div>&copy; 2026 DocusAI Appointments</div>
+                <div>&copy; 2026 MediNudge AI Appointments</div>
                 <div class="footer-links">
                     <a href="{% url 'website:pricing' %}">Pricing</a>
                     <a href="{% url 'website:knowledge_base' %}">Support</a>
