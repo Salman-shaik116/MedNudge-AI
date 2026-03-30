@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - MediNudge AI</title>
+    <title>Reports - Mednudge AI</title>
     <script>
         // Prevent showing a logged-in page from the browser back-forward cache after logout.
         window.addEventListener('pageshow', function (event) {
@@ -561,7 +561,7 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="{% url 'website:index' %}">MediNudge AI</a>
+                    <a href="{% url 'website:index' %}">Mednudge AI</a>
                 </div>
 
                 <div class="nav-links">
@@ -579,7 +579,7 @@
                         </svg>
                     </button>
                     <a href="{% url 'website:ai_doctor' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">AI Doctor</a>
-                    <a href="{% url 'website:upload' %}" class="cta-button">Upload Report</a>
+                    <a href="{% url 'website:upload' %}" class="nav-link" style="color: var(--text-main); font-weight: 600;">Upload</a>
                     {% include 'website/partials/auth_actions.html' with hide_dashboard_link='1' %}
                 </div>
             </nav>
@@ -602,7 +602,7 @@
 
                     <div class="hero-aside">
                         <h2>What you can do here</h2>
-                        <p>Use this space as your report archive and follow-up center across the MediNudge AI workflow.</p>
+                        <p>Use this space as your report archive and follow-up center across the Mednudge AI workflow.</p>
                         <div class="hero-list">
                             <div class="hero-list-item"><strong>Review</strong> uploaded reports and timestamps</div>
                             <div class="hero-list-item"><strong>Download</strong> original files when needed</div>
@@ -687,7 +687,7 @@
     <footer>
         <div class="container">
             <div class="footer-bottom">
-                <div>&copy; 2026 MediNudge AI Reports</div>
+                <div>&copy; 2026 Mednudge AI Reports</div>
                 <div class="footer-links">
                     <a href="{% url 'website:pricing' %}">Pricing</a>
                     <a href="{% url 'website:knowledge_base' %}">Support</a>

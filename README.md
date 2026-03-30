@@ -2,14 +2,14 @@
 
 ---
 
-# MediNudge AI (Django)
+# Mednudge AI (Django)
 
-MediNudge AI is a Django web app for:
+Mednudge AI is a Django web app for:
 
 - Uploading medical reports (TXT/DOCX/PDF/Images) and generating an AI-assisted summary/insights.
 - An “AI Doctor” chat that provides general health guidance and triage suggestions (not a diagnosis).
 - User dashboard with saved reports, reminders, and a public weekly progress tracker.
-- Doctor registration + appointment booking flow (with meeting link).
+- Admin-only doctor registration + appointment booking flow (with meeting link).
 
 This repository contains a deploy-ready configuration for Render (see build script and render config).
 
@@ -61,7 +61,7 @@ See [mediscanner/file_extractor.py](mediscanner/file_extractor.py) for the exact
 
 Prerequisites:
 
-- Python 3.11 (Render uses 3.11.9 via [runtime.txt](runtime.txt))
+- Python 3.11.x (Render uses 3.11.9 via [runtime.txt](runtime.txt))
 - (Optional, for image OCR) Tesseract OCR engine installed on your machine
 
 ### 1) Create a virtual environment
@@ -94,6 +94,10 @@ SECRET_KEY=change-me
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1,localhost
 
+# Timezone (recommended)
+# Default is Asia/Kolkata if not set.
+TIME_ZONE=Asia/Kolkata
+
 # Email (SMTP)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
@@ -114,6 +118,11 @@ GROQ_API_KEY=your_groq_key
 
 # OCR (only needed if Tesseract is not auto-detected on Windows)
 # TESSERACT_CMD=C:\\Program Files\\Tesseract-OCR\\tesseract.exe
+
+# Optional: Web Push notifications (only needed if you want push while the tab is closed)
+# VAPID_PUBLIC_KEY=your_vapid_public_key
+# VAPID_PRIVATE_KEY=your_vapid_private_key
+# VAPID_CLAIMS_SUB=mailto:admin@example.com
 ```
 
 Email notes:
@@ -152,6 +161,7 @@ Key settings used by the code:
 - `ALLOWED_HOSTS`: comma-separated hosts
 - `DATABASE_URL`: full database URL (Render Postgres)
 - `DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`: optional explicit DB config
+- `TIME_ZONE`: Django timezone (default: `Asia/Kolkata`)
 
 Email (SMTP):
 
@@ -177,6 +187,11 @@ Render superuser provisioning (used by [create_superuser.py](create_superuser.py
 - `DJANGO_SUPERUSER_EMAIL`
 - `DJANGO_SUPERUSER_PASSWORD`
 
+Web Push notifications (optional):
+
+- `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`: required if you want Web Push notifications
+- `VAPID_CLAIMS_SUB`: `mailto:...` claim (optional; defaults to `mailto:admin@example.com`)
+
 ## Common routes
 
 Routes are defined in [website/urls.py](website/urls.py). A few important ones:
@@ -190,10 +205,40 @@ Routes are defined in [website/urls.py](website/urls.py). A few important ones:
 - `/dashboard/` Logged-in dashboard
 - `/progress/<tracker_id>/` Public weekly tracker page
 - `/api/progress/<tracker_id>/update/` and `/api/progress/<tracker_id>/get/` tracker sync APIs
-- `/doctor-register/` Doctor registration
+- `/forgot-password/` Password reset (email 6-digit code)
+- `/reminder/` Reminder dashboard
+- `/doctor-register/` Doctor registration (admin/staff only)
 - `/doctors-list/` Doctors list + booking
 - `/book-appointment/<doctor_id>/` Book an appointment
 - `/appointment-meeting/<appointment_id>/` Appointment meeting page
+
+## Authentication notes
+
+- Sign-in is **email + password** (not username).
+- Forgot password flow:
+	1) Enter your email on `/forgot-password/`
+	2) Receive a 6-digit code via SMTP
+	3) Set a new password
+
+Make sure your Django user records have an email address set (admin can manage users at `/admin/`).
+
+## Notifications (local)
+
+There are 2 notification modes:
+
+1) In-page reminders (recommended for local dev)
+	 - Open `/reminder/` and keep it open.
+	 - “Due reminders” auto-refreshes and shows reminders when their time arrives.
+	 - Click **Enable** to allow desktop pop-ups from your browser.
+
+2) Web Push (optional)
+	 - Requires `VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY`.
+	 - Requires a secure context (HTTPS). `localhost` is allowed.
+	 - Run the sender periodically (like a cron job):
+
+		 ```bash
+		 python manage.py send_due_push_notifications
+		 ```
 
 ## Deploy on Render
 

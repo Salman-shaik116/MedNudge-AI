@@ -1,4 +1,4 @@
-# Render Deployment Guide for MediNudge AI
+# Render Deployment Guide for Mednudge AI
 
 ## Prerequisites
 - GitHub account
@@ -8,10 +8,13 @@
 ## Step 1: Push to GitHub
 
 ```bash
-cd c:\Users\Papam\Downloads\docusai_project-main
+# From the folder that contains manage.py
+# Example:
+# cd docusai_projectlastreview/docusai_projectfor_render_db01
+
 git init
 git add .
-git commit -m "Initial commit - ready for deployment"
+git commit -m "Initial commit"
 git branch -M main
 git remote add origin <YOUR_GITHUB_REPO_URL>
 git push -u origin main
@@ -54,6 +57,7 @@ In the web service "Environment" tab, add:
 | `DEBUG` | `False` |
 | `ALLOWED_HOSTS` | `your-app-name.onrender.com` |
 | `PYTHON_VERSION` | `3.11.9` |
+| `TIME_ZONE` | Optional (recommended), e.g. `Asia/Kolkata` |
 | `AI_PROVIDER` | `groq` or `xai` (or `grok`) |
 | `GROQ_API_KEY` | Your Groq API key (if using Groq) |
 | `XAI_API_KEY` | Your xAI (Grok) API key (if using xAI) |
@@ -64,6 +68,14 @@ In the web service "Environment" tab, add:
 | `EMAIL_USE_TLS` | `True` (recommended) |
 | `EMAIL_HOST_USER` | Sender email address / SMTP username |
 | `EMAIL_HOST_PASSWORD` | SMTP password (for Gmail: an App Password) |
+
+Optional (Web Push notifications):
+
+| Key | Value |
+|-----|-------|
+| `VAPID_PUBLIC_KEY` | Your VAPID public key |
+| `VAPID_PRIVATE_KEY` | Your VAPID private key |
+| `VAPID_CLAIMS_SUB` | Optional, e.g. `mailto:admin@example.com` |
 
 Notes for Gmail:
 
@@ -78,15 +90,40 @@ Notes for Gmail:
 
 ## Step 6: Create Superuser
 
-After successful deployment:
+This project can provision a superuser automatically during build using these env vars:
+
+- `DJANGO_SUPERUSER_USERNAME`
+- `DJANGO_SUPERUSER_EMAIL`
+- `DJANGO_SUPERUSER_PASSWORD`
+
+If you prefer to create it manually (or create additional admins):
+
 1. Go to your web service → "Shell" tab
 2. Run: `python manage.py createsuperuser`
-3. Follow prompts to create admin user
+3. Follow prompts
 
 ## Step 7: Access Your Application
 
 - App URL: `https://your-app-name.onrender.com`
 - Admin: `https://your-app-name.onrender.com/admin`
+
+## Notifications on Render
+
+There are 2 modes:
+
+1) In-page reminders
+    - Users see due reminders on the Reminder dashboard (`/reminder/`) while the page is open.
+
+2) Web Push notifications (optional)
+    - Requires VAPID env vars (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`).
+    - Requires running the sender management command periodically:
+
+       ```bash
+       python manage.py send_due_push_notifications
+       ```
+
+    - Render does not automatically run this on a schedule for you unless you set up a scheduler/job.
+       Use a scheduler option available to you (Render cron job if enabled for your plan, or an external scheduler).
 
 ## Troubleshooting
 

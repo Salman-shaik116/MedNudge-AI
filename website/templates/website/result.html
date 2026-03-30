@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analysis Result - MediNudge AI</title>
+    <title>Analysis Result - Mednudge AI</title>
     {% if bfcache_reload_guard %}
     <script>
         // Prevent showing a logged-in report view from the browser back-forward cache after logout.
@@ -514,7 +514,7 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="{% url 'website:index' %}">MediNudge AI</a>
+                    <a href="{% url 'website:index' %}">Mednudge AI</a>
                 </div>
 
                 <div class="nav-links">
@@ -531,7 +531,6 @@
                             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
                         </svg>
                     </button>
-                    <a href="{% url 'website:upload' %}" class="cta-button">Upload Another</a>
                     {% include 'website/partials/auth_actions.html' %}
                 </div>
             </nav>
@@ -613,7 +612,7 @@
                 <div class="card-head">
                     <span class="eyebrow">Reminder</span>
                     <h2>Add a plan to your Reminder dashboard</h2>
-                    <p>Select what you want MediNudge AI to add for this report.</p>
+                    <p>Select what you want Mednudge AI to add for this report.</p>
                 </div>
 
                 <form class="plan-form" method="post" action="{% url 'website:create_reminder_plan' %}">
@@ -664,7 +663,7 @@
     <footer>
         <div class="container">
             <div class="footer-bottom">
-                <div>&copy; 2026 MediNudge AI Results</div>
+                <div>&copy; 2026 Mednudge AI Results</div>
                 <div class="footer-links">
                     <a href="{% url 'website:pricing' %}">Pricing</a>
                     <a href="{% url 'website:knowledge_base' %}">Support</a>

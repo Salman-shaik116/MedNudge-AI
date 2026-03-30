@@ -1,4 +1,4 @@
-# MediNudge AI — Full Setup Guide (Windows/macOS/Linux)
+# Mednudge AI — Full Setup Guide (Windows/macOS/Linux)
 
 This guide is meant to be “copy/paste runnable” and detailed enough to run the project on a fresh computer.
 

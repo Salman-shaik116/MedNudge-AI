@@ -19,7 +19,7 @@ class SymptomAgent:
 
     def reply(self, message: str, history: Optional[List[Dict[str, Any]]] = None) -> str:
         system_instructions = (
-            "You are MediNudge AI Doctor, a medical guidance assistant. "
+            "You are Mednudge AI Doctor, a medical guidance assistant. "
             "Provide general health information and triage guidance, not a diagnosis. "
             "Be calm, clear, and concise. "
             "Do not provide medication dosing. "

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - MediNudge AI</title>
+  <title>Dashboard - Mednudge AI</title>
 
   <script>
     // Prevent showing a logged-in dashboard from the browser back-forward cache after logout.
@@ -66,6 +66,13 @@
     .hero p{color:var(--text-muted);max-width:68ch}
     .hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
 
+    .summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-bottom:1.25rem}
+    .summary-card{padding:1.15rem 1.15rem}
+    .summary-card strong{display:block;font-size:1.75rem;line-height:1.1;font-weight:950;margin-bottom:.35rem}
+    .summary-card span{color:var(--text-muted);font-size:.92rem;font-weight:700}
+
+    .quick-links{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.25rem}
+
     .dash-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem;align-items:start}
     .stack{display:grid;gap:1.25rem}
 
@@ -93,6 +100,9 @@
 
     .empty{padding:1rem 1rem;border-radius:16px;border:1px dashed var(--border-color);color:var(--text-muted);background:transparent}
 
+    .pill-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+    .pill{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .65rem;border-radius:999px;border:1px solid var(--border-color);background:var(--section-alt-bg);color:var(--text-muted);font-weight:800;font-size:.82rem}
+
     footer{background:var(--footer-bg);color:var(--footer-text);padding:2.75rem 0;border-top:1px solid #1E293B}
     .footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--footer-muted);font-size:.95rem;flex-wrap:wrap}
     .footer-links{display:flex;gap:1.25rem;flex-wrap:wrap}
@@ -107,7 +117,7 @@
   <header>
     <div class="container">
       <nav>
-        <div class="logo"><a href="{% url 'website:index' %}">MediNudge AI</a></div>
+        <div class="logo"><a href="{% url 'website:index' %}">Mednudge AI</a></div>
         <div class="nav-links">
           <a href="{% url 'website:index' %}" class="nav-link">Home</a>
           <a href="{% url 'website:reports' %}" class="nav-link">Reports</a>
@@ -129,61 +139,46 @@
   <main class="page-shell">
     <div class="container">
       <section class="card hero">
-        <span class="eyebrow">Your workspace</span>
+        <span class="eyebrow">Your dashboard</span>
         <h1>Welcome back, {{ request.user.username|title }}.</h1>
-        <p>Everything important in one place — upload a report, send a tracker reminder, review recent reports, and check upcoming appointments.</p>
+        <p>A faster overview of your reports, trackers, reminders, and appointments — with one clear next step.</p>
         <div class="hero-actions">
           <a href="{% url 'website:upload' %}" class="cta-button">Upload new report</a>
           <a href="{% url 'website:reports' %}" class="secondary-button">Open reports</a>
-          <a href="{% url 'website:doctors_list' %}" class="secondary-button">Find doctors</a>
+          <a href="{% url 'website:reminder' %}" class="secondary-button">Open reminder dashboard</a>
+        </div>
+
+        <div class="pill-row">
+          <span class="pill">Reports: {{ report_count }}</span>
+          <span class="pill">Trackers: {{ tracker_count }}</span>
+          <span class="pill">Avg completion: {{ tracker_completion_rate }}%</span>
+          <span class="pill">Appointments: {{ appointment_count }}</span>
         </div>
       </section>
 
+      <section class="summary-grid">
+        <article class="card summary-card">
+          <strong>{{ report_count }}</strong>
+          <span>Total reports</span>
+        </article>
+        <article class="card summary-card">
+          <strong>{{ tracker_completion_rate }}%</strong>
+          <span>Average tracker completion</span>
+        </article>
+        <article class="card summary-card">
+          <strong>{{ appointment_count }}</strong>
+          <span>Upcoming appointments</span>
+        </article>
+      </section>
+
+      <section class="quick-links">
+        <a href="{% url 'website:ai_doctor' %}" class="secondary-button">AI Doctor</a>
+        <a href="{% url 'website:lab_test' %}" class="secondary-button">Lab test</a>
+        <a href="{% url 'website:knowledge_base' %}" class="secondary-button">Knowledge base</a>
+        <a href="{% url 'website:doctors_list' %}" class="secondary-button">Doctors</a>
+      </section>
+
       <section class="dash-grid">
-        <div class="stack">
-          <section class="card panel">
-            <div class="panel-head">
-              <div>
-                <h2>Quick upload</h2>
-                <div class="panel-sub">Upload a medical report to generate analysis and reminders.</div>
-              </div>
-              <a href="{% url 'website:upload' %}" class="cta-button">Upload</a>
-            </div>
-          </section>
-
-          <section class="card panel">
-            <div class="panel-head">
-              <div>
-                <h2>Send reminder link</h2>
-                <div class="panel-sub">Send a weekly health tracker link to someone.</div>
-              </div>
-            </div>
-
-            {% if messages %}
-              {% for message in messages %}
-                <div class="message {{ message.tags }}">{{ message }}</div>
-              {% endfor %}
-            {% endif %}
-
-            <form method="POST" action="{% url 'website:send_reminder' %}" class="form-stack">
-              {% csrf_token %}
-              <div class="form-group">
-                <label for="recipient_email">Recipient email</label>
-                <input class="form-input" type="email" id="recipient_email" name="recipient_email" placeholder="Enter email address" required>
-              </div>
-              <div class="form-group">
-                <label for="recipient_name">Recipient name</label>
-                <input class="form-input" type="text" id="recipient_name" name="recipient_name" placeholder="Enter recipient name" required>
-              </div>
-              <div class="form-group">
-                <label for="recipient_username">Username</label>
-                <input class="form-input" type="text" id="recipient_username" name="recipient_username" placeholder="Enter username" required>
-              </div>
-              <button type="submit" class="cta-button">Send reminder</button>
-            </form>
-          </section>
-        </div>
-
         <div class="stack">
           <section class="card panel">
             <div class="panel-head">
@@ -242,6 +237,93 @@
             {% endif %}
           </section>
         </div>
+
+        <div class="stack">
+          <section class="card panel">
+            <div class="panel-head">
+              <div>
+                <h2>Send reminder link</h2>
+                <div class="panel-sub">Create a weekly tracker link and send it by email.</div>
+              </div>
+            </div>
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'website:send_reminder' %}" class="form-stack">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="recipient_email">Recipient email</label>
+                <input class="form-input" type="email" id="recipient_email" name="recipient_email" placeholder="Enter email address" required>
+              </div>
+              <div class="form-group">
+                <label for="recipient_name">Recipient name</label>
+                <input class="form-input" type="text" id="recipient_name" name="recipient_name" placeholder="Enter recipient name" required>
+              </div>
+              <div class="form-group">
+                <label for="recipient_username">Username</label>
+                <input class="form-input" type="text" id="recipient_username" name="recipient_username" placeholder="Enter username" required>
+              </div>
+              <button type="submit" class="cta-button">Send reminder</button>
+            </form>
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head">
+              <div>
+                <h2>Shared trackers</h2>
+                <div class="panel-sub">Your sent trackers and current completion.</div>
+              </div>
+            </div>
+
+            {% if task_progress %}
+              <div class="list">
+                {% for tracker in task_progress|slice:":4" %}
+                  <article class="item">
+                    <div class="item-title">{{ tracker.user_name }}</div>
+                    <div class="item-meta">{{ tracker.completion_rate }}% complete · Updated {{ tracker.last_updated }}</div>
+                    <div class="item-actions">
+                      <a href="{% url 'website:progress_tracker' tracker.tracker_id %}" class="secondary-button" target="_blank">Open</a>
+                      <form method="POST" action="{% url 'website:delete_tracker' tracker.tracker_id %}" onsubmit="return confirm('Delete tracker {{ tracker.tracker_id }}?')">
+                        {% csrf_token %}
+                        <button type="submit" class="danger-button">Delete</button>
+                      </form>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="empty">No trackers yet. Send a reminder to generate a tracker link.</div>
+            {% endif %}
+          </section>
+
+          <section class="card panel">
+            <div class="panel-head">
+              <div>
+                <h2>Weekly tracker</h2>
+                <div class="panel-sub">A quick snapshot of your most recent tracker.</div>
+              </div>
+            </div>
+
+            {% if task_progress %}
+              {% with latest=task_progress.0 %}
+                <div class="item" style="margin-top:.25rem;">
+                  <div class="item-title">{{ latest.user_name }}</div>
+                  <div class="item-meta">{{ latest.completion_rate }}% complete · Tracker {{ latest.tracker_id }}</div>
+                  <div class="item-actions">
+                    <a href="{% url 'website:progress_tracker' latest.tracker_id %}" class="cta-button" target="_blank">Open tracker</a>
+                    <a href="{% url 'website:reminder' %}" class="secondary-button">Reminder dashboard</a>
+                  </div>
+                </div>
+              {% endwith %}
+            {% else %}
+              <div class="empty">No tracker snapshot available yet.</div>
+            {% endif %}
+          </section>
+        </div>
       </section>
     </div>
   </main>
@@ -249,7 +331,7 @@
   <footer>
     <div class="container">
       <div class="footer-bottom">
-        <div>&copy; 2026 MediNudge AI Dashboard</div>
+        <div>&copy; 2026 Mednudge AI Dashboard</div>
         <div class="footer-links">
           <a href="{% url 'website:pricing' %}">Pricing</a>
           <a href="{% url 'website:knowledge_base' %}">Support</a>

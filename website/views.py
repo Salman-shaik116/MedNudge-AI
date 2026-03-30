@@ -124,7 +124,7 @@ self.addEventListener('push', function (event) {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch (e) { data = {}; }
 
-  const title = data.title || 'MediNudge AI Reminder';
+    const title = data.title || 'Mednudge AI Reminder';
     const hasId = !!data.notification_id;
   const options = {
     body: data.body || '',
@@ -330,6 +330,9 @@ def dashboard(request):
     user_reports = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at')
     recent_reports = list(user_reports[:5])
 
+    task_progress = load_user_progress(request.user.email)
+    tracker_completion_rate = calculate_user_completion_rate(request.user.email)
+
     today = timezone.localdate()
     upcoming_appointments = list(
         Appointment.objects.filter(
@@ -343,6 +346,11 @@ def dashboard(request):
     context = {
         'recent_reports': recent_reports,
         'upcoming_appointments': upcoming_appointments,
+        'task_progress': task_progress,
+        'tracker_completion_rate': tracker_completion_rate,
+        'report_count': user_reports.count(),
+        'appointment_count': len(upcoming_appointments),
+        'tracker_count': len(task_progress),
     }
     
     return render(request, 'website/dashboard_v2.html', context)
@@ -1302,7 +1310,7 @@ def forgot_password(request):
         msg = MIMEMultipart('alternative')
         msg['From'] = sender_email
         msg['To'] = to_email
-        msg['Subject'] = 'Your MediNudge AI password reset code'
+        msg['Subject'] = 'Your Mednudge AI password reset code'
 
         html_body = f"""
         <html>
