@@ -4,7 +4,7 @@ from .models import MedicalReport, InAppNotification, PushSubscription, Appointm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, FileResponse, Http404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
@@ -520,6 +520,21 @@ def view_report(request, report_id):
         'report_has_reminder_plan': bool(report.reminder_plan),
         'bfcache_reload_guard': True,
     })
+
+
+@login_required(login_url='website:signin')
+@never_cache
+def download_report(request, report_id):
+    report = get_object_or_404(MedicalReport, id=report_id, user=request.user)
+
+    if not report.report_file:
+        raise Http404('Report file not found')
+
+    report_file = report.report_file
+    report_file.open('rb')
+
+    filename = os.path.basename(report_file.name or 'report')
+    return FileResponse(report_file.file, as_attachment=True, filename=filename)
 
 
 def _build_simple_week_plan(*, include_exercise: bool, include_diet: bool, include_medicine: bool):

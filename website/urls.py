@@ -29,6 +29,7 @@ urlpatterns = [
     path('reminder-plan/', views.create_reminder_plan, name='create_reminder_plan'),
     path('send-reminder/', views.send_reminder, name='send_reminder'),
     path('view-report/<int:report_id>/', views.view_report, name='view_report'),
+    path('download-report/<int:report_id>/', views.download_report, name='download_report'),
     path('delete-report/<int:report_id>/', views.delete_report, name='delete_report'),
     path('delete-tracker/<str:tracker_id>/', views.delete_tracker, name='delete_tracker'),
     path('progress/<str:tracker_id>/', views.progress_tracker, name='progress_tracker'),

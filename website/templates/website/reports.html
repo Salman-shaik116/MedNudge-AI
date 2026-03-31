@@ -651,7 +651,7 @@
 
                                 <div class="report-actions">
                                     {% if report.report_file %}
-                                        <a class="link-button download-button" href="{{ report.report_file.url }}" target="_blank" rel="noopener noreferrer">Download original report</a>
+                                        <a class="link-button download-button" href="{% url 'website:download_report' report.id %}">Download original report</a>
                                     {% endif %}
                                     <a href="{% url 'website:ai_doctor' %}" class="link-button">Discuss with AI Doctor</a>
                                     <a href="{% url 'website:second_opinion' %}" class="link-button">Request second opinion</a>
